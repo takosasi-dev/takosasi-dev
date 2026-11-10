@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 84" width="100%" role="img" aria-label="PROJECTS">
+<defs><pattern id="hz" width="28" height="28" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="14" height="28" fill="#ff2bd6"/></pattern>
+<clipPath id="c"><rect x="950" y="30" width="230" height="24"/></clipPath></defs>
+<style>.m{animation:m 1.6s linear infinite}@keyframes m{to{transform:translateX(39.6px)}}
+.p{animation:p 2.4s ease-in-out infinite}@keyframes p{50%{opacity:.35}}
+.d{stroke-dasharray:6 10;animation:d 1.2s linear infinite}@keyframes d{to{stroke-dashoffset:-16}}@media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+<rect width="1200" height="84" rx="10" fill="#05070d"/>
+<rect x="20" y="18" width="84" height="48" fill="#ff2bd6"/>
+<text x="62" y="54" text-anchor="middle" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="32" font-weight="800" fill="#06080c">03</text>
+<text x="126" y="57" font-family="'Yu Mincho',YuMincho,'Hiragino Mincho ProN','Noto Serif CJK JP','Noto Serif JP','MS PMincho',serif" font-size="40" font-weight="900" fill="#fff" letter-spacing="6">制作物</text>
+<text x="290" y="40" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="13" letter-spacing="4" fill="#ff2bd6">PROJECTS</text>
+<text class="p" x="290" y="60" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="11" letter-spacing="3" fill="#5f7387">SECTION 03 / ACCESS GRANTED</text>
+<line class="d" x1="594" y1="42" x2="930" y2="42" stroke="#ff2bd6" stroke-opacity=".7" stroke-width="2"/>
+<g clip-path="url(#c)"><rect class="m" x="870" y="30" width="330" height="24" fill="url(#hz)"/></g>
+<rect x="950" y="30" width="230" height="24" fill="none" stroke="#ff2bd6" stroke-width="1.5"/>
+</svg>

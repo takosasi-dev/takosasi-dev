@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 406" width="100%" role="img" aria-label="Recently updated repositories">
+<defs><clipPath id="c"><rect width="1200" height="406" rx="14"/></clipPath>
+<linearGradient id="hl" x1="0" x2="1"><stop offset="0" stop-color="#39ff88" stop-opacity=".0"/><stop offset=".5" stop-color="#39ff88" stop-opacity=".16"/><stop offset="1" stop-color="#39ff88" stop-opacity="0"/></linearGradient></defs>
+<style>.row{animation:row .5s ease-out both}@keyframes row{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+.hl{animation:hl 7.2s steps(6,end) infinite}@keyframes hl{to{transform:translateY(324px)}}
+.bl{animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:.2}}@media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+<g clip-path="url(#c)">
+<rect width="1200" height="406" fill="#05070d"/>
+<circle class="bl" cx="32" cy="32" r="5" fill="#39ff88"/>
+<text x="48" y="37" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="13" letter-spacing="4" fill="#39ff88">RECENT TRANSMISSIONS // LATEST PUSHES</text>
+<text x="1176" y="37" text-anchor="end" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="11" letter-spacing="3" fill="#5f7387">AUTO-UPDATED BY GITHUB ACTIONS</text>
+<g class="row" style="animation-delay:0.00s">
+<rect x="20" y="64" width="1160" height="46" fill="#0a0f1c" stroke="#39ff88" stroke-opacity=".22"/>
+<rect x="20" y="64" width="5" height="46" fill="#39ff88"/>
+<text x="42" y="93" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="13" fill="#39ff88">2026-11-10</text>
+<text x="150" y="93" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="15" font-weight="800" fill="#fff">packet-bouncer</text>
+<circle cx="420" cy="88" r="5" fill="#00e5ff"/>
+<text x="434" y="93" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="12" fill="#d8e6f0">GDScript</text>
+<text x="540" y="93" font-family="'Yu Gothic UI','Hiragino Sans','Noto Sans CJK JP',Meiryo,sans-serif" font-size="13.5" fill="#5f7387">ブラウザで遊ぶパケット検問ゲーム(Godot 4.7・開発中)</text>
+</g><g class="row" style="animation-delay:0.18s">
+<rect x="20" y="118" width="1160" height="46" fill="#0a0f1c" stroke="#39ff88" stroke-opacity=".22"/>
+<rect x="20" y="118" width="5" height="46" fill="#39ff88"/>
+<text x="42" y="147" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="13" fill="#39ff88">2026-11-10</text>
+<text x="150" y="147" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="15" font-weight="800" fill="#fff">glintloop</text>
+<circle cx="420" cy="142" r="5" fill="#5f7387"/>
+<text x="434" y="147" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="12" fill="#d8e6f0">-</text>
+<text x="540" y="147" font-family="'Yu Gothic UI','Hiragino Sans','Noto Sans CJK JP',Meiryo,sans-serif" font-size="13.5" fill="#5f7387">画像にエフェクトを重ねて短いループ アニメーション(GIF・APNG・WebP)を作る Windows アプリ</text>
+</g><g class="row" style="animation-delay:0.36s">
+<rect x="20" y="172" width="1160" height="46" fill="#0a0f1c" stroke="#39ff88" stroke-opacity=".22"/>
+<rect x="20" y="172" width="5" height="46" fill="#39ff88"/>
+<text x="42" y="201" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="13" fill="#39ff88">2026-10-29</text>
+<text x="150" y="201" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="15" font-weight="800" fill="#fff">-ai-work-board-</text>
+<circle cx="420" cy="196" r="5" fill="#ffc400"/>
+<text x="434" y="201" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="12" fill="#d8e6f0">Python</text>
+<text x="540" y="201" font-family="'Yu Gothic UI','Hiragino Sans','Noto Sans CJK JP',Meiryo,sans-serif" font-size="13.5" fill="#5f7387">(no description)</text>
+</g><g class="row" style="animation-delay:0.54s">
+<rect x="20" y="226" width="1160" height="46" fill="#0a0f1c" stroke="#39ff88" stroke-opacity=".22"/>
+<rect x="20" y="226" width="5" height="46" fill="#39ff88"/>
+<text x="42" y="255" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="13" fill="#39ff88">2026-10-26</text>
+<text x="150" y="255" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="15" font-weight="800" fill="#fff">padlab</text>
+<circle cx="420" cy="250" r="5" fill="#39ff88"/>
+<text x="434" y="255" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="12" fill="#d8e6f0">C#</text>
+<text x="540" y="255" font-family="'Yu Gothic UI','Hiragino Sans','Noto Sans CJK JP',Meiryo,sans-serif" font-size="13.5" fill="#5f7387">Windows 向けゲームコントローラー診断ツール。入力の可視化・ドリフト・チャタリング・…</text>
+</g><g class="row" style="animation-delay:0.72s">
+<rect x="20" y="280" width="1160" height="46" fill="#0a0f1c" stroke="#39ff88" stroke-opacity=".22"/>
+<rect x="20" y="280" width="5" height="46" fill="#39ff88"/>
+<text x="42" y="309" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="13" fill="#39ff88">2026-10-26</text>
+<text x="150" y="309" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="15" font-weight="800" fill="#fff">reply-frame</text>
+<circle cx="420" cy="304" r="5" fill="#3b9dff"/>
+<text x="434" y="309" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="12" fill="#d8e6f0">TypeScript</text>
+<text x="540" y="309" font-family="'Yu Gothic UI','Hiragino Sans','Noto Sans CJK JP',Meiryo,sans-serif" font-size="13.5" fill="#5f7387">Claude Code の返答を角丸の色付き枠で囲む mod（ターミナル/VS Code/デスクトップ/…</text>
+</g><g class="row" style="animation-delay:0.90s">
+<rect x="20" y="334" width="1160" height="46" fill="#0a0f1c" stroke="#39ff88" stroke-opacity=".22"/>
+<rect x="20" y="334" width="5" height="46" fill="#39ff88"/>
+<text x="42" y="363" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="13" fill="#39ff88">2026-10-26</text>
+<text x="150" y="363" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="15" font-weight="800" fill="#fff">github-repo-lens</text>
+<circle cx="420" cy="358" r="5" fill="#f1e05a"/>
+<text x="434" y="363" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="12" fill="#d8e6f0">JavaScript</text>
+<text x="540" y="363" font-family="'Yu Gothic UI','Hiragino Sans','Noto Sans CJK JP',Meiryo,sans-serif" font-size="13.5" fill="#5f7387">GitHub のリポジトリの事実を出典つきでコピーし、自分の公開リポジトリをルールと Actions…</text>
+</g>
+<rect class="hl" x="20" y="64" width="1160" height="46" fill="url(#hl)"/>
+</g>
+<rect x="1" y="1" width="1198" height="404" rx="14" fill="none" stroke="#39ff88" stroke-opacity=".45" stroke-width="1.5"/>
+</svg>
