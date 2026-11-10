@@ -2,6 +2,8 @@
 
 <img src="assets/header.svg" width="100%" alt="takosasi-dev // infrastructure, network, security, games and tools">
 
+<a href="https://x.com/kou111011051"><img src="assets/link-x.svg" width="330" alt="X (Twitter): @kou111011051"></a>
+
 <img src="assets/sec-01.svg" width="100%" alt="01 OPERATOR">
 <img src="assets/terminal.svg" width="100%" alt="$ whoami: takosasi-dev. Focus: infrastructure / network / security. Builds: games, desktop tools, server tools, Obsidian plugins, Chrome extensions, Minecraft add-ons.">
 

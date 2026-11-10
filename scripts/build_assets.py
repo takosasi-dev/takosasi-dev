@@ -393,6 +393,33 @@ def card(i, repo, name, desc, lang, col):
     save(f"card-{repo}.svg", svg)
 
 
+# --------------------------------------------------------------------------- contact links
+# (file key, mark, service label, handle, color). The URL lives in README.md.
+LINKS = [
+    ("x", "X", "X // TWITTER", "@kou111011051", CYAN),
+]
+
+
+def link(key, mark, label, handle, col):
+    W, H = 440, 72
+    shape = f"M14 1.5H{W-1.5}V{H-14}L{W-14} {H-1.5}H1.5V14Z"
+    per = 2 * (W + H) - 22
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="100%" role="img" aria-label="{esc(label)}: {esc(handle)}">
+<style>.t{{stroke-dasharray:90 {per - 90};animation:t 4s linear infinite}}@keyframes t{{to{{stroke-dashoffset:-{per}}}}}
+.bl{{animation:bl 1.4s steps(1) infinite}}@keyframes bl{{50%{{opacity:.2}}}}{REDUCED}</style>
+<path d="{shape}" fill="{BG}"/>
+<path d="{shape}" fill="none" stroke="{col}" stroke-opacity=".4" stroke-width="1.5"/>
+<path class="t" d="{shape}" fill="none" stroke="{col}" stroke-width="3" stroke-linecap="round"/>
+<rect x="16" y="14" width="44" height="44" fill="{col}"/>
+<text x="38" y="47" text-anchor="middle" font-family="{MONO}" font-size="30" font-weight="800" fill="#06080c">{esc(mark)}</text>
+<text x="74" y="29" font-family="{MONO}" font-size="11" letter-spacing="3" fill="{col}">{esc(label)}</text>
+<text x="74" y="55" font-family="{MONO}" font-size="22" font-weight="800" fill="#fff">{esc(handle)}</text>
+<text x="{W - 40}" y="41" text-anchor="end" font-family="{MONO}" font-size="11" letter-spacing="2" fill="{DIM}">OPEN &gt;</text>
+<circle class="bl" cx="{W - 26}" cy="37" r="4" fill="{col}"/>
+</svg>'''
+    save(f"link-{key}.svg", svg)
+
+
 # --------------------------------------------------------------------------- footer
 def footer():
     W, H = 1200, 170
@@ -434,4 +461,6 @@ if __name__ == "__main__":
     network()
     for i, p in enumerate(PROJECTS, 1):
         card(i, *p)
+    for l in LINKS:
+        link(*l)
     footer()
