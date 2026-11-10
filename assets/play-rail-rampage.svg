@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 72" width="100%" role="img" aria-label="PLAY IN BROWSER: RailRampage">
+<style>.t{stroke-dasharray:90 912;animation:t 4s linear infinite}@keyframes t{to{stroke-dashoffset:-1002}}
+.bl{animation:bl 1.4s steps(1) infinite}@keyframes bl{50%{opacity:.2}}@media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+<path d="M14 1.5H438.5V58L426 70.5H1.5V14Z" fill="#05070d"/>
+<path d="M14 1.5H438.5V58L426 70.5H1.5V14Z" fill="none" stroke="#ff7a00" stroke-opacity=".4" stroke-width="1.5"/>
+<path class="t" d="M14 1.5H438.5V58L426 70.5H1.5V14Z" fill="none" stroke="#ff7a00" stroke-width="3" stroke-linecap="round"/>
+<rect x="16" y="14" width="44" height="44" fill="#ff7a00"/>
+<polygon points="31,24 31,48 50,36" fill="#06080c"/>
+<text x="74" y="29" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="11" letter-spacing="3" fill="#ff7a00">PLAY IN BROWSER</text>
+<text x="74" y="55" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="22" font-weight="800" fill="#fff">RailRampage</text>
+<text x="400" y="41" text-anchor="end" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="11" letter-spacing="2" fill="#5f7387">OPEN &gt;</text>
+<circle class="bl" cx="414" cy="37" r="4" fill="#ff7a00"/>
+</svg>

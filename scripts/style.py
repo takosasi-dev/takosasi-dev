@@ -18,7 +18,7 @@ DIM = "#5f7387"
 
 LANG_COLOR = {
     "C++": "#f34b7d", "C#": "#39ff88", "GDScript": "#00e5ff", "Python": "#ffc400",
-    "TypeScript": "#3b9dff", "JavaScript": "#f1e05a", "Kotlin": "#a97bff",
+    "TypeScript": "#3b9dff", "JavaScript": "#f1e05a", "Kotlin": "#a97bff", "C": "#8aa0b4",
 }
 
 

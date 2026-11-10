@@ -7,8 +7,7 @@
 <g clip-path="url(#c)">
 <rect width="1200" height="406" fill="#05070d"/>
 <circle class="bl" cx="32" cy="32" r="5" fill="#39ff88"/>
-<text x="48" y="37" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="13" letter-spacing="4" fill="#39ff88">RECENT TRANSMISSIONS // LATEST PUSHES</text>
-<text x="1176" y="37" text-anchor="end" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="11" letter-spacing="3" fill="#5f7387">AUTO-UPDATED BY GITHUB ACTIONS</text>
+<text x="48" y="37" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="13" letter-spacing="4" fill="#39ff88">RECENT TRANSMISSIONS // LATEST PUSHES</text><text x="1176" y="37" text-anchor="end" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="11" letter-spacing="3" fill="#5f7387">AUTO-UPDATED BY GITHUB ACTIONS</text>
 <g class="row" style="animation-delay:0.00s">
 <rect x="20" y="64" width="1160" height="46" fill="#0a0f1c" stroke="#39ff88" stroke-opacity=".22"/>
 <rect x="20" y="64" width="5" height="46" fill="#39ff88"/>
@@ -32,7 +31,7 @@
 <text x="150" y="201" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="15" font-weight="800" fill="#fff">-ai-work-board-</text>
 <circle cx="420" cy="196" r="5" fill="#ffc400"/>
 <text x="434" y="201" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="12" fill="#d8e6f0">Python</text>
-<text x="540" y="201" font-family="'Yu Gothic UI','Hiragino Sans','Noto Sans CJK JP',Meiryo,sans-serif" font-size="13.5" fill="#5f7387">(no description)</text>
+<text x="540" y="201" font-family="'Yu Gothic UI','Hiragino Sans','Noto Sans CJK JP',Meiryo,sans-serif" font-size="13.5" fill="#5f7387">各 AI との作業の進み具合を1枚の画面で見て書けるボード</text>
 </g><g class="row" style="animation-delay:0.54s">
 <rect x="20" y="226" width="1160" height="46" fill="#0a0f1c" stroke="#39ff88" stroke-opacity=".22"/>
 <rect x="20" y="226" width="5" height="46" fill="#39ff88"/>

@@ -171,121 +171,155 @@ def section(name, no, jp, en, color):
 
 
 # --------------------------------------------------------------------------- terminal
-def terminal():
-    W, H = 1200, 330
-    lines = [
-        ("cmd", "whoami"),
-        ("out", "takosasi-dev"),
-        ("cmd", "cat focus.txt"),
-        ("out", "infrastructure / network / security  (Windows Server, VMware, Linux, AWS, ModSecurity, Snort)"),
-        ("cmd", "ls ~/builds"),
-        ("out", "games/  desktop-tools/  server-tools/  obsidian-plugins/  chrome-extensions/  minecraft-addons/"),
-        ("cmd", "uptime"),
-        ("out", "up since day one,  load average: too many ideas"),
-    ]
+TERM = [
+    ("cmd", "whoami"),
+    ("out", "takosasi-dev"),
+    ("cmd", "cat focus.txt"),
+    ("out", "infrastructure / network / security  (Windows Server, VMware, Linux, AWS, ModSecurity, Snort)"),
+    ("cmd", "ls ~/builds"),
+    ("out", "games/  desktop-tools/  server-tools/  obsidian-plugins/  chrome-extensions/  minecraft-addons/"),
+    ("cmd", "uptime"),
+    ("out", "up since day one,  load average: too many ideas"),
+]
+# The same session, re-wrapped by hand for the narrow (phone) variant.
+TERM_M = [
+    ("cmd", "whoami"),
+    ("out", "takosasi-dev"),
+    ("cmd", "cat focus.txt"),
+    ("out", "infrastructure / network / security"),
+    ("out", "Windows Server, VMware, Linux, AWS,"),
+    ("out", "ModSecurity, Snort"),
+    ("cmd", "ls ~/builds"),
+    ("out", "games/  desktop-tools/  server-tools/"),
+    ("out", "obsidian-plugins/  chrome-extensions/"),
+    ("out", "minecraft-addons/"),
+    ("cmd", "uptime"),
+    ("out", "up since day one,"),
+    ("out", "load average: too many ideas"),
+]
+
+
+def terminal(name, W, lines, fs, lh):
+    s = fs / 16.5
+    bar = round(38 * s)
+    x0 = 34 if W > 800 else 22
+    y = bar + round(40 * s)
+    H = y + len(lines) * lh + round(20 * s)
+    CH = fs * 0.606  # approx glyph advance of the mono stack
     CYC = 18.0
     t = 0.6
     css, body = "", ""
-    y = 78
-    CH = 10.0  # approx glyph advance at 16.5px mono
     for i, (kind, text) in enumerate(lines):
-        x = 34
         if kind == "cmd":
-            body += f'<text x="{x}" y="{y}" font-family="{MONO}" font-size="16.5" fill="{GREEN}">$</text>'
-            tx = x + 22
+            body += f'<text x="{x0}" y="{y}" font-family="{MONO}" font-size="{fs}" fill="{GREEN}">$</text>'
+            tx = x0 + round(22 * s)
             n = len(text)
             dur = n * 0.07
             ps, pe = t / CYC * 100, (t + dur) / CYC * 100
             css += (f"@keyframes k{i}{{0%,{ps:.2f}%{{transform:translateX(0);animation-timing-function:steps({n},end)}}"
                     f"{pe:.2f}%{{transform:translateX({n * CH * 1.15:.0f}px);animation-timing-function:steps(1,end)}}"
-                    f"{pe + 0.05:.2f}%,96%{{transform:translateX(1300px)}}96.1%,100%{{transform:translateX(0)}}}}"
+                    f"{pe + 0.05:.2f}%,96%{{transform:translateX({W + 100}px)}}96.1%,100%{{transform:translateX(0)}}}}"
                     f".k{i}{{animation:k{i} {CYC}s linear infinite}}")
-            body += f'<text x="{tx}" y="{y}" font-family="{MONO}" font-size="16.5" fill="#fff" xml:space="preserve">{esc(text)}</text>'
-            body += f'<rect class="k{i}" x="{tx - 2}" y="{y - 18}" width="1300" height="26" fill="#070b14"/>'
+            body += f'<text x="{tx}" y="{y}" font-family="{MONO}" font-size="{fs}" fill="#fff" xml:space="preserve">{esc(text)}</text>'
+            # "cv" covers the command until it is typed; hidden outright when motion is reduced
+            body += f'<rect class="k{i} cv" x="{tx - 2}" y="{y - round(18 * s)}" width="{W + 100}" height="{round(26 * s)}" fill="#070b14"/>'
             t += dur + 0.35
         else:
             ps = t / CYC * 100
             css += (f"@keyframes k{i}{{0%,{ps:.2f}%{{opacity:0}}{ps + 0.05:.2f}%,96%{{opacity:1}}96.1%,100%{{opacity:0}}}}"
                     f".k{i}{{animation:k{i} {CYC}s steps(1,end) infinite}}")
-            body += f'<text class="k{i}" x="{x}" y="{y}" font-family="{MONO}" font-size="16.5" fill="{CYAN}" xml:space="preserve">{esc(text)}</text>'
-            t += 0.9
-        y += 29
+            body += f'<text class="k{i}" x="{x0}" y="{y}" font-family="{MONO}" font-size="{fs}" fill="{CYAN}" xml:space="preserve">{esc(text)}</text>'
+            more = i + 1 < len(lines) and lines[i + 1][0] == "out"
+            t += 0.12 if more else 0.9
+        y += lh
     ps = t / CYC * 100
     css += (f"@keyframes kp{{0%,{ps:.2f}%{{opacity:0}}{ps + 0.05:.2f}%,96%{{opacity:1}}96.1%,100%{{opacity:0}}}}"
             f".kp{{animation:kp {CYC}s steps(1,end) infinite}}.cur{{animation:cur 1s steps(1) infinite}}@keyframes cur{{50%{{opacity:0}}}}")
-    body += (f'<g class="kp"><text x="34" y="{y}" font-family="{MONO}" font-size="16.5" fill="{GREEN}">$</text>'
-             f'<rect class="cur" x="56" y="{y - 16}" width="10" height="20" fill="{GREEN}"/></g>')
+    body += (f'<g class="kp"><text x="{x0}" y="{y}" font-family="{MONO}" font-size="{fs}" fill="{GREEN}">$</text>'
+             f'<rect class="cur" x="{x0 + round(22 * s)}" y="{y - round(16 * s)}" width="{round(10 * s)}" height="{round(20 * s)}" fill="{GREEN}"/></g>')
+    dots = "".join(f'<circle cx="{round(cx * s)}" cy="{bar / 2}" r="{round(6 * s)}" fill="{c}"/>'
+                   for cx, c in ((24, RED), (46, AMBER), (68, GREEN)))
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="100%" role="img" aria-label="terminal: whoami takosasi-dev, focus on infrastructure, network and security">
 <defs><clipPath id="c"><rect width="{W}" height="{H}" rx="12"/></clipPath>
 <pattern id="lines" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="1" fill="#000" opacity=".25"/></pattern></defs>
-<style>{css}{REDUCED}</style>
+<style>{css}{REDUCED}@media (prefers-reduced-motion:reduce){{.cv{{display:none}}}}</style>
 <g clip-path="url(#c)">
 <rect width="{W}" height="{H}" fill="#070b14"/>
 {body}
-<rect width="{W}" height="38" fill="#101829"/>
-<circle cx="24" cy="19" r="6" fill="{RED}"/><circle cx="46" cy="19" r="6" fill="{AMBER}"/><circle cx="68" cy="19" r="6" fill="{GREEN}"/>
-<text x="{W/2}" y="24" text-anchor="middle" font-family="{MONO}" font-size="13" letter-spacing="2" fill="{DIM}">takosasi@node-jp: ~</text>
+<rect width="{W}" height="{bar}" fill="#101829"/>
+{dots}
+<text x="{W/2}" y="{bar / 2 + round(5 * s)}" text-anchor="middle" font-family="{MONO}" font-size="{round(13 * s)}" letter-spacing="2" fill="{DIM}">takosasi@node-jp: ~</text>
 <rect width="{W}" height="{H}" fill="url(#lines)"/>
 </g>
 <rect x=".75" y=".75" width="{W-1.5}" height="{H-1.5}" rx="12" fill="none" stroke="{CYAN}" stroke-opacity=".45" stroke-width="1.5"/>
 </svg>'''
-    save("terminal.svg", svg)
+    save(name, svg)
 
 
 # --------------------------------------------------------------------------- status (hex panel)
-def status():
-    W, H = 1200, 400
-    R, DX, DY = 64, 111, 96
-    y1, y2, y3 = 104, 200, 296
+def status(name, mobile=False):
+    R, DX = 64, 111
+    # the hex grid is the same in both variants; the phone one moves it under the title block
+    W, H, gx, gy, fl = (600, 706, -512, 286, 15.5) if mobile else (1200, 400, 0, 0, 14)
     rows = [
-        (y1, 645.5, [("LINUX", ORANGE), ("WIN SERVER", ORANGE), ("VMWARE", ORANGE), ("AWS", ORANGE)]),
-        (y2, 590.0, [("NETWORK", RED), ("SECURITY", RED), ("MODSEC", RED), ("SNORT", RED), ("GODOT", CYAN)]),
-        (y3, 645.5, [("C++ / JUCE", CYAN), ("TYPESCRIPT", CYAN), ("PYTHON", CYAN), ("C#", CYAN)]),
+        (104, 645.5, [("LINUX", ORANGE), ("WIN SERVER", ORANGE), ("VMWARE", ORANGE), ("AWS", ORANGE)]),
+        (200, 590.0, [("NETWORK", RED), ("SECURITY", RED), ("MODSEC", RED), ("SNORT", RED), ("GODOT", CYAN)]),
+        (296, 645.5, [("C++ / JUCE", CYAN), ("TYPESCRIPT", CYAN), ("PYTHON", CYAN), ("C#", CYAN)]),
     ]
     cells, n = "", 0
-    for y, x0, items in rows:
+    for y0, x0, items in rows:
         for i, (label, col) in enumerate(items):
-            cx = x0 + i * DX
+            cx, y = x0 + i * DX + gx, y0 + gy
             n += 1
             cells += (f'<g><polygon points="{hex_points(cx, y, R - 4)}" fill="{col}" fill-opacity=".1" stroke="{col}" stroke-width="2.5"/>'
                       f'<polygon class="hx" style="animation-delay:{n * 0.35 - 5:.2f}s" points="{hex_points(cx, y, R - 4)}" fill="{col}"/>'
-                      f'<text x="{cx}" y="{y - 22}" text-anchor="middle" font-family="{MONO}" font-size="11" letter-spacing="2" fill="{col}">{n:02d}</text>'
-                      f'<text x="{cx}" y="{y + 5}" text-anchor="middle" font-family="{MONO}" font-size="14" font-weight="800" fill="#fff">{esc(label)}</text>'
-                      f'<text x="{cx}" y="{y + 26}" text-anchor="middle" font-family="{MONO}" font-size="10" letter-spacing="2" fill="{col}">ACTIVE</text></g>')
-    deco = "".join(f'<polygon points="{hex_points(x, y, R - 4)}" fill="none" stroke="{DIM}" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="4 6"/>'
-                   for x, y in [(645.5 - DX, y1), (645.5 + 4 * DX, y1), (645.5 - DX, y3), (645.5 + 4 * DX, y3), (590 + 5 * DX, y2)])
+                      f'<text x="{cx}" y="{y - 22}" text-anchor="middle" font-family="{MONO}" font-size="{fl - 3}" letter-spacing="2" fill="{col}">{n:02d}</text>'
+                      f'<text x="{cx}" y="{y + 5}" text-anchor="middle" font-family="{MONO}" font-size="{fl}" font-weight="800" fill="#fff">{esc(label)}</text>'
+                      f'<text x="{cx}" y="{y + 26}" text-anchor="middle" font-family="{MONO}" font-size="{fl - 4}" letter-spacing="2" fill="{col}">ACTIVE</text></g>')
+    if mobile:
+        deco = ""
+        s1, s2 = (30, 26, 540, 18), (30, 664, 540, 18)
+        tx, f1, ty, f2, jy, f3, ky, f4 = 30, 15, 76, 76, 150, 24, 188, 14
+        by, bx, bw, sy = 212, 130, 440, 302
+    else:
+        deco = "".join(f'<polygon points="{hex_points(x, y, R - 4)}" fill="none" stroke="{DIM}" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="4 6"/>'
+                       for x, y in [(645.5 - DX, 104), (645.5 + 4 * DX, 104), (645.5 - DX, 296), (645.5 + 4 * DX, 296), (590 + 5 * DX, 200)])
+        s1, s2 = (40, 40, 410, 20), (40, 340, 410, 20)
+        tx, f1, ty, f2, jy, f3, ky, f4 = 40, 13, 96, 84, 182, 24, 222, 12
+        by, bx, bw, sy = 252, 130, 320, 330
+    bars = ""
+    for k, (label, col, frac) in enumerate([("INFRA", ORANGE, .84), ("SEC/NET", RED, .78), ("DEV", CYAN, .94)]):
+        y = by + k * (f4 + 12)
+        bars += (f'<text x="{tx}" y="{y + 10}" fill="{col}">{label}</text><rect x="{bx}" y="{y}" width="{bw}" height="10" fill="{col}" fill-opacity=".15"/>'
+                 f'<rect class="g" style="animation-delay:{k * .2:.1f}s" x="{bx}" y="{y}" width="{bw * frac:.0f}" height="10" fill="{col}"/>')
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="100%" role="img" aria-label="Skill domains: Linux, Windows Server, VMware, AWS, network, security, ModSecurity, Snort, Godot, C++/JUCE, TypeScript, Python, C#">
 <defs>{hex_pattern("hex", 22, ORANGE, 0.07)}
 <pattern id="hz" width="32" height="32" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="16" height="32" fill="{ORANGE}"/></pattern>
 <clipPath id="c"><rect width="{W}" height="{H}" rx="14"/></clipPath>
-<clipPath id="s1"><rect x="40" y="40" width="410" height="20"/></clipPath>
-<clipPath id="s2"><rect x="40" y="340" width="410" height="20"/></clipPath></defs>
+<clipPath id="s1"><rect x="{s1[0]}" y="{s1[1]}" width="{s1[2]}" height="{s1[3]}"/></clipPath>
+<clipPath id="s2"><rect x="{s2[0]}" y="{s2[1]}" width="{s2[2]}" height="{s2[3]}"/></clipPath></defs>
 <style>
 .hx{{opacity:0;animation:hx 5s linear infinite}}
 @keyframes hx{{0%{{opacity:.75}}6%{{opacity:.1}}9%{{opacity:.45}}16%,100%{{opacity:0}}}}
 .m{{animation:m 1.4s linear infinite}}@keyframes m{{to{{transform:translateX(45.25px)}}}}
 .m2{{animation:m 1.4s linear infinite reverse}}
 .bl{{animation:bl 1s steps(1) infinite}}@keyframes bl{{50%{{opacity:.2}}}}
-.g{{transform-origin:60px 0;animation:g 2.2s cubic-bezier(.2,.8,.2,1) both}}@keyframes g{{from{{transform:scaleX(0)}}}}
+.g{{transform-origin:{bx}px 0;animation:g 2.2s cubic-bezier(.2,.8,.2,1) both}}@keyframes g{{from{{transform:scaleX(0)}}}}
 {REDUCED}</style>
 <g clip-path="url(#c)">
 <rect width="{W}" height="{H}" fill="{BG}"/><rect width="{W}" height="{H}" fill="url(#hex)"/>
-<g clip-path="url(#s1)"><rect class="m" x="-60" y="40" width="570" height="20" fill="url(#hz)"/></g>
-<g clip-path="url(#s2)"><rect class="m2" x="-60" y="340" width="570" height="20" fill="url(#hz)"/></g>
-<text x="40" y="96" font-family="{MONO}" font-size="13" letter-spacing="4" fill="{ORANGE}">SKILL DOMAINS // DIAGNOSTIC</text>
-<text x="36" y="182" font-family="{MIN}" font-size="84" font-weight="900" fill="#fff" letter-spacing="4">技術領域</text>
-<text x="40" y="222" font-family="{MIN}" font-size="24" font-weight="900" fill="{ORANGE}" letter-spacing="10">全項目 稼働中</text>
-<g font-family="{MONO}" font-size="12" letter-spacing="2">
-<text x="40" y="262" fill="{ORANGE}">INFRA</text><rect x="130" y="252" width="320" height="10" fill="{ORANGE}" fill-opacity=".15"/><rect class="g" x="130" y="252" width="270" height="10" fill="{ORANGE}"/>
-<text x="40" y="286" fill="{RED}">SEC/NET</text><rect x="130" y="276" width="320" height="10" fill="{RED}" fill-opacity=".15"/><rect class="g" style="animation-delay:.2s" x="130" y="276" width="250" height="10" fill="{RED}"/>
-<text x="40" y="310" fill="{CYAN}">DEV</text><rect x="130" y="300" width="320" height="10" fill="{CYAN}" fill-opacity=".15"/><rect class="g" style="animation-delay:.4s" x="130" y="300" width="300" height="10" fill="{CYAN}"/>
-</g>
-<circle class="bl" cx="46" cy="326" r="4" fill="{GREEN}"/><text x="58" y="330" font-family="{MONO}" font-size="11" letter-spacing="3" fill="{GREEN}">STATUS: NOMINAL / 13 OF 13</text>
+<g clip-path="url(#s1)"><rect class="m" x="{s1[0] - 100}" y="{s1[1]}" width="{s1[2] + 160}" height="{s1[3]}" fill="url(#hz)"/></g>
+<g clip-path="url(#s2)"><rect class="m2" x="{s2[0] - 100}" y="{s2[1]}" width="{s2[2] + 160}" height="{s2[3]}" fill="url(#hz)"/></g>
+<text x="{tx}" y="{ty}" font-family="{MONO}" font-size="{f1}" letter-spacing="4" fill="{ORANGE}">SKILL DOMAINS // DIAGNOSTIC</text>
+<text x="{tx - 4}" y="{jy}" font-family="{MIN}" font-size="{f2}" font-weight="900" fill="#fff" letter-spacing="4">技術領域</text>
+<text x="{tx}" y="{ky}" font-family="{MIN}" font-size="{f3}" font-weight="900" fill="{ORANGE}" letter-spacing="10">全項目 稼働中</text>
+<g font-family="{MONO}" font-size="{f4}" letter-spacing="2">{bars}</g>
+<circle class="bl" cx="{tx + 6}" cy="{sy - 4}" r="4" fill="{GREEN}"/><text x="{tx + 18}" y="{sy}" font-family="{MONO}" font-size="{f4 - 1}" letter-spacing="3" fill="{GREEN}">STATUS: NOMINAL / 13 OF 13</text>
 {deco}{cells}
 </g>
 <rect x="1" y="1" width="{W-2}" height="{H-2}" rx="14" fill="none" stroke="{ORANGE}" stroke-opacity=".6" stroke-width="2"/>
 </svg>'''
-    save("status.svg", svg)
+    save(name, svg)
 
 
 # --------------------------------------------------------------------------- network
@@ -354,49 +388,12 @@ def network():
     save("network.svg", svg)
 
 
-# --------------------------------------------------------------------------- project cards
-PROJECTS = [
-    ("kanade-daw", "KANADE DAW", "AI 音楽生成・自動採譜を核にした統合 DAW。C++20 / JUCE 8、ローカル完結", "C++", CYAN),
-    ("koe-loom", "KoeLoom", "Discord などで使える Windows 11 向けボイスチェンジャー。DSP のみ、JUCE / C++", "C++", MAG),
-    ("rail-rampage", "RailRampage", "トロッコ問題を題材にした横スクロールの1ボタン破壊ゲーム（Godot 4）", "GDScript", ORANGE),
-    ("packet-bouncer", "Packet Bouncer", "ブラウザで遊ぶパケット検問ゲーム（Godot 4・開発中）", "GDScript", GREEN),
-    ("padlab", "PadLab", "Windows 向けゲームコントローラー診断ツール。入力の可視化・ドリフト・チャタリング・精度テスト", "C#", AMBER),
-    ("net-diag", "net-diag", "自宅回線のボトルネックを推測ではなく実測で切り分けるネットワーク診断ツール", "Python", RED),
-]
-
-
-def card(i, repo, name, desc, lang, col):
-    W, H = 590, 190
-    per = 2 * (W + H) - 80
-    dl = "".join(f'<text x="34" y="{112 + k * 22}" font-family="{GOTH}" font-size="14.5" fill="{TEXT}">{esc(l)}</text>'
-                 for k, l in enumerate(wrap(desc, 35.5, 2)))
-    lc = LANG_COLOR.get(lang, col)
-    bars = "".join(f'<rect class="eq" style="animation-delay:{-k * 0.17:.2f}s" x="{W - 96 + k * 9}" y="150" width="5" height="18" fill="{col}"/>' for k in range(7))
-    shape = f"M22 1.5H{W-1.5}V{H-22}L{W-22} {H-1.5}H1.5V22Z"
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="100%" role="img" aria-label="{esc(name)}: {esc(desc)}">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{col}" stop-opacity=".16"/><stop offset=".55" stop-color="{BG}" stop-opacity="0"/></linearGradient>
-{hex_pattern("hex", 16, col, 0.07)}</defs>
-<style>.t{{stroke-dasharray:140 {per - 140};animation:t 5s linear infinite}}@keyframes t{{to{{stroke-dashoffset:-{per}}}}}
-.eq{{transform-box:fill-box;transform-origin:bottom;animation:eq 1.1s ease-in-out infinite alternate}}@keyframes eq{{from{{transform:scaleY(.2)}}to{{transform:scaleY(1)}}}}
-.bl{{animation:bl 1.4s steps(1) infinite}}@keyframes bl{{50%{{opacity:.2}}}}{REDUCED}</style>
-<path d="{shape}" fill="{BG}"/><path d="{shape}" fill="url(#hex)"/><path d="{shape}" fill="url(#g)"/>
-<path d="{shape}" fill="none" stroke="{col}" stroke-opacity=".4" stroke-width="1.5"/>
-<path class="t" d="{shape}" fill="none" stroke="{col}" stroke-width="3" stroke-linecap="round"/>
-<text x="34" y="40" font-family="{MONO}" font-size="12" letter-spacing="3" fill="{col}">PRJ-{i:02d} // {esc(repo)}</text>
-<circle class="bl" cx="{W-36}" cy="35" r="4" fill="{col}"/>
-<text x="34" y="80" font-family="{MONO}" font-size="30" font-weight="800" fill="#fff">{esc(name)}</text>
-{dl}
-<circle cx="40" cy="162" r="5" fill="{lc}"/><text x="54" y="167" font-family="{MONO}" font-size="12.5" fill="{TEXT}">{esc(lang)}</text>
-<text x="{W - 110}" y="167" text-anchor="end" font-family="{MONO}" font-size="11" letter-spacing="2" fill="{DIM}">OPEN REPO &gt;</text>
-{bars}
-</svg>'''
-    save(f"card-{repo}.svg", svg)
-
-
 # --------------------------------------------------------------------------- contact links
-# (file key, mark, service label, handle, color). The URL lives in README.md.
+# Small link badges: (file name, mark, label, text, color). The URLs live in README.md.
 LINKS = [
-    ("x", "X", "X // TWITTER", "@kou111011051", CYAN),
+    ("link-x", "X", "X // TWITTER", "@kou111011051", CYAN),
+    ("play-packet-bouncer", "play", "PLAY IN BROWSER", "Packet Bouncer", GREEN),
+    ("play-rail-rampage", "play", "PLAY IN BROWSER", "RailRampage", ORANGE),
 ]
 
 
@@ -404,6 +401,10 @@ def link(key, mark, label, handle, col):
     W, H = 440, 72
     shape = f"M14 1.5H{W-1.5}V{H-14}L{W-14} {H-1.5}H1.5V14Z"
     per = 2 * (W + H) - 22
+    if mark == "play":
+        icon = '<polygon points="31,24 31,48 50,36" fill="#06080c"/>'
+    else:
+        icon = f'<text x="38" y="47" text-anchor="middle" font-family="{MONO}" font-size="30" font-weight="800" fill="#06080c">{esc(mark)}</text>'
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="100%" role="img" aria-label="{esc(label)}: {esc(handle)}">
 <style>.t{{stroke-dasharray:90 {per - 90};animation:t 4s linear infinite}}@keyframes t{{to{{stroke-dashoffset:-{per}}}}}
 .bl{{animation:bl 1.4s steps(1) infinite}}@keyframes bl{{50%{{opacity:.2}}}}{REDUCED}</style>
@@ -411,13 +412,72 @@ def link(key, mark, label, handle, col):
 <path d="{shape}" fill="none" stroke="{col}" stroke-opacity=".4" stroke-width="1.5"/>
 <path class="t" d="{shape}" fill="none" stroke="{col}" stroke-width="3" stroke-linecap="round"/>
 <rect x="16" y="14" width="44" height="44" fill="{col}"/>
-<text x="38" y="47" text-anchor="middle" font-family="{MONO}" font-size="30" font-weight="800" fill="#06080c">{esc(mark)}</text>
+{icon}
 <text x="74" y="29" font-family="{MONO}" font-size="11" letter-spacing="3" fill="{col}">{esc(label)}</text>
 <text x="74" y="55" font-family="{MONO}" font-size="22" font-weight="800" fill="#fff">{esc(handle)}</text>
 <text x="{W - 40}" y="41" text-anchor="end" font-family="{MONO}" font-size="11" letter-spacing="2" fill="{DIM}">OPEN &gt;</text>
 <circle class="bl" cx="{W - 26}" cy="37" r="4" fill="{col}"/>
 </svg>'''
-    save(f"link-{key}.svg", svg)
+    save(f"{key}.svg", svg)
+
+
+# --------------------------------------------------------------------------- network (phone)
+def network_m():
+    """The same topology laid out top to bottom for narrow screens."""
+    W, H, cx = 600, 630, 300
+
+    def node(x, y, w, h, title, sub, col):
+        return (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="6" fill="{BG2}" stroke="{col}" stroke-width="2"/>'
+                f'<rect x="{x}" y="{y}" width="6" height="{h}" fill="{col}"/>'
+                f'<text x="{x + 20}" y="{y + h/2 - 3}" font-family="{MONO}" font-size="17" font-weight="800" fill="#fff">{esc(title)}</text>'
+                f'<text x="{x + 20}" y="{y + h/2 + 17}" font-family="{MONO}" font-size="12.5" letter-spacing="1" fill="{col}">{esc(sub)}</text>'
+                f'<circle class="bl" cx="{x + w - 14}" cy="{y + 14}" r="3.5" fill="{GREEN}"/>')
+
+    servers = [(30, 440, "LINUX", "Alma / Arch / Debian"), (315, 440, "WIN SERVER", "AD / DNS / IIS"),
+               (30, 530, "VMWARE", "ESXi / vSphere"), (315, 530, "AWS", "EC2 / VPC")]
+    paths, packets = "", ""
+    for i, (x, y, _, _) in enumerate(servers):
+        bx, by = x + 127, y - 13  # branch off the trunk just above each row
+        paths += f'<path d="M{cx} 374V{by}H{bx}V{y}"/>'
+        route = f"M{cx} 140V{by}H{bx}V{y}"
+        for j in range(2):
+            col = CYAN if j == 0 else GREEN
+            packets += (f'<circle r="5" fill="{col}"><animateMotion dur="{3.2 + i * 0.5:.1f}s" begin="{-(i * 0.9 + j * 1.7):.1f}s" '
+                        f'repeatCount="indefinite" path="{route}" keyPoints="{"0;1" if j == 0 else "1;0"}" keyTimes="0;1" calcMode="linear"/></circle>')
+    bad = (f'<g><circle r="5.5" fill="{RED}"><animateMotion dur="4s" repeatCount="indefinite" path="M{cx} 140L{cx + 0.01} 200" keyPoints="0;1;1" keyTimes="0;0.45;1" calcMode="linear"/>'
+           f'<animate attributeName="opacity" dur="4s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.45;0.6;1"/></circle>'
+           f'<text x="440" y="232" font-family="{MONO}" font-size="16" font-weight="800" letter-spacing="3" fill="{RED}" opacity="0">DROP'
+           f'<animate attributeName="opacity" dur="4s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.44;0.46;0.7;0.75;1"/></text></g>')
+    srv = "".join(node(x, y, 255, 64, t, s, CYAN) for x, y, t, s in servers)
+    leds = "".join(f'<rect class="bl" style="animation-delay:{-k*0.23:.2f}s" x="{255 + k*12}" y="350" width="7" height="7"/>' for k in range(8))
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="100%" role="img" aria-label="Animated network topology: internet, WAF and IDS, core switch, Linux, Windows Server, VMware and AWS">
+<defs><pattern id="gr" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0H0V30" fill="none" stroke="{CYAN}" stroke-opacity=".07"/></pattern>
+<clipPath id="c"><rect width="{W}" height="{H}" rx="14"/></clipPath></defs>
+<style>.bl{{animation:bl 1.4s steps(1) infinite}}@keyframes bl{{50%{{opacity:.2}}}}
+.w{{stroke-dasharray:5 7;animation:w 1s linear infinite}}@keyframes w{{to{{stroke-dashoffset:-12}}}}
+.r{{transform-origin:{cx}px 100px;animation:r 3s ease-out infinite}}@keyframes r{{from{{transform:scale(.6);opacity:.9}}to{{transform:scale(1.5);opacity:0}}}}
+.sh{{animation:sh 4s steps(1) infinite}}@keyframes sh{{0%,44%{{stroke:{RED}}}46%,60%{{stroke:#fff}}62%,100%{{stroke:{RED}}}}}{REDUCED}</style>
+<g clip-path="url(#c)">
+<rect width="{W}" height="{H}" fill="{BG}"/><rect width="{W}" height="{H}" fill="url(#gr)"/>
+<text x="24" y="38" font-family="{MONO}" font-size="15" letter-spacing="4" fill="{CYAN}">NETWORK TOPOLOGY // LIVE</text>
+<g fill="none" stroke="{CYAN}" stroke-opacity=".55" stroke-width="2" class="w"><path d="M{cx} 140V190"/><path d="M{cx} 262V310"/>{paths}</g>
+<circle class="r" cx="{cx}" cy="100" r="40" fill="none" stroke="{MAG}" stroke-width="2"/>
+<circle cx="{cx}" cy="100" r="40" fill="{BG2}" stroke="{MAG}" stroke-width="2"/>
+<ellipse cx="{cx}" cy="100" rx="17" ry="40" fill="none" stroke="{MAG}" stroke-opacity=".6"/><line x1="{cx - 40}" y1="100" x2="{cx + 40}" y2="100" stroke="{MAG}" stroke-opacity=".6"/>
+<text x="{cx + 58}" y="105" font-family="{MONO}" font-size="14" letter-spacing="3" fill="{MAG}">INTERNET</text>
+<rect class="sh" x="180" y="190" width="240" height="72" rx="6" fill="{BG2}" stroke="{RED}" stroke-width="2.5"/>
+<path d="M204 210l14 -6l14 6v12c0 9 -6 15 -14 18c-8 -3 -14 -9 -14 -18z" fill="none" stroke="{RED}" stroke-width="2"/>
+<text x="246" y="224" font-family="{MONO}" font-size="17" font-weight="800" fill="#fff">WAF / IDS</text>
+<text x="246" y="244" font-family="{MONO}" font-size="12.5" fill="{RED}">ModSecurity + Snort</text>
+<rect x="220" y="310" width="160" height="64" rx="6" fill="{BG2}" stroke="{AMBER}" stroke-width="2"/>
+<text x="{cx}" y="338" text-anchor="middle" font-family="{MONO}" font-size="17" font-weight="800" fill="#fff">CORE SW</text>
+<g fill="{AMBER}">{leds}</g>
+{srv}
+{packets}{bad}
+</g>
+<rect x="1" y="1" width="{W-2}" height="{H-2}" rx="14" fill="none" stroke="{CYAN}" stroke-opacity=".45" stroke-width="1.5"/>
+</svg>'''
+    save("m-network.svg", svg)
 
 
 # --------------------------------------------------------------------------- footer
@@ -456,11 +516,12 @@ if __name__ == "__main__":
     section("sec-02.svg", "02", "技術領域", "SKILL DOMAINS", ORANGE)
     section("sec-03.svg", "03", "制作物", "PROJECTS", MAG)
     section("sec-04.svg", "04", "活動記録", "ACTIVITY LOG", GREEN)
-    terminal()
-    status()
+    terminal("terminal.svg", 1200, TERM, 16.5, 29)
+    terminal("m-terminal.svg", 600, TERM_M, 20, 33)
+    status("status.svg")
+    status("m-status.svg", mobile=True)
     network()
-    for i, p in enumerate(PROJECTS, 1):
-        card(i, *p)
+    network_m()
     for l in LINKS:
         link(*l)
     footer()
