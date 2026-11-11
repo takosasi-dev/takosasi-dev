@@ -29,7 +29,7 @@
 <!-- ARCHIVE:START -->
 
 <details>
-<summary><b>ARCHIVE 01 // GAMES</b> (4)</summary>
+<summary><b>ARCHIVE 01 // GAMES</b> (5)</summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -38,6 +38,7 @@
 | [packet-bouncer](https://github.com/takosasi-dev/packet-bouncer) | ブラウザで遊ぶパケット検問ゲーム(Godot 4.7・開発中) | GDScript | - |
 | [rail-rampage](https://github.com/takosasi-dev/rail-rampage) | トロッコ問題を題材にした横スクロールの1ボタン破壊ゲーム（Godot 4） | GDScript | v0.1.0 |
 | [shapez-quad-forge](https://github.com/takosasi-dev/shapez-quad-forge) | shapez.io の目標シェイプから建物数最小の構築手順を逆算するツール (QuadForge) | Python | v0.2.0 |
+| [sling-arc](https://github.com/takosasi-dev/sling-arc) | 惑星の重力で軌道を曲げてゴールに入れる、ブラウザで遊ぶ 2D ゲーム(Godot 4.7・開発中) | GDScript | - |
 
 </details>
 
