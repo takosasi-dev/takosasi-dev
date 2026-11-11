@@ -347,7 +347,8 @@ def archive_md(groups):
         if not rows:
             continue
         slug, _, ja, *_ = CAT[title]
-        out.append(f'<details>\n<summary><img src="assets/arc-{slug}.svg" height="40" align="middle" alt="{ja} / {title} ({len(rows)})"></summary>\n<br>\n\n'
+        # <picture> keeps GitHub from turning the image into a link, so a click on the sign opens the block.
+        out.append(f'<details>\n<summary><picture><img src="assets/arc-{slug}.svg" height="40" align="middle" alt="{ja} / {title} ({len(rows)})"></picture></summary>\n<br>\n\n'
                    "| Repo | 内容 | Lang | Release |\n|---|---|---|---|")
         for r in rows:
             desc = (DESC.get(r["name"]) or r["desc"] or "-").replace("|", "\\|")

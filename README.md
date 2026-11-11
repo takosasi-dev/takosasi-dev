@@ -41,7 +41,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 <!-- ARCHIVE:START -->
 
 <details>
-<summary><img src="assets/arc-games.svg" height="40" align="middle" alt="ゲーム / GAMES (6)"></summary>
+<summary><picture><img src="assets/arc-games.svg" height="40" align="middle" alt="ゲーム / GAMES (6)"></picture></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -56,7 +56,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/arc-apps.svg" height="40" align="middle" alt="アプリ / APPS (9)"></summary>
+<summary><picture><img src="assets/arc-apps.svg" height="40" align="middle" alt="アプリ / APPS (9)"></picture></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -74,7 +74,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/arc-diag.svg" height="40" align="middle" alt="診断ツール / DIAGNOSTICS (6)"></summary>
+<summary><picture><img src="assets/arc-diag.svg" height="40" align="middle" alt="診断ツール / DIAGNOSTICS (6)"></picture></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -89,7 +89,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/arc-linux.svg" height="40" align="middle" alt="Linux・サーバ / LINUX / SERVER (5)"></summary>
+<summary><picture><img src="assets/arc-linux.svg" height="40" align="middle" alt="Linux・サーバ / LINUX / SERVER (5)"></picture></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -103,7 +103,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/arc-obsidian.svg" height="40" align="middle" alt="Obsidian / OBSIDIAN (14)"></summary>
+<summary><picture><img src="assets/arc-obsidian.svg" height="40" align="middle" alt="Obsidian / OBSIDIAN (14)"></picture></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -126,7 +126,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/arc-chrome.svg" height="40" align="middle" alt="Chrome 拡張 / CHROME EXTENSIONS (6)"></summary>
+<summary><picture><img src="assets/arc-chrome.svg" height="40" align="middle" alt="Chrome 拡張 / CHROME EXTENSIONS (6)"></picture></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -141,7 +141,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/arc-minecraft.svg" height="40" align="middle" alt="Minecraft / MINECRAFT ADD-ONS (8)"></summary>
+<summary><picture><img src="assets/arc-minecraft.svg" height="40" align="middle" alt="Minecraft / MINECRAFT ADD-ONS (8)"></picture></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -158,7 +158,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/arc-claude.svg" height="40" align="middle" alt="Claude Code / CLAUDE CODE MODS (5)"></summary>
+<summary><picture><img src="assets/arc-claude.svg" height="40" align="middle" alt="Claude Code / CLAUDE CODE MODS (5)"></picture></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -187,7 +187,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 列車を待つあいだに遊べるミニゲームです。札を押すと開きます。答えは選択肢を押すと出ます。
 
 <details>
-<summary><img src="assets/game-1.svg" height="40" align="middle" alt="ゲーム 1: パケット検問ミニ"></summary>
+<summary><picture><img src="assets/game-1.svg" height="40" align="middle" alt="ゲーム 1: パケット検問ミニ"></picture></summary>
 <br>
 
 あなたはファイアウォールです。規則を上から順に見て、最初に合った行のとおりに、パケットを「通す」か「落とす」か決めてください。全 5 問。
@@ -221,7 +221,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/game-2.svg" height="40" align="middle" alt="ゲーム 2: 通過列車の動体視力テスト"></summary>
+<summary><picture><img src="assets/game-2.svg" height="40" align="middle" alt="ゲーム 2: 通過列車の動体視力テスト"></picture></summary>
 <br>
 
 LED の板を、列車の案内が一瞬で通過します。4 けたの列車番号を読み取ってください。5 秒ごとに何度でも通過します。<br>
@@ -251,7 +251,7 @@ LED の板を、列車の案内が一瞬で通過します。4 けたの列車�
 </details>
 
 <details>
-<summary><img src="assets/game-3.svg" height="40" align="middle" alt="ゲーム 3: のりかえ迷路"></summary>
+<summary><picture><img src="assets/game-3.svg" height="40" align="middle" alt="ゲーム 3: のりかえ迷路"></picture></summary>
 <br>
 
 思いついたアイデアを、リリースまで運んでください。路線図を見て、乗る列車を選びます。3 回の乗車でリリース駅に着けばクリアです。
@@ -330,7 +330,7 @@ LED の板を、列車の案内が一瞬で通過します。4 けたの列車�
 </details>
 
 <details>
-<summary><img src="assets/game-4.svg" height="40" align="middle" alt="ゲーム 4: 本日の運行占い"></summary>
+<summary><picture><img src="assets/game-4.svg" height="40" align="middle" alt="ゲーム 4: 本日の運行占い"></picture></summary>
 <br>
 
 <img src="assets/fortune.svg" width="100%" alt="本日の運行占い。毎朝引き直します">
