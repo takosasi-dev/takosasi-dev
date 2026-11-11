@@ -104,9 +104,9 @@ class Board:
     """One LED window: top-left x, y, size in dots, dot pitch. Everything is placed in dot coordinates."""
 
     def __init__(self, uid, x, y, cols, rows, p=2):
-        self.uid, self.x, self.y, self.cols, self.p = uid, x, y, cols, p
+        self.uid, self.x, self.y, self.cols, self.nrows, self.p = uid, x, y, cols, rows, p
         self.w, self.h = cols * p, rows * p
-        self.static, self.tick, self.css = [], "", ""
+        self.static, self.tick, self.css, self.loose = [], "", "", ""
 
     def raw(self, rows, cx, cy, col, blink=False, op=1):
         a = (f' class="{self.uid}bl"' if blink else "") + (f' opacity="{op}"' if op != 1 else "")
@@ -130,10 +130,18 @@ class Board:
             f'<clipPath id="{u}c"><rect x="-.5" y="{cy - 1}" width="{self.cols}" height="{font.h + 2}"/></clipPath>'
             f'<g id="{u}t" clip-path="url(#{u}c)"><path class="{u}tk" stroke="{col}" d="{d}"/></g>'
         )
-        self.css = (
+        self.css += (
             f"@keyframes {u}tk{{to{{transform:translateX(-{w}px)}}}}"
             f".{u}tk{{animation:{u}tk {w / dots_per_sec:.1f}s steps({w}) infinite}}"
         )
+
+    def drift(self, dots, col, secs, op=.55):
+        """Loose dots falling through the whole window, one row per step (snow, petals, rain). dots: [(x, y)]."""
+        u, n = self.uid, self.nrows
+        d = "".join(f"M{x} {y}h.01M{x} {y - n}h.01" for x, y in dots)
+        k = f"{u}d{len(self.loose)}"
+        self.loose += f'<path class="{u}df {k}" stroke="{col}" opacity="{op}" d="{d}"/>'
+        self.css += f"@keyframes {u}df{{to{{transform:translateY({n}px)}}}}.{k}{{animation:{u}df {secs}s steps({n}) infinite}}"
 
     def fly(self, font, s, cy, col, secs, period, scale=2):
         """Text that crosses the window in `secs` seconds, once every `period`. With motion off it rests in the middle."""
@@ -145,7 +153,7 @@ class Board:
             f'<clipPath id="{u}c"><rect x="-.5" y="{cy - 1}" width="{self.cols}" height="{font.h * scale + 2}"/></clipPath>'
             f'<g id="{u}t" clip-path="url(#{u}c)"><path class="{u}tk" stroke="{col}" d="{path_d(rows, x0, cy)}"/></g>'
         )
-        self.css = (
+        self.css += (
             f"@keyframes {u}tk{{0%{{transform:translateX({a}px);animation-timing-function:steps({a - b})}}"
             f"{secs / period * 100:.1f}%,100%{{transform:translateX({b}px)}}}}"
             f".{u}tk{{animation:{u}tk {period}s infinite}}"
@@ -159,7 +167,7 @@ class Board:
         )
         css = (
             f"{self.css}@keyframes {u}bl{{50%{{opacity:.12}}}}.{u}bl{{animation:{u}bl 1.6s steps(1) infinite}}"
-            f"@media (prefers-reduced-motion:reduce){{.{u}tk,.{u}bl{{animation:none}}}}"
+            f"@media (prefers-reduced-motion:reduce){{.{u}tk,.{u}bl,.{u}df{{animation:none!important}}}}"
         )
         out = (
             f'<rect x="{x - 3}" y="{y - 3}" width="{self.w + 6}" height="{self.h + 6}" rx="2" fill="#000" stroke="#15171a"/>'
@@ -174,6 +182,9 @@ class Board:
         )
         if self.tick:
             out += f'<use href="#{u}t" filter="url(#{u}g)" opacity=".45"/><use href="#{u}t"/>'
+        if self.loose:
+            out += (f'<clipPath id="{u}w"><rect x="-.5" y="-.5" width="{self.cols}" height="{self.nrows}"/></clipPath>'
+                    f'<g clip-path="url(#{u}w)">{self.loose}</g>')
         return out + "</g>"
 
 

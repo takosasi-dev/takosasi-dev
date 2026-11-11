@@ -3,7 +3,7 @@
 
     python3 scripts/build_assets.py
 
-header.svg (departure board), sec-01..05.svg (station name signs), routemap.svg (skills),
+sec-01..05.svg (station name signs), nav-*.svg (the way to each platform), routemap.svg (skills),
 link-x.svg / play-*.svg (guidance signs), footer.svg, and the pictures of the mini games in the
 waiting room (pk-*.svg, pass-*.svg, maze-map.svg, game-*.svg). Everything that changes with the
 GitHub API is built by update_live.py instead.
@@ -15,34 +15,17 @@ sys.path.insert(0, os.path.dirname(__file__))
 from style import *  # noqa: E402,F403
 
 
-def header():
-    b = Board("h", LED_X, 61, LED_COLS, 86)
-    b.put(F16, "TAKOSASI-DEV", 5, 4, AMBER, scale=2)
-    b.put(F16, "インフラ/ネットワーク", 207, 4, GREEN)
-    b.put(F16, "/セキュリティ", 207, 21, GREEN)
-    w = b.put(F16, "運行情報", 7, 44, RED, invert=True)
-    b.put(F16, "全系統 正常稼働中", 7 + w + 8, 44, GREEN)
-    b.put(F16, f"のりば 1-{len(LINE)}", 397, 44, AMBER, right=True)
-    b.ticker(F16, "ゲーム、デスクトップツール、プラグインなど、思いついた物を作っています。　　"
-                  "GAMES, DESKTOP TOOLS, PLUGINS AND WHATEVER COMES TO MIND.　　　", 66, AMBER)
-    spots = "".join(
-        f'<circle cx="{968 + i * 44}" cy="56" r="15" fill="{c}"/>'
-        f'<text x="{968 + i * 44}" y="62" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">{i + 1}</text>'
-        for i, c in enumerate(LINE))
-    body = (
-        f'<g transform="scale(.705)"><rect x="180" width="14" height="30" fill="#33373e"/><rect x="1006" width="14" height="30" fill="#33373e"/>'
-        f'<rect x="6" y="24" width="1188" height="328" rx="10" fill="{BODY}" stroke="{EDGE}"/>'
-        f'<rect x="16" y="26" width="1168" height="2" fill="#6a717b" opacity=".45"/>'
-        f'<g font-family="{GOTH}"><rect x="30" y="38" width="36" height="36" rx="5" fill="#1d63c4"/>'
-        f'<path d="M40 49h16a3 3 0 0 1 3 3v11a3 3 0 0 1-3 3H40a3 3 0 0 1-3-3V52a3 3 0 0 1 3-3zm1 4v6h14v-6zm1 9.5a1.5 1.5 0 1 0 .01 0zm12 0a1.5 1.5 0 1 0 .01 0zM42 66l-3 4m15-4l3 4" fill="#fff" stroke="#fff" stroke-width="1.6" fill-rule="evenodd"/>'
-        f'<text x="80" y="66" font-size="26" font-weight="700" fill="#f2f2ee" letter-spacing="4">発車案内</text>'
-        f'<text x="214" y="65" font-size="15" fill="#aab0b8" letter-spacing="1">Departures</text>'
-        f'<text x="886" y="62" font-size="15" fill="#aab0b8">のりば</text>{spots}</g></g>'
-        + b.svg() + seam(b, 41) + seam(b, 63))
-    save("header.svg", W, 252, body, "TAKOSASI-DEV 発車案内。インフラ、ネットワーク、セキュリティ。全系統 正常稼働中")
+def nav():
+    """Small signs under the header, one per platform; README links each to its section."""
+    for n, (ja, _) in enumerate(SECTIONS, 1):
+        body = (f'<g font-family="{GOTH}"><rect x="1" y="1" width="122" height="38" rx="6" fill="{PLATE}" stroke="{PLATE_EDGE}" stroke-width="1.5"/>'
+                f'<circle cx="21" cy="20" r="13" fill="{LINE[n - 1]}"/>'
+                f'<text x="21" y="25.5" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">{n}</text>'
+                f'<text x="41" y="26" font-size="16" font-weight="700" fill="#111">{ja}</text></g>')
+        save(f"nav-{n}.svg", 124, 40, body, f"{n} 番線 {ja}")
 
 
-SECTIONS = [("ご案内", "INFORMATION"), ("技術領域", "SKILLS"), ("制作物", "PROJECTS"), ("運行記録", "ACTIVITY"),
+SECTIONS =[("ご案内", "INFORMATION"), ("技術領域", "SKILLS"), ("制作物", "PROJECTS"), ("運行記録", "ACTIVITY"),
             ("待合室", "WAITING ROOM")]
 
 
@@ -217,8 +200,14 @@ def games():
 
 
 if __name__ == "__main__":
+    import importlib
+    import importlib.util
+
+    for name in ["ext_train", "ext_tako", "ext_data", "ext_games"]:  # optional modules, see update_live.py
+        if importlib.util.find_spec(name):
+            getattr(importlib.import_module(name), "static", lambda: None)()
     games()
-    header()
+    nav()
     for n in range(1, len(SECTIONS) + 1):
         section(n)
     routemap()

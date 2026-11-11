@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Rebuild everything in the profile that depends on live GitHub data.
 
+    assets/header.svg      the departure board: status from the real activity, notices and season from the date
     assets/guide.svg       lines (categories) with their repo counts, latest release in the ticker
     assets/card-*.svg      featured projects: the repos carrying the GitHub topic "featured"
     assets/arc-*.svg       the sign on top of each ARCHIVE group
@@ -18,6 +19,8 @@ import base64
 import bisect
 import datetime
 import glob
+import importlib
+import importlib.util
 import json
 import os
 import random
@@ -30,6 +33,9 @@ from style import *  # noqa: E402,F403
 
 USER = "takosasi-dev"
 README = os.path.join(ROOT, "README.md")
+# Optional modules in scripts/. Each may define static() (called by build_assets.py) and
+# live(ctx) -> {MARKER: text}; the text replaces what is between <!-- MARKER:START --> and <!-- MARKER:END --> in README.
+EXTENSIONS = ["ext_train", "ext_tako", "ext_data", "ext_games"]
 NOTE = "GitHub の記録から毎日自動で更新"
 
 # ponytail: one page of 100 repos, no cursor paging. Add paging when the account passes 100 public repos.
@@ -38,7 +44,7 @@ QUERY = """query($login: String!) {
     repositories(first: 100, privacy: PUBLIC, ownerAffiliations: OWNER, isFork: false,
                  orderBy: {field: PUSHED_AT, direction: DESC}) {
       nodes {
-        name description pushedAt
+        name description pushedAt createdAt
         primaryLanguage { name }
         repositoryTopics(first: 20) { nodes { topic { name } } }
         releases(first: 1, orderBy: {field: CREATED_AT, direction: DESC}) {
@@ -78,6 +84,7 @@ def fetch():
             "name": n["name"],
             "desc": (n["description"] or "").strip(),
             "pushed": (n["pushedAt"] or "")[:10],
+            "created": (n.get("createdAt") or "")[:10],
             "lang": (n["primaryLanguage"] or {}).get("name") or "-",
             "topics": {t["topic"]["name"] for t in n["repositoryTopics"]["nodes"]},
             "releases": n["releases"]["totalCount"],
@@ -202,6 +209,111 @@ def card(i, r, cat):
     save(f"card-{repo}.svg", 412, 317, body, f"{name}: {' '.join(lines)}")
 
 
+# --------------------------------------------------------------------------- header
+def streaks(cal):
+    """(days in a row up to now, longest run in the year, days since the last contribution)."""
+    counts = [d["contributionCount"] for w in cal["weeks"] for d in w["contributionDays"]]
+    best = run = 0
+    for c in counts:
+        run = run + 1 if c else 0
+        best = max(best, run)
+    past = counts[:-1] if counts and not counts[-1] else counts  # today may still be empty
+    cur = next((i for i, c in enumerate(reversed(past)) if not c), len(past))
+    idle = next((i for i, c in enumerate(reversed(past)) if c), len(past))
+    return cur, best, idle
+
+
+OPENED = "2026-11-11"  # the day this profile went up
+# MM-DD -> a line put in front of the scrolling text on that day.
+SPECIAL = {
+    "01-01": "謹賀新年。本年も当駅をよろしくお願いいたします。", "01-02": "謹賀新年。本年も当駅をよろしくお願いいたします。",
+    "01-03": "謹賀新年。本年も当駅をよろしくお願いいたします。",
+    "04-01": "本日に限り、すべての列車が定刻どおりに運転しています。",
+    "07-07": "七夕です。短冊には「バグが出ませんように」と書きました。",
+    "10-14": "本日は鉄道の日です。",
+    "10-31": "ハロウィンです。お化けより本番障害のほうが怖い。",
+    "12-24": "臨時列車 サンタクロース号が運転されます。", "12-25": "臨時列車 サンタクロース号が運転されます。",
+    "12-31": "大みそかです。本年もご利用ありがとうございました。",
+}
+# month -> (what falls on the board, colours, seconds for one pass (0 = it stays and twinkles), the dots of one piece)
+SNOW = ("雪", ["#e8f0ff"], 15, [(0, 0), (1, 0), (0, 1), (1, 1)])
+SAKURA = ("桜", ["#ff9ec4"], 17, [(0, 0), (1, 0), (0, 1)])
+LEAF = ("紅葉", ["#ff7a3d", "#ffc04d"], 19, [(0, 0), (1, 0), (1, 1), (2, 1)])
+STAR = ("星", ["#fff3a0"], 0, [(0, 0), (-1, 0), (1, 0), (0, -1), (0, 1)])
+SEASON = {12: SNOW, 1: SNOW, 2: SNOW, 3: SAKURA, 4: SAKURA, 6: ("雨", ["#6aa8ff"], 3, [(0, 0), (0, 1), (0, 2)]),
+          7: STAR, 8: STAR, 10: LEAF, 11: LEAF}
+
+
+def notices(today):
+    day = datetime.date.fromisoformat(today)
+    out = []
+    if today[5:] == OPENED[5:]:
+        years = day.year - int(OPENED[:4])
+        out.append(f"本日は当駅の開業記念日です。開業から {years} 年。" if years else "本日、当駅は開業しました。")
+    if today[5:] in SPECIAL:
+        out.append(SPECIAL[today[5:]])
+    if day.timetuple().tm_yday == 256:
+        out.append("本日は 256 日目、プログラマーの日です。")
+    if day.weekday() == 4:
+        out.append("本日は金曜日、週末ダイヤで運転しています。")
+    return out
+
+
+def header(repos, cal, today):
+    """The departure board. The status line, the notices and what falls on the board follow the real data and the date."""
+    cur, _, idle = streaks(cal)
+    yesterday = (datetime.date.fromisoformat(today) - datetime.timedelta(days=1)).isoformat()
+    fresh = [r for r in repos if r["tag_date"] >= yesterday]
+    if fresh:
+        n = max(fresh, key=lambda r: r["tag_date"])
+        col, status = AMBER, f'臨時列車 {n["name"]} 発車'
+    elif idle >= 3:
+        col, status = RED, f"運転見合わせ 休養{idle}日目"
+    elif cur >= 7:
+        col, status = AMBER, f"増発中 連続{cur}日"
+    else:
+        col, status = GREEN, "全系統 正常稼働中"
+    b = Board("h", LED_X, 61, LED_COLS, 86)
+    b.put(F16, "TAKOSASI-DEV", 5, 4, AMBER, scale=2)
+    b.put(F16, "インフラ/ネットワーク", 207, 4, GREEN)
+    b.put(F16, "/セキュリティ", 207, 21, GREEN)
+    w = b.put(F16, "運行情報", 7, 44, RED, invert=True)
+    pw = b.put(F16, f"のりば 1-{len(LINE)}", 397, 44, AMBER, right=True)
+    b.put(F16, F16.fit(status, 397 - pw - 8 - (15 + w)), 15 + w, 44, col)
+    extra = notices(today)
+    b.ticker(F16, "".join(s + "　　" for s in extra)
+             + "ゲーム、デスクトップツール、プラグインなど、思いついた物を作っています。　　"
+               "GAMES, DESKTOP TOOLS, PLUGINS AND WHATEVER COMES TO MIND.　　　", 66, AMBER)
+    _, cols, secs, piece = SEASON.get(int(today[5:7]), ("", [], 0, []))
+    rnd = random.Random("season" + today)
+    for i, c in enumerate(cols * 2):
+        spots = [(rnd.randrange(2, LED_COLS - 3), rnd.randrange(2, 84)) for _ in range(22 // len(cols))]
+        dots = [(x + dx, y + dy) for x, y in spots for dx, dy in piece]
+        if secs:
+            b.drift(dots, c, secs + i * 4, op=.8)  # two layers at different speeds
+        else:  # stars do not fall: one half is steady, the other half blinks
+            rows = [[0] * LED_COLS for _ in range(86)]
+            for x, y in dots:
+                rows[y][x] = 1
+            b.raw(rows, 0, 0, c, blink=bool(i), op=.8)
+    spots = "".join(
+        f'<circle cx="{968 + i * 44}" cy="56" r="15" fill="{c}"/>'
+        f'<text x="{968 + i * 44}" y="62" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">{i + 1}</text>'
+        for i, c in enumerate(LINE))
+    body = (
+        f'<g transform="scale(.705)"><rect x="180" width="14" height="30" fill="#33373e"/><rect x="1006" width="14" height="30" fill="#33373e"/>'
+        f'<rect x="6" y="24" width="1188" height="328" rx="10" fill="{BODY}" stroke="{EDGE}"/>'
+        f'<rect x="16" y="26" width="1168" height="2" fill="#6a717b" opacity=".45"/>'
+        f'<g font-family="{GOTH}"><rect x="30" y="38" width="36" height="36" rx="5" fill="#1d63c4"/>'
+        f'<path d="M40 49h16a3 3 0 0 1 3 3v11a3 3 0 0 1-3 3H40a3 3 0 0 1-3-3V52a3 3 0 0 1 3-3zm1 4v6h14v-6zm1 9.5a1.5 1.5 0 1 0 .01 0zm12 0a1.5 1.5 0 1 0 .01 0zM42 66l-3 4m15-4l3 4" fill="#fff" stroke="#fff" stroke-width="1.6" fill-rule="evenodd"/>'
+        f'<text x="80" y="66" font-size="26" font-weight="700" fill="#f2f2ee" letter-spacing="4">発車案内</text>'
+        f'<text x="214" y="65" font-size="15" fill="#aab0b8" letter-spacing="1">Departures</text>'
+        f'<text x="886" y="62" font-size="15" fill="#aab0b8">のりば</text>{spots}</g></g>'
+        + b.svg() + seam(b, 41) + seam(b, 63))
+    save("header.svg", W, 252, body,
+         f"TAKOSASI-DEV 発車案内。インフラ、ネットワーク、セキュリティ。運行情報: {status}。" + "".join(extra))
+
+
 # --------------------------------------------------------------------------- boards
 def guide(repos, groups):
     b = Board("g", LED_X, 40, LED_COLS, 98)
@@ -266,17 +378,9 @@ def releases(repos, cat_of):
 
 
 def contrib(cal):
-    days = [d for w in cal["weeks"] for d in w["contributionDays"]]
-    counts = [d["contributionCount"] for d in days]
-    best = run = cur = 0
-    for c in counts:
-        run = run + 1 if c else 0
-        best = max(best, run)
-    for c in reversed(counts[:-1] if counts and not counts[-1] else counts):  # today may still be empty
-        if not c:
-            break
-        cur += 1
-    text = f"過去1年 {cal['totalContributions']:,}回　連続 {cur}日　最長 {best}日"
+    counts = [d["contributionCount"] for w in cal["weeks"] for d in w["contributionDays"]]
+    cur, best, _ = streaks(cal)
+    text =f"過去1年 {cal['totalContributions']:,}回　連続 {cur}日　最長 {best}日"
     t = Board("c", LED_X, 40, LED_COLS, 20)
     t.put(F16, F16.fit(text, 392), 5, 2, AMBER)
     weeks = cal["weeks"][-53:]
@@ -310,9 +414,8 @@ FORTUNES = [
 ]
 
 
-def fortune(repos):
+def fortune(repos, today):
     """Drawn again every morning. The date (JST) is the seed, so a rerun on the same day gives the same draw."""
-    today = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date().isoformat()
     rnd = random.Random(today)
     luck, run, advice = rnd.choice(FORTUNES)
     pick = rnd.choice(sorted(repos, key=lambda r: r["name"]))
@@ -326,8 +429,8 @@ def fortune(repos):
     b.ticker(F16, f'本日のおすすめ: {pick["name"]}　{desc}　　　', 82, AMBER)
     save("fortune.svg", W, 257, casing(W, 257, "本日の運行占い", "Today", "毎朝 6 時すぎに引き直します") + b.svg() + seam(b, 58),
          f"{md(today)} の運行占い: {luck}、{run}。{advice}。本日のおすすめは {pick['name']}")
-    return (f'本日のおすすめ: <a href="https://github.com/{USER}/{pick["name"]}">{esc(pick["name"])}</a>'
-            + (f"（{esc(desc)}）" if desc else ""))
+    return (luck, run, advice), (f'本日のおすすめ: <a href="https://github.com/{USER}/{pick["name"]}">{esc(pick["name"])}</a>'
+                                 + (f"（{esc(desc)}）" if desc else ""))
 
 
 # --------------------------------------------------------------------------- README.md
@@ -385,10 +488,21 @@ if __name__ == "__main__":
     stats(repos)
     releases(repos, cat_of)
     contrib(cal)
-    today = fortune(repos)
+    # PROFILE_DATE=2026-12-31 lets you look at another day (season, notices, the daily draws).
+    today = os.environ.get("PROFILE_DATE") or datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date().isoformat()
+    header(repos, cal, today)
+    luck, pick = fortune(repos, today)
+    parts = {"CARDS": cards_md(feat), "ARCHIVE": archive_md(groups), "FORTUNE": pick}
+    # Everything an extension needs, so that it never has to import this file.
+    ctx = {"repos": repos, "cal": cal, "cat_of": cat_of, "groups": groups, "today": today, "luck": luck,
+           "CAT": CAT, "DESC": DESC, "USER": USER}
+    for name in EXTENSIONS:
+        if importlib.util.find_spec(name):
+            parts.update(getattr(importlib.import_module(name), "live", lambda ctx: {})(ctx) or {})
     with open(README, encoding="utf-8", newline="") as f:
         text = f.read()
-    text = splice(splice(splice(text, "CARDS", cards_md(feat)), "ARCHIVE", archive_md(groups)), "FORTUNE", today)
+    for tag, body in parts.items():
+        text = splice(text, tag, body)
     with open(README, "w", encoding="utf-8", newline="") as f:
         f.write(text)
     check(repos)
