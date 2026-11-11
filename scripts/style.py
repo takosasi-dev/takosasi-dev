@@ -12,7 +12,7 @@ F12 = Font(f"{_F}/shnmk12.bdf.gz", f"{_F}/shnm6x12a.bdf.gz", 12)
 MONO = "'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace"
 GOTH = "'Yu Gothic UI','Hiragino Sans','Noto Sans CJK JP',Meiryo,sans-serif"
 
-LINE = ["#00a7db", "#f39700", "#e5404f", "#00a650"]  # one colour per platform (= README section)
+LINE = ["#00a7db", "#f39700", "#e5404f", "#00a650", "#8f76d6"]  # one colour per platform (= README section)
 BODY, EDGE = "#25282e", "#444a53"                    # the casing of a board
 PLATE, PLATE_EDGE = "#f4f4ef", "#8a9099"             # a printed sign
 
@@ -43,6 +43,17 @@ def casing(w, h, title="", sub="", note="", y=0):
              f'<text x="{w - 22}" y="{y + 27}" text-anchor="end" font-size="11" fill="#8d949d">{note}</text></g>')
     return (f'<rect x=".5" y="{y + .5}" width="{w - 1}" height="{h - y - 1}" rx="8" fill="{BODY}" stroke="{EDGE}"/>'
             f'<rect x="10" y="{y + 2}" width="{w - 20}" height="1.5" fill="#6a717b" opacity=".45"/>' + t)
+
+
+def plate(name, col, top, bottom, ja, en):
+    """The small sign on top of a folded block (420x46): a line symbol like a station number, then the name."""
+    body = (f'<g font-family="{GOTH}"><rect x="1" y="1" width="418" height="44" rx="6" fill="{PLATE}" stroke="{PLATE_EDGE}" stroke-width="1.5"/>'
+            f'<circle cx="25" cy="23" r="16" fill="#fff" stroke="{col}" stroke-width="5"/>'
+            f'<text x="25" y="21" text-anchor="middle" font-size="12" font-weight="800" fill="#111">{top}</text>'
+            f'<text x="25" y="33" text-anchor="middle" font-size="11" font-weight="800" fill="#111">{bottom}</text>'
+            f'<text x="54" y="30" font-size="19" font-weight="700" fill="#111">{ja}</text>'
+            f'<text x="406" y="29" text-anchor="end" font-size="11" fill="#666" font-family="{MONO}" letter-spacing="1.5">{en}</text></g>')
+    save(name, 420, 46, body, f"{ja} {en}")
 
 
 def seam(board, row):

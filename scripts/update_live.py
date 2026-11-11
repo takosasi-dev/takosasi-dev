@@ -7,7 +7,8 @@
     assets/stats.svg       repo / release / language counts
     assets/releases.svg    the six newest releases
     assets/contrib.svg     one year of contributions
-    README.md              the card links and the ARCHIVE list, between their markers
+    assets/fortune.svg     the fortune of the day in the waiting room
+    README.md              the card links, the ARCHIVE list and today's pick, between their markers
 
 Run by .github/workflows/activity.yml once a day. Standard library only.
     GITHUB_TOKEN=... python3 scripts/update_live.py   # live (GraphQL needs a token)
@@ -19,6 +20,7 @@ import datetime
 import glob
 import json
 import os
+import random
 import re
 import sys
 import urllib.request
@@ -294,13 +296,38 @@ def contrib(cal):
 def strip(title, n):
     """The sign on top of one ARCHIVE group: the line symbol with the repo count, like a station number."""
     slug, _, ja, sym, col, _ = CAT[title]
-    body = (f'<g font-family="{GOTH}"><rect x="1" y="1" width="418" height="44" rx="6" fill="{PLATE}" stroke="{PLATE_EDGE}" stroke-width="1.5"/>'
-            f'<circle cx="25" cy="23" r="16" fill="#fff" stroke="{col}" stroke-width="5"/>'
-            f'<text x="25" y="21" text-anchor="middle" font-size="12" font-weight="800" fill="#111">{sym}</text>'
-            f'<text x="25" y="33" text-anchor="middle" font-size="11" font-weight="800" fill="#111">{n:02d}</text>'
-            f'<text x="54" y="30" font-size="19" font-weight="700" fill="#111">{ja}</text>'
-            f'<text x="406" y="29" text-anchor="end" font-size="11" fill="#666" font-family="{MONO}" letter-spacing="1.5">{title}</text></g>')
-    save(f"arc-{slug}.svg", 420, 46, body, f"{ja} {n} 本")
+    plate(f"arc-{slug}.svg", col, sym, f"{n:02d}", ja, title)
+
+
+# The daily fortune in the waiting room: (luck, how the trains run today, advice of at most 24 full-width characters).
+FORTUNES = [
+    ("大吉", "定刻運転", "今日書いたコードは一発で動くでしょう"),
+    ("中吉", "平常運転", "こまめにコミットすると吉"),
+    ("小吉", "徐行運転", "急がば回れ。先にテストを書くと吉"),
+    ("吉", "各駅停車", "ひとつずつ片付けると吉"),
+    ("末吉", "5分遅れ", "仕様書を読み直すと吉"),
+    ("凶", "運転見合わせ", "今日は早く寝ると吉"),
+]
+
+
+def fortune(repos):
+    """Drawn again every morning. The date (JST) is the seed, so a rerun on the same day gives the same draw."""
+    today = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date().isoformat()
+    rnd = random.Random(today)
+    luck, run, advice = rnd.choice(FORTUNES)
+    pick = rnd.choice(sorted(repos, key=lambda r: r["name"]))
+    desc = DESC.get(pick["name"]) or pick["desc"]
+    b = Board("o", LED_X, 40, LED_COLS, 100)
+    w = b.put(F16, "本日の運行", 7, 4, GREEN, invert=True)
+    b.put(F16, md(today), 15 + w, 4, AMBER)
+    w = b.put(F16, luck, 6, 24, AMBER, scale=2)
+    b.put(F16, run, 6 + w + 32, 24, GREEN, scale=2)
+    b.put(F16, F16.fit(advice, 390), 6, 62, GREEN)
+    b.ticker(F16, f'本日のおすすめ: {pick["name"]}　{desc}　　　', 82, AMBER)
+    save("fortune.svg", W, 257, casing(W, 257, "本日の運行占い", "Today", "毎朝 6 時すぎに引き直します") + b.svg() + seam(b, 58),
+         f"{md(today)} の運行占い: {luck}、{run}。{advice}。本日のおすすめは {pick['name']}")
+    return (f'本日のおすすめ: <a href="https://github.com/{USER}/{pick["name"]}">{esc(pick["name"])}</a>'
+            + (f"（{esc(desc)}）" if desc else ""))
 
 
 # --------------------------------------------------------------------------- README.md
@@ -357,9 +384,10 @@ if __name__ == "__main__":
     stats(repos)
     releases(repos, cat_of)
     contrib(cal)
+    today = fortune(repos)
     with open(README, encoding="utf-8", newline="") as f:
         text = f.read()
-    text = splice(splice(text, "CARDS", cards_md(feat)), "ARCHIVE", archive_md(groups))
+    text = splice(splice(splice(text, "CARDS", cards_md(feat)), "ARCHIVE", archive_md(groups)), "FORTUNE", today)
     with open(README, "w", encoding="utf-8", newline="") as f:
         f.write(text)
     check(repos)

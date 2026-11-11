@@ -3,9 +3,10 @@
 
     python3 scripts/build_assets.py
 
-header.svg (departure board), sec-01..04.svg (station name signs), routemap.svg (skills),
-link-x.svg / play-*.svg (guidance signs), footer.svg. Everything that changes with the GitHub API
-is built by update_live.py instead.
+header.svg (departure board), sec-01..05.svg (station name signs), routemap.svg (skills),
+link-x.svg / play-*.svg (guidance signs), footer.svg, and the pictures of the mini games in the
+waiting room (pk-*.svg, pass-*.svg, maze-map.svg, game-*.svg). Everything that changes with the
+GitHub API is built by update_live.py instead.
 """
 import os
 import sys
@@ -21,12 +22,12 @@ def header():
     b.put(F16, "/セキュリティ", 207, 21, GREEN)
     w = b.put(F16, "運行情報", 7, 44, RED, invert=True)
     b.put(F16, "全系統 正常稼働中", 7 + w + 8, 44, GREEN)
-    b.put(F16, "のりば 1-4", 397, 44, AMBER, right=True)
+    b.put(F16, f"のりば 1-{len(LINE)}", 397, 44, AMBER, right=True)
     b.ticker(F16, "ゲーム、デスクトップツール、プラグインなど、思いついた物を作っています。　　"
                   "GAMES, DESKTOP TOOLS, PLUGINS AND WHATEVER COMES TO MIND.　　　", 66, AMBER)
     spots = "".join(
-        f'<circle cx="{1012 + i * 44}" cy="56" r="15" fill="{c}"/>'
-        f'<text x="{1012 + i * 44}" y="62" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">{i + 1}</text>'
+        f'<circle cx="{968 + i * 44}" cy="56" r="15" fill="{c}"/>'
+        f'<text x="{968 + i * 44}" y="62" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">{i + 1}</text>'
         for i, c in enumerate(LINE))
     body = (
         f'<g transform="scale(.705)"><rect x="180" width="14" height="30" fill="#33373e"/><rect x="1006" width="14" height="30" fill="#33373e"/>'
@@ -36,12 +37,13 @@ def header():
         f'<path d="M40 49h16a3 3 0 0 1 3 3v11a3 3 0 0 1-3 3H40a3 3 0 0 1-3-3V52a3 3 0 0 1 3-3zm1 4v6h14v-6zm1 9.5a1.5 1.5 0 1 0 .01 0zm12 0a1.5 1.5 0 1 0 .01 0zM42 66l-3 4m15-4l3 4" fill="#fff" stroke="#fff" stroke-width="1.6" fill-rule="evenodd"/>'
         f'<text x="80" y="66" font-size="26" font-weight="700" fill="#f2f2ee" letter-spacing="4">発車案内</text>'
         f'<text x="214" y="65" font-size="15" fill="#aab0b8" letter-spacing="1">Departures</text>'
-        f'<text x="930" y="62" font-size="15" fill="#aab0b8">のりば</text>{spots}</g></g>'
+        f'<text x="886" y="62" font-size="15" fill="#aab0b8">のりば</text>{spots}</g></g>'
         + b.svg() + seam(b, 41) + seam(b, 63))
     save("header.svg", W, 252, body, "TAKOSASI-DEV 発車案内。インフラ、ネットワーク、セキュリティ。全系統 正常稼働中")
 
 
-SECTIONS = [("ご案内", "INFORMATION"), ("技術領域", "SKILLS"), ("制作物", "PROJECTS"), ("運行記録", "ACTIVITY")]
+SECTIONS = [("ご案内", "INFORMATION"), ("技術領域", "SKILLS"), ("制作物", "PROJECTS"), ("運行記録", "ACTIVITY"),
+            ("待合室", "WAITING ROOM")]
 
 
 def section(n):
@@ -121,7 +123,101 @@ def footer():
     save("footer.svg", W, 70, casing(W, 70) + b.svg(), s)
 
 
+# --------------------------------------------------------------------------- waiting room (mini games)
+# README cannot run code, so a game is pictures plus folded blocks that hold the answers.
+# The answers themselves are written in README.md; keep them in step with the tables here.
+
+# Game 1. Rules are read top to bottom and the first match decides. (verdict, protocol, source, port)
+RULES = [("落とす", "すべて", "198.51.100.0/24", "すべて"), ("通す", "TCP", "どこからでも", "443"),
+         ("通す", "UDP", "どこからでも", "53"), ("通す", "TCP", "192.0.2.0/24", "22")]
+PACKETS = [("TCP", "203.0.113.7", "443"), ("UDP", "203.0.113.20", "53"), ("TCP", "198.51.100.9", "443"),
+           ("TCP", "203.0.113.80", "22"), ("UDP", "192.0.2.44", "22")]
+
+
+def packet_game():
+    rows = RULES + [("落とす", "どれにも合わない", "", "")]
+    b = Board("k", LED_X, 58, LED_COLS, 4 + 20 * len(rows))
+    for i, (verdict, proto, src, port) in enumerate(rows):
+        y = 4 + i * 20
+        b.put(F16, str(i + 1) if i < len(RULES) else "*", 6, y, AMBER)
+        b.put(F16, verdict, 24, y, GREEN if verdict == "通す" else RED, invert=True)
+        b.put(F16, proto, 84, y, AMBER)
+        b.put(F16, src, 146, y, AMBER)
+        b.put(F16, port, 397, y, GREEN, right=True)
+    h = 58 + b.h + 17
+    heads = (f'<g font-family="{GOTH}" font-size="10.5" fill="#aab0b8"><text x="31" y="50">順</text><text x="69" y="50">判定</text>'
+             f'<text x="189" y="50">プロトコル</text><text x="313" y="50">送信元</text><text x="815" y="50" text-anchor="end">宛先ポート</text></g>')
+    save("pk-rules.svg", W, h, casing(W, h, "検問の規則", "Rules", "上から順に見て、最初に合った行で決まります") + heads + b.svg(),
+         "検問の規則")
+    for i, (proto, src, port) in enumerate(PACKETS, 1):
+        p = Board("q", LED_X, 14, LED_COLS, 20)
+        w = p.put(F16, f"{i}/{len(PACKETS)}", 7, 2, AMBER, invert=True)
+        p.put(F16, f"{proto}　{src} から　ポート {port} へ", 15 + w, 2, GREEN)
+        save(f"pk-{i}.svg", W, 70, casing(W, 70) + p.svg(), f"パケット {i}: {proto}、{src} から、ポート {port} へ")
+
+
+# Game 2. (what passes, seconds it takes to cross the board)
+TRAINS = [("回送 4821", 1.6), ("快速 7306", 0.9), ("特急 9154", 0.5)]
+
+
+def passing_game():
+    for i, (text, secs) in enumerate(TRAINS, 1):
+        b = Board("v", LED_X, 40, LED_COLS, 60)
+        b.put(F16, "まもなく列車が通過します", 5, 3, GREEN)
+        b.fly(F16, text, 24, AMBER, secs, 5)
+        save(f"pass-{i}.svg", W, 177, casing(W, 177, "通過列車", f"Level {i}", "5 秒ごとに通過します") + b.svg() + seam(b, 21),
+             f"レベル {i}: 列車の案内が LED の板を通過する")  # the label must not give the answer away
+
+
+# Game 3. The map for the transfer maze. station: (x, y, where the name goes: dx, dy, anchor)
+STOPS = {
+    "アイデア": (90, 170, 0, -24, "middle"), "仕様書": (270, 90, 0, -22, "middle"), "完璧な設計": (500, 90, 0, -22, "middle"),
+    "実装": (420, 170, 0, -22, "middle"), "テスト": (570, 170, 0, 36, "middle"), "実機確認待ち": (750, 170, 0, -22, "middle"),
+    "リリース": (700, 70, 22, 8, "start"), "いきなり実装": (270, 250, 0, -22, "middle"), "バグの山": (500, 250, 0, -22, "middle"),
+    "新しい道具": (90, 282, 22, 8, "start"), "積みプロジェクト": (90, 350, 22, 8, "start"),
+}
+# (line name, colour, path, where its name tag sits)
+TRACKS = [
+    ("仕様線", "#00a7db", "M90 170L180 90H500", (385, 90)),
+    ("開発線", "#e5404f", "M270 90L360 170H750", (495, 170)),
+    ("公開線", "#333", "M570 170L700 70", (628, 124)),
+    ("実装線", "#f39700", "M90 170L180 250H500", (385, 250)),
+    ("道具線", "#00a650", "M90 170V350", (90, 228)),
+    ("リファクタリング環状線", "#8f76d6", "M270 250C205 345 335 345 270 250", (402, 310)),
+]
+
+
+def maze_map():
+    H = 384
+    out = (f'<g font-family="{GOTH}"><rect x="1" y="1" width="{W - 2}" height="{H - 2}" rx="7" fill="{PLATE}" stroke="{PLATE_EDGE}" stroke-width="2"/>'
+           f'<text x="24" y="38" font-size="23" font-weight="700" fill="#111" letter-spacing="3">のりかえ迷路</text>'
+           f'<text x="{W - 24}" y="37" text-anchor="end" font-size="14" font-weight="700" fill="#555">アイデア駅からリリース駅へ。3 回の乗車で着けるか</text>')
+    for name, col, d, (tx, ty) in TRACKS:
+        out += f'<path d="{d}" fill="none" stroke="{col}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>'
+    for name, col, d, (tx, ty) in TRACKS:
+        tw = len(name) * 15 + 16
+        out += (f'<rect x="{tx - tw / 2}" y="{ty - 12}" width="{tw}" height="24" rx="12" fill="{col}"/>'
+                f'<text x="{tx}" y="{ty + 5}" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">{name}</text>')
+    for name, (x, y, dx, dy, anchor) in STOPS.items():
+        ring = {"アイデア": "#111", "リリース": "#00a650"}.get(name)
+        out += (f'<circle cx="{x}" cy="{y}" r="{14 if ring else 10}" fill="#fff" stroke="{ring or "#222"}" stroke-width="{7 if ring else 4}"/>'
+                f'<text x="{x + dx}" y="{y + dy}" text-anchor="{anchor}" font-size="21" font-weight="700" fill="#111">{name}</text>')
+    out += (f'<text x="90" y="124" text-anchor="middle" font-size="13" font-weight="700" fill="#555">スタート</text>'
+            f'<text x="722" y="54" font-size="13" font-weight="700" fill="#00a650">ゴール</text></g>')
+    save("maze-map.svg", W, H, out, "のりかえ迷路の路線図")
+
+
+def games():
+    packet_game()
+    passing_game()
+    maze_map()
+    for i, (ja, en) in enumerate([("パケット検問ミニ", "PACKET CHECK"), ("通過列車の動体視力テスト", "PASSING TRAIN"),
+                                  ("のりかえ迷路", "TRANSFER MAZE"), ("本日の運行占い", "FORTUNE")], 1):
+        plate(f"game-{i}.svg", LINE[4], "遊", f"{i:02d}", ja, en)
+
+
 if __name__ == "__main__":
+    games()
     header()
     for n in range(1, len(SECTIONS) + 1):
         section(n)

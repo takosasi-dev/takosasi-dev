@@ -135,6 +135,22 @@ class Board:
             f".{u}tk{{animation:{u}tk {w / dots_per_sec:.1f}s steps({w}) infinite}}"
         )
 
+    def fly(self, font, s, cy, col, secs, period, scale=2):
+        """Text that crosses the window in `secs` seconds, once every `period`. With motion off it rests in the middle."""
+        rows = font.rows(s, scale)
+        w, u = len(rows[0]), self.uid
+        x0 = (self.cols - w) // 2
+        a, b = self.cols - x0, -(x0 + w)  # just outside the right edge -> just outside the left edge
+        self.tick = (
+            f'<clipPath id="{u}c"><rect x="-.5" y="{cy - 1}" width="{self.cols}" height="{font.h * scale + 2}"/></clipPath>'
+            f'<g id="{u}t" clip-path="url(#{u}c)"><path class="{u}tk" stroke="{col}" d="{path_d(rows, x0, cy)}"/></g>'
+        )
+        self.css = (
+            f"@keyframes {u}tk{{0%{{transform:translateX({a}px);animation-timing-function:steps({a - b})}}"
+            f"{secs / period * 100:.1f}%,100%{{transform:translateX({b}px)}}}}"
+            f".{u}tk{{animation:{u}tk {period}s infinite}}"
+        )
+
     def svg(self):
         u, x, y, p = self.uid, self.x, self.y, self.p
         g = (

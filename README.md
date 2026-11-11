@@ -180,6 +180,169 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 <img src="assets/releases.svg" width="100%" alt="新着リリース">
 <img src="assets/contrib.svg" width="100%" alt="稼働記録: 過去 1 年のコントリビューション">
 
+<img src="assets/sec-05.svg" width="100%" alt="5 番線 待合室 WAITING ROOM">
+
+</div>
+
+列車を待つあいだに遊べるミニゲームです。札を押すと開きます。答えは選択肢を押すと出ます。
+
+<details>
+<summary><img src="assets/game-1.svg" height="40" align="middle" alt="ゲーム 1: パケット検問ミニ"></summary>
+<br>
+
+あなたはファイアウォールです。規則を上から順に見て、最初に合った行のとおりに、パケットを「通す」か「落とす」か決めてください。全 5 問。
+
+<img src="assets/pk-rules.svg" width="100%" alt="検問の規則。1: 198.51.100.0/24 からは全部落とす。2: TCP のポート 443 は通す。3: UDP のポート 53 は通す。4: 192.0.2.0/24 からの TCP ポート 22 は通す。どれにも合わなければ落とす">
+
+<img src="assets/pk-1.svg" width="100%" alt="パケット 1/5: TCP、203.0.113.7 から、ポート 443 へ">
+<details><summary>通す</summary><blockquote><b>正解。</b>規則 2(TCP の 443)に合います。</blockquote></details>
+<details><summary>落とす</summary><blockquote><b>不正解。</b>規則 2(TCP の 443)に合うので、通します。</blockquote></details>
+
+<img src="assets/pk-2.svg" width="100%" alt="パケット 2/5: UDP、203.0.113.20 から、ポート 53 へ">
+<details><summary>通す</summary><blockquote><b>正解。</b>規則 3(UDP の 53)に合います。</blockquote></details>
+<details><summary>落とす</summary><blockquote><b>不正解。</b>規則 3(UDP の 53)に合うので、通します。</blockquote></details>
+
+<img src="assets/pk-3.svg" width="100%" alt="パケット 3/5: TCP、198.51.100.9 から、ポート 443 へ">
+<details><summary>通す</summary><blockquote><b>不正解。</b>ポートは 443 ですが、その前に規則 1(198.51.100.0/24 からは全部落とす)に合います。先に合った行で決まります。</blockquote></details>
+<details><summary>落とす</summary><blockquote><b>正解。</b>規則 2 より先に、規則 1(198.51.100.0/24 からは全部落とす)に合います。</blockquote></details>
+
+<img src="assets/pk-4.svg" width="100%" alt="パケット 4/5: TCP、203.0.113.80 から、ポート 22 へ">
+<details><summary>通す</summary><blockquote><b>不正解。</b>ポート 22 を通すのは 192.0.2.0/24 からだけです(規則 4)。どの行にも合わないので落とします。</blockquote></details>
+<details><summary>落とす</summary><blockquote><b>正解。</b>規則 4 は送信元が 192.0.2.0/24 のときだけ。どの行にも合いません。</blockquote></details>
+
+<img src="assets/pk-5.svg" width="100%" alt="パケット 5/5: UDP、192.0.2.44 から、ポート 22 へ">
+<details><summary>通す</summary><blockquote><b>不正解。</b>送信元とポートは規則 4 に合いますが、規則 4 は TCP だけです。UDP なのでどの行にも合わず、落とします。</blockquote></details>
+<details><summary>落とす</summary><blockquote><b>正解。</b>規則 4 は TCP だけ。UDP はどの行にも合いません。</blockquote></details>
+
+続きは本編でどうぞ。
+
+<a href="https://takosasi-dev.github.io/packet-bouncer/"><img src="assets/play-packet-bouncer.svg" width="330" alt="Packet Bouncer をブラウザで遊ぶ"></a>
+
+</details>
+
+<details>
+<summary><img src="assets/game-2.svg" height="40" align="middle" alt="ゲーム 2: 通過列車の動体視力テスト"></summary>
+<br>
+
+LED の板を、列車の案内が一瞬で通過します。4 けたの列車番号を読み取ってください。5 秒ごとに何度でも通過します。<br>
+(OS で「動きを減らす」設定にしていると、文字は止まって表示されます)
+
+<b>レベル 1</b>
+
+<img src="assets/pass-1.svg" width="100%" alt="レベル 1: 列車の案内が LED の板を通過する">
+<details><summary>4281</summary><blockquote><b>不正解。</b>もう一度見てみてください。</blockquote></details>
+<details><summary>4821</summary><blockquote><b>正解。</b>回送 4821 でした。</blockquote></details>
+<details><summary>4827</summary><blockquote><b>不正解。</b>もう一度見てみてください。</blockquote></details>
+
+<b>レベル 2</b>
+
+<img src="assets/pass-2.svg" width="100%" alt="レベル 2: 列車の案内が LED の板を通過する">
+<details><summary>7306</summary><blockquote><b>正解。</b>快速 7306 でした。</blockquote></details>
+<details><summary>7360</summary><blockquote><b>不正解。</b>もう一度見てみてください。</blockquote></details>
+<details><summary>7036</summary><blockquote><b>不正解。</b>もう一度見てみてください。</blockquote></details>
+
+<b>レベル 3</b>
+
+<img src="assets/pass-3.svg" width="100%" alt="レベル 3: 列車の案内が LED の板を通過する">
+<details><summary>9145</summary><blockquote><b>不正解。</b>もう一度見てみてください。</blockquote></details>
+<details><summary>9514</summary><blockquote><b>不正解。</b>もう一度見てみてください。</blockquote></details>
+<details><summary>9154</summary><blockquote><b>正解。</b>特急 9154 でした。読めたらかなりの目です。</blockquote></details>
+
+</details>
+
+<details>
+<summary><img src="assets/game-3.svg" height="40" align="middle" alt="ゲーム 3: のりかえ迷路"></summary>
+<br>
+
+思いついたアイデアを、リリースまで運んでください。路線図を見て、乗る列車を選びます。3 回の乗車でリリース駅に着けばクリアです。
+
+<img src="assets/maze-map.svg" width="100%" alt="のりかえ迷路の路線図。アイデア駅から仕様線・実装線・道具線が出ている。仕様線は仕様書駅を通って完璧な設計駅まで。開発線は仕様書駅から実装駅、テスト駅を通って実機確認待ち駅まで。公開線はテスト駅からリリース駅まで。実装線はいきなり実装駅を通ってバグの山駅まで。いきなり実装駅にはリファクタリング環状線。道具線は新しい道具駅を通って積みプロジェクト駅まで">
+
+<b>アイデア駅。</b>どの列車に乗りますか。
+
+<details><summary>青の仕様線に乗る</summary>
+<blockquote>
+
+<b>仕様書駅に着きました。</b>何を作るかが紙になりました。次はどうしますか。
+
+<details><summary>赤の開発線に乗りかえる</summary>
+<blockquote>
+
+実装駅を通って、<b>テスト駅に着きました。</b>動く物ができています。次はどうしますか。
+
+<details><summary>黒の公開線に乗りかえる</summary>
+<blockquote>
+
+<b>リリース駅に到着。クリアです。</b>3 回の乗車、最短でした。本日もご利用ありがとうございました。
+
+</blockquote>
+</details>
+<details><summary>このまま開発線で終点まで乗る</summary>
+<blockquote>
+
+<b>終点、実機確認待ち駅。</b>ホームには誰もいません。確認してくれる人を、ずっと待つことになりました。テスト駅で乗りかえるべきでした。
+
+</blockquote>
+</details>
+
+</blockquote>
+</details>
+<details><summary>このまま仕様線で終点まで乗る</summary>
+<blockquote>
+
+<b>終点、完璧な設計駅。</b>設計書は 300 ページになりましたが、コードはまだ 1 行もありません。仕様書駅で乗りかえるべきでした。
+
+</blockquote>
+</details>
+
+</blockquote>
+</details>
+<details><summary>橙の実装線に乗る</summary>
+<blockquote>
+
+<b>いきなり実装駅に着きました。</b>何を作るか決めないまま、もう書き始めています。次はどうしますか。
+
+<details><summary>紫のリファクタリング環状線に乗りかえる</summary>
+<blockquote>
+
+ぐるっと一周して、<b>いきなり実装駅に戻ってきました。</b>コードはきれいになりましたが、1 駅も進んでいません。アイデア駅からやり直しです。
+
+</blockquote>
+</details>
+<details><summary>このまま実装線で終点まで乗る</summary>
+<blockquote>
+
+<b>終点、バグの山駅。</b>この先に線路はありません。アイデア駅からやり直しです。
+
+</blockquote>
+</details>
+
+</blockquote>
+</details>
+<details><summary>緑の道具線に乗る</summary>
+<blockquote>
+
+新しい道具駅で道具を選んでいるうちに、<b>終点、積みプロジェクト駅</b>に着きました。道具はそろいましたが、何も作っていません。アイデア駅からやり直しです。
+
+</blockquote>
+</details>
+
+</details>
+
+<details>
+<summary><img src="assets/game-4.svg" height="40" align="middle" alt="ゲーム 4: 本日の運行占い"></summary>
+<br>
+
+<img src="assets/fortune.svg" width="100%" alt="本日の運行占い。毎朝引き直します">
+
+<!-- FORTUNE:START -->
+本日のおすすめ: <a href="https://github.com/takosasi-dev/github-repo-lens">github-repo-lens</a>（GitHub のリポジトリの事実を出典つきでコピーし、自分の公開リポジトリをルールと Actions の書き方で点検する Chrome 拡張(非公式)）
+<!-- FORTUNE:END -->
+
+</details>
+
+<div align="center">
+
 <img src="assets/footer.svg" width="100%" alt="本日もご利用ありがとうございました">
 
 </div>
