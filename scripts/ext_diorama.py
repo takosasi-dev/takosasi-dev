@@ -12,6 +12,10 @@ the building on the right, still under its crane.
 The picture is plain vector shapes laid out on the dot grid. A black sheet with one round hole per
 dot goes on top, which is what makes it look like LEDs. All the 60-second animations start together,
 so DIORAMA_T=20 (seconds into the loop) is enough to look at any time of day in a screenshot.
+
+ctx["weather"] (today in Tokyo, or None) puts the weather on the screen: clouds, rain, snow, fog or
+lightning, and one line of text in the corner. DIORAMA_WX=rain (cloud, snow, fog, thunder, clear)
+tries one without the network.
 """
 import math
 import os
@@ -305,9 +309,77 @@ TAKO = [
 ]
 
 
-def build(cal):
-    """(SVG body, text for people who cannot see it)."""
+WX_JA = {"clear": "晴れ", "cloud": "くもり", "rain": "雨", "snow": "雪", "thunder": "雷雨", "fog": "霧"}
+# kind -> (how much the grey sheet hides the sky, its colour, clouds by day (top, underside) or None)
+WX_SKY = {"cloud": (.45, "#5b6675", ("#c3ccd6", "#a7b1bd")), "snow": (.4, "#66717f", ("#c9d1da", "#aeb7c2")),
+          "rain": (.55, "#525d6b", ("#8b95a2", "#727c8a")), "thunder": (.68, "#3a4250", ("#727c8a", "#5a6472")),
+          "fog": (.38, "#aab4bf", None)}
+
+
+def weather(wx):
+    """Today's weather as layers of the screen: {"css", "sky" (over the sky, behind the hills), "town" (over the
+    buildings, behind the viaduct), "front" (over everything), "words" (for the label)}. All of them are empty
+    for None or anything that is not a known kind, so the picture is then exactly the one without weather."""
+    kind = wx.get("kind") if isinstance(wx, dict) else None
+    out = {"css": [], "sky": "", "town": "", "front": "", "words": ""}
+    if kind not in WX_JA:
+        return out
+    rnd = random.Random("weather " + kind)
+    fall = lambda n, w, h: "".join(  # noqa: E731  n pieces, each drawn twice one screen apart so the fall loops
+        f"M{x} {y}h{w}v{h}h{-w}zM{x} {y - ROWS}h{w}v{h}h{-w}z" for x, y in ((rnd.randrange(COLS), rnd.randrange(ROWS)) for _ in range(n)))
+    if kind in WX_SKY:
+        veil, grey, cloud = WX_SKY[kind]
+        out["sky"] += f'<rect width="{COLS}" height="{BASE + 6}" fill="{grey}" opacity="{veil}"/>'
+        if cloud:  # a thick layer of cloud, drifting left; three copies so it has no seam
+            c = Pair()
+            for i in range(14):
+                cx, cy, wide = i * 29 + rnd.randrange(-8, 9), rnd.randrange(0, 22), rnd.randrange(50, 110)
+                for off in (-COLS, 0, COLS):
+                    for r, (dx, cut) in enumerate(((10, 22), (5, 12), (2, 5), (0, 0), (1, 2), (6, 14))):
+                        c.box(cx + off + dx, cy + r, wide - cut, 1, cloud[r > 3])
+            out["css"] += [loop("wc"), frames("wc", [(0, 0, f"steps({COLS})"), (LOOP, -COLS)], "transform:translateX(%spx)")]
+            out["sky"] += f'<g class="wc">{c.svg(True)}</g>'
+    if kind == "thunder":  # two short flashes every nine seconds; hidden when motion is off
+        bolt = "".join(f"M{x} {y}h{w}v{h}h{-w}z" for x, y, w, h in ((262, 22, 2, 7), (260, 29, 2, 6), (260, 35, 7, 2), (265, 37, 2, 7), (263, 44, 2, 6), (261, 50, 2, 6), (259, 56, 2, 5), (267, 41, 5, 1), (271, 42, 2, 5)))
+        out["css"].append("@keyframes lt{0%{opacity:1}2%{opacity:0}5%{opacity:.7}7%,to{opacity:0}}.lt{animation:lt 9s step-end infinite}")
+        out["sky"] += (f'<g class="lt" opacity="0"><rect width="{COLS}" height="{BASE + 6}" fill="#fff" opacity=".4"/>'
+                       f'<path fill="#fff7c0" d="{bolt}"/></g>')
+    if kind == "fog":  # a pale sheet over the town and two layers of bands drifting past each other
+        out["town"] += f'<rect width="{COLS}" height="{GROUND}" fill="#c9d2dc" opacity=".3"/>'
+        for cls, to in (("g1", -COLS), ("g2", COLS)):
+            d = ""
+            for _ in range(10):
+                x, y, w, h = rnd.randrange(COLS), rnd.randrange(30, 92), rnd.randrange(60, 150), rnd.randrange(2, 6)
+                d += "".join(f"M{x + off} {y}h{w}v{h}h{-w}z" for off in (-COLS, 0, COLS))
+            out["css"] += [loop(cls), frames(cls, [(0, 0, f"steps({COLS})"), (LOOP, to)], "transform:translateX(%spx)")]
+            out["town"] += f'<path class="{cls}" fill="#d9e1e9" opacity=".38" d="{d}"/>'
+    if kind in ("rain", "thunder"):
+        out["css"].append(f"@keyframes rn{{to{{transform:translateY({ROWS}px)}}}}.r1{{animation:rn .8s steps({ROWS // 2}) infinite}}"
+                          f".r2{{animation:rn 1.15s steps({ROWS // 2}) infinite}}")
+        out["front"] += (f'<path class="r1" fill="#d6e6ff" opacity=".75" d="{fall(70, 1, 5)}"/>'
+                         f'<path class="r2" fill="#a9c6f5" opacity=".5" d="{fall(70, 1, 3)}"/>')
+    if kind == "snow":
+        out["css"].append(f"@keyframes sn{{to{{transform:translateY({ROWS}px)}}}}.s1{{animation:sn 7s steps({ROWS}) infinite}}"
+                          f".s2{{animation:sn 11s steps({ROWS}) infinite}}")
+        white = f"M0 {GROUND}h{COLS}v1h{-COLS}z"  # snow settles along the kerb
+        out["front"] += (f'<path fill="#8f9bb5" d="{white}"/><g class="dy" opacity=".12"><path fill="#f2f6fb" d="{white}"/></g>'
+                         f'<path class="s1" fill="#fff" opacity=".95" d="{fall(50, 1, 1)}{fall(16, 2, 2)}"/>'
+                         f'<path class="s2" fill="#dfe8ff" opacity=".7" d="{fall(60, 1, 1)}"/>')
+    # one line in the corner, like the caption of a TV screen
+    ja, temps = WX_JA[kind], [wx.get("tmax"), wx.get("tmin")]
+    known = all(type(t) is int and -60 < t < 60 for t in temps)
+    rows = F12.rows(f"東京 {ja}" + (f" {temps[0]}/{temps[1]}℃" if known else ""))
+    cap = Layer()
+    cap.art(4, 3, ["".join("#" if b else "." for b in row) for row in rows], {"#": "#ffffff"})
+    out["front"] += f'<path fill="#000" opacity=".5" d="M2 2h{len(rows[0]) + 4}v14h{-len(rows[0]) - 4}z"/>' + cap.svg()
+    out["words"] = f"今日の東京の天気は{ja}" + (f"、最高 {temps[0]} 度、最低 {temps[1]} 度。" if known else "。")
+    return out
+
+
+def build(cal, wx=None):
+    """(SVG body, text for people who cannot see it). wx: ctx["weather"], or None for the picture without weather."""
     tot = totals(cal)
+    sky_wx = weather(wx)
     rnd = random.Random("diorama")
     css = [loop("dy"), frames("dy", DAY), loop("dk"), frames("dk", DUSK), loop("dw"), frames("dw", DAWN),
            loop("lp"), switch("lp", *LAMPS),
@@ -356,6 +428,8 @@ def build(cal):
     sky += (f'<g class="sx" style="transform:translateX(-30px)"><g class="sy" style="transform:translateY({ROWS + 20}px)">'
             f'{sun.svg()}<g class="sr">{sun_red.svg()}</g></g></g>')
 
+    sky += sky_wx["sky"]
+
     # ---- hills far away, so the sun has something to set behind (decoration, not data)
     far = Pair()
     bump = lambda x, at, wide: math.exp(-((x - at) / wide) ** 2)  # noqa: E731
@@ -377,7 +451,7 @@ def build(cal):
     for i, (on, off, _) in enumerate(GROUPS):
         css += [loop(f"l{i}"), switch(f"l{i}", on, off)]
     town = (bld.svg(True) + panes + '<g id="da">' + "".join(f'<g class="l{i}">{g.svg(True)}</g>' for i, g in enumerate(lit))
-            + f'</g><g class="lp"><g class="bk">{red.svg()}</g></g>')
+            + f'</g><g class="lp"><g class="bk">{red.svg()}</g></g>' + sky_wx["town"])
 
     # ---- behind the train: overhead line, platform roof
     back, glow = Pair(), Layer()
@@ -489,19 +563,23 @@ def build(cal):
     body = (
         casing(W, H, "たこさし駅前", "Station front", "ビルの高さは週ごとの活動量。60 秒で 1 日")
         + f'<rect x="{LED_X - 3}" y="{Y0 - 3}" width="{w + 6}" height="{h + 6}" rx="2" fill="#000" stroke="#15171a"/>'
-        + f'<style>{"".join(css)}</style><defs>{grads}</defs>'
+        + f'<style>{"".join(css + sky_wx["css"])}</style><defs>{grads}</defs>'
         + f'{place} shape-rendering="crispEdges">'
         + sky + town + back.svg() + f'<g class="lp">{glow.svg()}</g>' + train
-        + fg.svg() + sign.svg() + f'<g id="db" class="lp">{fl.svg()}</g>' + tako_svg + bus_svg + "</g>"
+        + fg.svg() + sign.svg() + f'<g id="db" class="lp">{fl.svg()}</g>' + tako_svg + bus_svg + sky_wx["front"] + "</g>"
         + f'<rect x="{LED_X}" y="{Y0}" width="{w}" height="{h}" fill="url(#dm)"/>'
         + f'{place}><g filter="url(#df)" opacity=".55"><use href="#da" clip-path="url(#dh)"/><use href="#db"/></g></g>')
     label = (f"たこさし駅前の大型 LED ビジョン。60 秒で朝・昼・夕・夜が巡り、高架の駅に列車が発着する。"
-             f"ビル {len(tot)} 棟は過去 1 年の週ごとの活動量で、いちばん高いビルの週は {max(tot)} 回、建設中の右端が今週の {tot[-1]} 回。")
+             f"ビル {len(tot)} 棟は過去 1 年の週ごとの活動量で、いちばん高いビルの週は {max(tot)} 回、建設中の右端が今週の {tot[-1]} 回。"
+             + sky_wx["words"])
     return body, label
 
 
 def live(ctx):
-    body, label = build(ctx["cal"])
+    wx = ctx.get("weather")
+    if os.environ.get("DIORAMA_WX"):  # try a weather by hand
+        wx = {"kind": os.environ["DIORAMA_WX"], "tmax": 15, "tmin": 8}
+    body, label = build(ctx["cal"], wx)
     save("diorama.svg", W, H, body, label)
     return {}
 
@@ -520,4 +598,14 @@ if __name__ == "__main__":  # self-check
     assert sum(1 for _, x, *_ in pts if x == TRAIN_STOP) == 2 * sum(k == "stop" for k, _ in TIMETABLE)
     assert arc(SUN_UP + SUN_SECS / 2, SUN_UP, SUN_SECS, 78, 13) == (13, True) and not arc(20, SUN_UP, SUN_SECS, 78, 13)[1]
     assert H <= 270
+    # weather: nothing known -> exactly the picture without it; every kind fits and carries its caption
+    cal = fake(lambda i: i % 9)
+    plain = build(cal)
+    for none in (None, {}, {"kind": "sharknado"}, {"kind": None}, "rain", 3):
+        assert build(cal, none) == plain, none
+    for kind, ja in WX_JA.items():
+        body, label = build(cal, {"kind": kind, "ja": "x", "tmax": -3, "tmin": -11})
+        assert len(plain[0]) < len(body) < 200_000 and "nan" not in body.lower() and f"天気は{ja}、最高 -3 度" in label, kind
+        assert build(cal, {"kind": kind, "tmax": "<svg>", "tmin": None})[1].endswith(f"天気は{ja}。")  # odd temperatures are left out
+    assert all(F12.glyph(ch) != F12.glyph("?") for ch in "東京℃/-0123456789" + "".join(WX_JA.values()))
     print("diorama ok")

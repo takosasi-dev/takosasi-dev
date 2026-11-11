@@ -1,10 +1,10 @@
 <div align="center">
 
 <img src="assets/header.svg" width="100%" alt="TAKOSASI-DEV 発車案内 // インフラ・ネットワーク・セキュリティ。ゲーム、デスクトップツール、プラグインなど、思いついた物を作っています">
-<img src="assets/diorama.svg" width="100%" alt="たこさし駅前の大型 LED ビジョン: 60 秒で朝・昼・夕・夜が巡り、高架の駅に列車が発着する。ビルの高さは過去 1 年の週ごとの活動量">
+<img src="assets/diorama.svg" width="100%" alt="たこさし駅前の大型 LED ビジョン: 60 秒で朝・昼・夕・夜が巡り、高架の駅に列車が発着する。ビルの高さは過去 1 年の週ごとの活動量。今日の東京の天気に合わせて、雨や雪が降る">
 
 <a href="https://x.com/kou111011051"><img src="assets/link-x.svg" width="330" alt="X (Twitter): @kou111011051"></a>
-<a href="https://takosasi-dev.github.io/takosasi-dev/"><img src="assets/gate.svg" width="330" alt="改札口: 構内(GitHub Pages)へ。実時刻の発車標・発車ベル・キーボードで遊べるゲーム"></a>
+<a href="https://takosasi-dev.github.io/takosasi-dev/"><img src="assets/gate.svg" width="330" alt="改札口: 構内(GitHub Pages)へ。実時刻の発車標・発車ベル・キーボードで遊べるゲーム・構内スタンプラリー"></a>
 
 <a href="#noriba-1"><img src="assets/nav-1.svg" height="34" alt="1 番線 ご案内 へ"></a>
 <a href="#noriba-2"><img src="assets/nav-2.svg" height="34" alt="2 番線 制作物 へ"></a>
@@ -12,13 +12,16 @@
 <a href="#noriba-4"><img src="assets/nav-4.svg" height="34" alt="4 番線 運行記録 へ"></a>
 <a href="#noriba-5"><img src="assets/nav-5.svg" height="34" alt="5 番線 待合室 へ"></a>
 
+<a href="README.en.md">English version</a>
+
 <details>
-<summary>English</summary>
+<summary>English (short)</summary>
 <br>
 
 I'm takosasi-dev. My field is infrastructure, networks and security (Windows Server, VMware, Linux, AWS, ModSecurity, Snort).<br>
 Here I publish what I build: games, desktop tools, Obsidian plugins, Chrome extensions and Minecraft Bedrock add-ons.<br>
-Most of the repositories are documented in Japanese. The numbers and lists on this page are rebuilt from the GitHub API once a day.
+Most of the repositories are documented in Japanese. The numbers and lists on this page are rebuilt from the GitHub API once a day.<br>
+The whole page in English: <a href="README.en.md">README.en.md</a>
 
 </details>
 
@@ -26,6 +29,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 <img src="assets/sec-01.svg" width="100%" alt="1 番線 ご案内 INFORMATION">
 <img src="assets/tako.svg" width="100%" alt="駅長室: タコの駅長が歩いてきて旗を上げ、列車を見送る。毎朝かわる駅長の一言">
 <img src="assets/guide.svg" width="100%" alt="系統のご案内: 分類ごとの公開リポジトリ数と、最新のリリース">
+<img src="assets/service.svg" width="100%" alt="列車運行情報: 分類(路線)ごとに、各リポジトリの自動テスト(CI)の結果を「平常運転・調整中・遅延・情報なし」で表示">
 
 <img src="assets/rail.svg" width="100%" alt="線路を、新着リリースの名前を付けた列車が横切る">
 
@@ -196,9 +200,12 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 <img src="assets/stats.svg" width="100%" alt="運行状況: 公開リポジトリ数、リリース数、言語の内訳">
 <img src="assets/releases.svg" width="100%" alt="新着リリース">
 <img src="assets/contrib.svg" width="100%" alt="稼働記録: 過去 1 年のコントリビューション">
+<img src="assets/timetable.svg" width="100%" alt="時刻表: 過去 4 週間の公開コミットを、コミットした時刻で並べた駅の時刻表。行が「時」、数字が「分」。平日と土・休日の 2 列で、始発・終電・いちばん混む時間帯に印">
+<img src="assets/commuter.svg" width="480" alt="定期券: たこさし ⇔ GitHub。いま続いている連続日数と、その有効期間。1 日休むと期限切れになる">
 <img src="assets/stamps.svg" width="100%" alt="駅スタンプ帳: 公開リポジトリ数・リリース数・言語・連続日数などの実績を、達成するとスタンプが押される台紙">
 <img src="assets/lost.svg" width="100%" alt="お忘れ物センター: いちばん長く push していないリポジトリと、その日数">
 <img src="assets/lost-delay.svg" width="100%" alt="遅延証明書: 注目のリポジトリのうち、リリースがいちばん遅れている 1 本">
+<img src="assets/history.svg" width="100%" alt="沿革: GitHub への登録、いちばん古い公開リポジトリ、10・25・50 本目、いちばん多く新設した月、このプロフィールの公開日、今の本数とリリース数を古い順に並べた年表">
 
 <a name="noriba-5"></a>
 <img src="assets/sec-05.svg" width="100%" alt="5 番線 待合室 WAITING ROOM">
@@ -207,9 +214,9 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 
 列車を待つあいだに遊べるミニゲームです。札を押すと開きます。答えは選択肢を押すと出ます。
 
-改札の先(GitHub Pages)には、実時刻で動く発車標、発車ベル(押したときだけ鳴ります)、キーボードで遊べるゲームがあります。
+改札の先(GitHub Pages)には、実時刻で動く発車標、発車ベル(押したときだけ鳴ります)、キーボードで遊べるゲームがあります。回ると印が増える「構内スタンプラリー」(6 つ)もあります。
 
-<a href="https://takosasi-dev.github.io/takosasi-dev/"><img src="assets/gate.svg" width="330" alt="改札口: 構内(GitHub Pages)へ。実時刻の発車標・発車ベル・キーボードで遊べるゲーム"></a>
+<a href="https://takosasi-dev.github.io/takosasi-dev/"><img src="assets/gate.svg" width="330" alt="改札口: 構内(GitHub Pages)へ。実時刻の発車標・発車ベル・キーボードで遊べるゲーム・構内スタンプラリー"></a>
 
 <details>
 <summary><picture><img src="assets/game-1.svg" height="40" align="middle" alt="ゲーム 1: パケット検問ミニ"></picture></summary>
@@ -512,6 +519,31 @@ Issue は自動で返事が付いて閉じられます。絵が変わるまで�
 </div>
 
 Issue は自動で返事が付いて閉じられます。同じ人が何度出しても、番号は最初の 1 枚と同じです。
+
+</details>
+
+<details open>
+<summary><picture><img src="assets/board-plate.svg" height="40" align="middle" alt="伝言板"></picture></summary>
+<br>
+
+駅の伝言板です。下の札から一言を選んで押し、開いた画面でそのまま緑のボタンを押すと、その一言があなたの GitHub の名前と一緒に板に書かれます(GitHub へのログインが要ります)。書けるのは札の 8 つの文だけで、1 人 1 行です。もう一度書くと、前の行と入れ替わります。
+
+<img src="assets/board.svg" width="100%" alt="駅の伝言板。日付・伝言・書いた人の名前が、新しい順に 8 行まで並ぶ">
+
+<div align="center">
+
+<a href="https://github.com/takosasi-dev/takosasi-dev/issues/new?title=board%3A%201&amp;body=%E9%A1%8C%E5%90%8D%E3%82%92%E5%A4%89%E3%81%88%E3%81%9A%E3%81%AB%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E7%B7%91%E3%81%AE%E3%83%9C%E3%82%BF%E3%83%B3%E3%82%92%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82"><img src="assets/board-go-1.svg" width="170" alt="伝言板に「見に来ました」と書く"></a>
+<a href="https://github.com/takosasi-dev/takosasi-dev/issues/new?title=board%3A%202&amp;body=%E9%A1%8C%E5%90%8D%E3%82%92%E5%A4%89%E3%81%88%E3%81%9A%E3%81%AB%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E7%B7%91%E3%81%AE%E3%83%9C%E3%82%BF%E3%83%B3%E3%82%92%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82"><img src="assets/board-go-2.svg" width="170" alt="伝言板に「おつかれさまです」と書く"></a>
+<a href="https://github.com/takosasi-dev/takosasi-dev/issues/new?title=board%3A%203&amp;body=%E9%A1%8C%E5%90%8D%E3%82%92%E5%A4%89%E3%81%88%E3%81%9A%E3%81%AB%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E7%B7%91%E3%81%AE%E3%83%9C%E3%82%BF%E3%83%B3%E3%82%92%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82"><img src="assets/board-go-3.svg" width="170" alt="伝言板に「また来ます」と書く"></a>
+<a href="https://github.com/takosasi-dev/takosasi-dev/issues/new?title=board%3A%204&amp;body=%E9%A1%8C%E5%90%8D%E3%82%92%E5%A4%89%E3%81%88%E3%81%9A%E3%81%AB%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E7%B7%91%E3%81%AE%E3%83%9C%E3%82%BF%E3%83%B3%E3%82%92%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82"><img src="assets/board-go-4.svg" width="170" alt="伝言板に「列車を動かしました」と書く"></a>
+<a href="https://github.com/takosasi-dev/takosasi-dev/issues/new?title=board%3A%205&amp;body=%E9%A1%8C%E5%90%8D%E3%82%92%E5%A4%89%E3%81%88%E3%81%9A%E3%81%AB%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E7%B7%91%E3%81%AE%E3%83%9C%E3%82%BF%E3%83%B3%E3%82%92%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82"><img src="assets/board-go-5.svg" width="170" alt="伝言板に「隠し駅を見つけました」と書く"></a>
+<a href="https://github.com/takosasi-dev/takosasi-dev/issues/new?title=board%3A%206&amp;body=%E9%A1%8C%E5%90%8D%E3%82%92%E5%A4%89%E3%81%88%E3%81%9A%E3%81%AB%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E7%B7%91%E3%81%AE%E3%83%9C%E3%82%BF%E3%83%B3%E3%82%92%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82"><img src="assets/board-go-6.svg" width="170" alt="伝言板に「応援しています」と書く"></a>
+<a href="https://github.com/takosasi-dev/takosasi-dev/issues/new?title=board%3A%207&amp;body=%E9%A1%8C%E5%90%8D%E3%82%92%E5%A4%89%E3%81%88%E3%81%9A%E3%81%AB%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E7%B7%91%E3%81%AE%E3%83%9C%E3%82%BF%E3%83%B3%E3%82%92%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82"><img src="assets/board-go-7.svg" width="170" alt="伝言板に「ゲームを全部解きました」と書く"></a>
+<a href="https://github.com/takosasi-dev/takosasi-dev/issues/new?title=board%3A%208&amp;body=%E9%A1%8C%E5%90%8D%E3%82%92%E5%A4%89%E3%81%88%E3%81%9A%E3%81%AB%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E7%B7%91%E3%81%AE%E3%83%9C%E3%82%BF%E3%83%B3%E3%82%92%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82"><img src="assets/board-go-8.svg" width="170" alt="伝言板に「Hello from overseas」と書く"></a>
+
+</div>
+
+Issue は自動で返事が付いて閉じられます。絵が変わるまで数分かかることがあります。
 
 </details>
 

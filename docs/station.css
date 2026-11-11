@@ -53,6 +53,20 @@ button[aria-pressed="true"] { background: var(--amber); border-color: #9a6400; }
 .rules b.ok { background: var(--green); }
 .rules b.ng { background: var(--red); }
 
+/* the stamp card of the rally: a ring of dashes until the stamp is pressed, red ink after */
+.rally { list-style: none; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px 6px; margin: 4px 0 12px; padding: 12px 8px; background: var(--plate); border: 2px solid var(--plate-edge); border-radius: 6px; color: #333; }
+.rally li { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.rally .ink { display: grid; place-content: center; width: 92px; height: 92px; border: 2px dashed #9aa0a8; border-radius: 50%; color: #8a9099; line-height: 1.3; }
+.rally .ink b { font-size: 16px; letter-spacing: .05em; }
+.rally .ink i { font: 700 11px var(--mono); min-height: 1.3em; }
+.rally small { font-size: 11.5px; line-height: 1.4; color: #555; }
+.rally .got .ink { border: 4px double #c5301f; color: #c5301f; transform: rotate(-8deg); }
+.rally .got:nth-child(even) .ink { transform: rotate(6deg); }
+.rally .got small { color: #888; }
+@keyframes press { from { scale: 1.5; opacity: 0; } }
+.rally .new .ink { animation: press .28s cubic-bezier(.175, .885, .32, 1.275); }
+@media (prefers-reduced-motion: reduce) { .rally .new .ink { animation: none; } }
+
 /* platform sign above the games */
 .sec { display: flex; align-items: center; gap: 12px; background: var(--plate); color: #111; border: 2px solid var(--plate-edge); border-radius: 8px; padding: 6px 14px; margin-top: 22px; font-size: 22px; letter-spacing: .1em; scroll-margin-top: 12px; }
 .sec span { display: grid; place-items: center; width: 38px; height: 38px; border: 5px solid var(--line); border-radius: 50%; font-size: 16px; letter-spacing: 0; background: #fff; }
@@ -60,7 +74,7 @@ button[aria-pressed="true"] { background: var(--amber); border-color: #9a6400; }
 
 /* way out: yellow, like the exit signs of a station; blue for a transfer */
 .exits { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
-.exits a { flex: 1 1 240px; background: #ffd500; color: #1a1a1a; border: 2px solid #1a1a1a; border-radius: 7px; padding: 8px 14px; text-decoration: none; font: 800 19px var(--mono); }
+.exits a { flex: 1 1 34%; min-width: 240px; background: #ffd500; color: #1a1a1a; border: 2px solid #1a1a1a; border-radius: 7px; padding: 8px 14px; text-decoration: none; font: 800 19px var(--mono); }
 .exits a small { display: block; font: 700 12px var(--goth); letter-spacing: .08em; opacity: .85; }
 .exits a.play { background: #1d4f9e; color: #fff; border-color: #0d2a57; }
 .exits a:hover { filter: brightness(1.08); }
@@ -76,6 +90,8 @@ footer { color: #8d949d; font-size: 12.5px; padding: 4px 4px 24px; }
   .band a, .band span { font-size: 12px; }
   .pad button { flex: 0 0 17%; padding: 8px 0; }
   .pad #ps-start { flex-basis: 100%; }
+  .rally { grid-template-columns: repeat(3, 1fr); }
+  .rally .ink { width: 84px; height: 84px; }
 }
 
 /* ---- the hidden station ---- */

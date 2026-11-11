@@ -39,6 +39,10 @@
   const now = new Date();
   $("when").textContent = `${now.getFullYear()}.${two(now.getMonth() + 1)}.${two(now.getDate())} ${two(now.getHours())}:${two(now.getMinutes())}`;
 
+  // Getting here is one of the six stamps of the rally in the concourse.
+  Rally.stamp("kisaragi");
+  $("rally-note").textContent = "構内スタンプラリーの台紙にも、印を押しておきました。";
+
   // A drum far away, then small bells.
   $("listen").addEventListener("click", () => {
     for (const at of [0, .9, 1.8, 2.25, 2.7]) Sound.note(62, at, .5, .3);

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- This page reads ../data.json and nothing else. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>のりつぎ口 | たこさし線</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../station.css">
+</head>
+<body>
+<main>
+
+<header class="name">
+  <p class="name-ja">のりつぎ口</p>
+  <p class="name-en">TRANSFER <span>たこさし線 / Takosasi line</span></p>
+  <div class="band"><span>◀ 前の駅</span><span>次の駅 ▶</span></div>
+</header>
+
+<section class="case" aria-labelledby="h-next">
+  <div class="strip"><h2 id="h-next">のりかえ案内</h2><span>Next station</span><small>注目のリポジトリを環状につないだ路線です</small></div>
+  <div class="led" id="board" role="img" aria-label="LED の案内。次の駅の名前"></div>
+  <p class="say" id="say" aria-live="polite"></p>
+  <p class="note center">まもなく、次の駅へご案内します。動かないときは、下の出口をご利用ください。</p>
+</section>
+
+<nav class="exits" aria-label="出口">
+  <a id="go" href="https://github.com/takosasi-dev"><small>出口　EXIT</small>GitHub のプロフィール</a>
+  <a class="play" href="../"><small>のりかえ　CONCOURSE</small>たこさし駅 構内</a>
+</nav>
+
+</main>
+<script src="../font.js"></script>
+<script src="../led.js"></script>
+<script src="../rally.js"></script>
+<script src="line.js"></script>
+</body>
+</html>

@@ -8,6 +8,17 @@
 <meta name="referrer" content="no-referrer">
 <title>たこさし駅 構内 | takosasi-dev</title>
 <meta name="description" content="takosasi-dev のプロフィールの改札の先。実時刻で動く LED の発車標、発車ベル、キーボードで遊べるミニゲーム。">
+<!-- What a link to this page looks like when it is pasted on X, Discord and the like. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="takosasi-dev">
+<meta property="og:title" content="たこさし駅 構内 | takosasi-dev">
+<meta property="og:description" content="プロフィールの改札の先にある駅。実時刻で動く LED の発車標、発車ベル、キーボードで遊べるミニゲーム、構内スタンプラリー。">
+<meta property="og:url" content="https://takosasi-dev.github.io/takosasi-dev/">
+<meta property="og:image" content="https://takosasi-dev.github.io/takosasi-dev/og.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="TAKOSASI-DEV の発車標">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="station.css">
 </head>
@@ -67,8 +78,24 @@
   </div>
 </section>
 
+<section class="case" aria-labelledby="h-rally">
+  <div class="strip"><h2 id="h-rally">構内スタンプラリー</h2><span>Stamp rally</span><small>記録はこの端末のブラウザにだけ残ります</small></div>
+  <p class="note">構内を回ると、台紙に印が増えます。6 つそろうと、記念の表示が出ます。</p>
+  <ol class="rally" id="rally">
+    <li data-id="gate"><span class="ink"><b>入場</b><i></i></span><small>改札を通る</small></li>
+    <li data-id="bell"><span class="ink"><b>発車ベル</b><i></i></span><small>発車ベルを鳴らす</small></li>
+    <li data-id="packet"><span class="ink"><b>検問</b><i></i></span><small>パケット検問を終える</small></li>
+    <li data-id="eyes"><span class="ink"><b>動体視力</b><i></i></span><small>動体視力テストを終える</small></li>
+    <li data-id="line"><span class="ink"><b>乗りつぎ</b><i></i></span><small>下の「たこさし線」に乗る</small></li>
+    <li data-id="kisaragi" data-name="きさらぎ"><span class="ink"><b>？？？</b><i></i></span><small>路線図に載っていない駅に着く</small></li>
+  </ol>
+  <div class="led" id="rally-led" role="img" aria-label="構内スタンプラリーの LED 表示。集めた数と、全部そろったときの記念の表示"></div>
+  <p class="say" id="rally-say" aria-live="polite"></p>
+</section>
+
 <nav class="exits" aria-label="出口">
   <a href="https://github.com/takosasi-dev"><small>出口　EXIT</small>GitHub のプロフィール</a>
+  <a class="play" id="ride" href="line/"><small>のりかえ　TRANSFER</small>たこさし線に乗る</a>
   <a class="play" href="https://takosasi-dev.github.io/packet-bouncer/"><small>のりかえ　PLAY</small>Packet Bouncer</a>
   <a class="play" href="https://takosasi-dev.github.io/rail-rampage/"><small>のりかえ　PLAY</small>RailRampage</a>
 </nav>
@@ -81,6 +108,7 @@
 </main>
 <script src="font.js"></script>
 <script src="led.js"></script>
+<script src="rally.js"></script>
 <script src="station.js"></script>
 </body>
 </html>

@@ -7,6 +7,17 @@
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
 <title>きさらぎ | 路線図に載っていない駅</title>
+<!-- The preview of a pasted link says no more than the sign outside does. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="takosasi-dev">
+<meta property="og:title" content="路線図に載っていない駅">
+<meta property="og:description" content="次の列車 未定。">
+<meta property="og:url" content="https://takosasi-dev.github.io/takosasi-dev/kisaragi/">
+<meta property="og:image" content="https://takosasi-dev.github.io/takosasi-dev/og.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="TAKOSASI-DEV の発車標">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="../station.css">
 </head>
@@ -31,6 +42,7 @@
   <p class="note">よくここまで来ました。迷路の線路を歩いても、LED の QR を読んでも、ソースをたどっても、着く駅は同じです。隠し駅を見つけるような人に、作った物を見てもらえるのがいちばんうれしいです。</p>
   <div class="stamp"><div><b>きさらぎ</b>到達<br><span id="when"></span></div></div>
   <p class="note center">遠くで太鼓と鈴の音がします。気のせいでしょう。</p>
+  <p class="note center" id="rally-note"></p>
   <div class="keys">
     <button type="button" id="listen">耳をすます</button>
     <small>音は、ボタンを押したときだけ鳴ります。</small>
@@ -55,6 +67,7 @@
 </main>
 <script src="../font.js"></script>
 <script src="../led.js"></script>
+<script src="../rally.js"></script>
 <script src="kisaragi.js"></script>
 </body>
 </html>

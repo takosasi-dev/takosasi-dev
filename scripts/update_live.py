@@ -36,16 +36,19 @@ USER = "takosasi-dev"
 README = os.path.join(ROOT, "README.md")
 # Optional modules in scripts/. Each may define static() (called by build_assets.py) and
 # live(ctx) -> {MARKER: text}; the text replaces what is between <!-- MARKER:START --> and <!-- MARKER:END --> in README.
-EXTENSIONS = ["ext_train", "ext_tako", "ext_data", "ext_games", "ext_diorama", "ext_riders", "ext_ticket", "ext_site", "ext_qr"]
+EXTENSIONS = ["ext_train", "ext_tako", "ext_data", "ext_games", "ext_diorama", "ext_riders", "ext_ticket", "ext_site", "ext_qr",
+              "ext_status", "ext_history", "ext_timetable", "ext_commuter", "ext_board", "ext_stations", "ext_og"]
 NOTE = "GitHub の記録から毎日自動で更新"
 
 # ponytail: one page of 100 repos, no cursor paging. Add paging when the account passes 100 public repos.
 QUERY = """query($login: String!) {
   user(login: $login) {
+    createdAt
     repositories(first: 100, privacy: PUBLIC, ownerAffiliations: OWNER, isFork: false,
                  orderBy: {field: PUSHED_AT, direction: DESC}) {
       nodes {
-        name description pushedAt createdAt
+        name description pushedAt createdAt isArchived
+        defaultBranchRef { target { ... on Commit { statusCheckRollup { state } } } }
         primaryLanguage { name }
         repositoryTopics(first: 20) { nodes { topic { name } } }
         releases(first: 1, orderBy: {field: CREATED_AT, direction: DESC}) {
@@ -82,8 +85,53 @@ def stargazers(name):
         return []
 
 
-def fetch():
-    """(public repos, most recently pushed first; the contribution calendar; who starred, newest first)."""
+JST = datetime.timezone(datetime.timedelta(hours=9))
+# WMO weather code -> (kind, word on a board). Codes that are not here count as cloudy.
+WMO = {0: ("clear", "晴れ"), 1: ("clear", "晴れ"), 2: ("cloud", "くもり"), 3: ("cloud", "くもり"), 45: ("fog", "霧"), 48: ("fog", "霧"),
+       **{c: ("rain", "雨") for c in (51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82)},
+       **{c: ("snow", "雪") for c in (71, 73, 75, 77, 85, 86)}, **{c: ("thunder", "雷雨") for c in (95, 96, 99)}}
+
+
+def commit_times(today):
+    """When the public commits of the last four weeks were written, in Japan time: ["2026-11-11T22:03", ...],
+    newest first. Never raises: the timetable is drawn empty if the search does not answer."""
+    since = (datetime.date.fromisoformat(today) - datetime.timedelta(days=27)).isoformat()
+    out = []
+    try:
+        for page in (1, 2, 3):  # ponytail: 300 commits at most. Narrow the period if four weeks ever pass that.
+            req = urllib.request.Request(
+                f"https://api.github.com/search/commits?q=author:{USER}+user:{USER}+is:public+author-date:%3E={since}"
+                f"&sort=author-date&order=desc&per_page=100&page={page}",
+                headers={"Authorization": f"Bearer {os.environ.get('GITHUB_TOKEN', '')}", "User-Agent": USER})
+            with urllib.request.urlopen(req, timeout=30) as r:
+                items = json.load(r)["items"]
+            out += [datetime.datetime.fromisoformat(i["commit"]["author"]["date"].replace("Z", "+00:00"))
+                    .astimezone(JST).strftime("%Y-%m-%dT%H:%M") for i in items]
+            if len(items) < 100:
+                break
+    except Exception as e:  # noqa: BLE001
+        print(f"commit times: {type(e).__name__} {e}")
+    return out
+
+
+def weather():
+    """Today's weather in Tokyo from Open-Meteo (no key): {"kind", "ja", "tmax", "tmin"}, or None if it does not answer.
+    The place is fixed to central Tokyo; it says nothing about where anyone lives."""
+    try:
+        with urllib.request.urlopen(
+                "https://api.open-meteo.com/v1/forecast?latitude=35.68&longitude=139.77"
+                "&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=1", timeout=20) as r:
+            d = json.load(r)["daily"]
+        kind, ja = WMO.get(int(d["weather_code"][0]), ("cloud", "くもり"))
+        return {"kind": kind, "ja": ja, "tmax": round(float(d["temperature_2m_max"][0])), "tmin": round(float(d["temperature_2m_min"][0]))}
+    except Exception as e:  # noqa: BLE001
+        print(f"weather: {type(e).__name__} {e}")
+        return None
+
+
+def fetch(today):
+    """(public repos, most recently pushed first; the contribution calendar; who starred, newest first;
+    the rest: {"joined", "commits", "weather"})."""
     if len(sys.argv) > 1:
         with open(sys.argv[1], encoding="utf-8") as f:
             data = json.load(f)
@@ -94,9 +142,16 @@ def fetch():
             headers={"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}", "User-Agent": USER})
         with urllib.request.urlopen(req, timeout=30) as r:
             data = json.load(r)
+        data["extra"] = {"commits": commit_times(today), "weather": weather()}
+        if os.environ.get("PROFILE_SAVE"):  # keep the answers, to draw from them again without the network
+            with open(os.environ["PROFILE_SAVE"], "w", encoding="utf-8", newline="\n") as f:
+                json.dump(data, f, ensure_ascii=False)
     if data.get("errors"):
         sys.exit(f"GraphQL error: {data['errors']}")
     user = data["data"]["user"]
+    extra = {"commits": [], "weather": None, **data.get("extra", {}), "joined": (user.get("createdAt") or "")[:10]}
+    # One script that commits to a dozen repos in the same minute is one departure, not a dozen.
+    extra["commits"] = sorted(set(extra["commits"]), reverse=True)
     repos, stars = [], {}
     for n in user["repositories"]["nodes"]:
         # Stars on any repo, this one included. One entry per person (the newest star). The login and the
@@ -118,14 +173,18 @@ def fetch():
             "desc": (n["description"] or "").strip(),
             "pushed": (n["pushedAt"] or "")[:10],
             "created": (n.get("createdAt") or "")[:10],
+            "created_at": n.get("createdAt") or "",
             "lang": (n["primaryLanguage"] or {}).get("name") or "-",
             "topics": {t["topic"]["name"] for t in n["repositoryTopics"]["nodes"]},
             "releases": n["releases"]["totalCount"],
             "tag": last.get("tagName") or "",
             "tag_date": (last.get("publishedAt") or "")[:10],
+            # The automatic tests on the default branch: SUCCESS / FAILURE / ERROR / PENDING / EXPECTED, "" if the repo has none.
+            "ci": ((((n.get("defaultBranchRef") or {}).get("target") or {}).get("statusCheckRollup") or {}).get("state") or ""),
+            "archived": bool(n.get("isArchived")),
         })
     return (repos, user["contributionsCollection"]["contributionCalendar"],
-            sorted(stars.values(), key=lambda s: s["at"], reverse=True))
+            sorted(stars.values(), key=lambda s: s["at"], reverse=True), extra)
 
 
 def md(date):
@@ -524,7 +583,9 @@ def check(repos):
 
 
 if __name__ == "__main__":
-    repos, cal, stars = fetch()
+    # PROFILE_DATE=2026-12-31 lets you look at another day (season, notices, the daily draws).
+    today = os.environ.get("PROFILE_DATE") or datetime.datetime.now(JST).date().isoformat()
+    repos, cal, stars, extra = fetch(today)
     cat_of = {r["name"]: next(title for title, test in CATS if test(r)) for r in repos}
     groups = {title: sorted((r for r in repos if cat_of[r["name"]] == title), key=lambda r: r["name"].strip("-").lower())
               for title in CAT}
@@ -539,21 +600,25 @@ if __name__ == "__main__":
     stats(repos)
     releases(repos, cat_of)
     contrib(cal)
-    # PROFILE_DATE=2026-12-31 lets you look at another day (season, notices, the daily draws).
-    today = os.environ.get("PROFILE_DATE") or datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date().isoformat()
     header(repos, cal, today, stars)
     luck, pick = fortune(repos, today)
     parts = {"CARDS": cards_md(feat), "ARCHIVE": archive_md(groups), "FORTUNE": pick}
     # Everything an extension needs, so that it never has to import this file.
     ctx = {"repos": repos, "cal": cal, "cat_of": cat_of, "groups": groups, "today": today, "luck": luck,
-           "CAT": CAT, "DESC": DESC, "USER": USER, "stars": stars}
+           "CAT": CAT, "DESC": DESC, "USER": USER, "stars": stars, "streak": streaks(cal), "opened": OPENED,
+           "feat": [(r["name"], PROJECTS.get(r["name"], (r["name"],))[0]) for r in feat], **extra}
     for name in EXTENSIONS:
         if importlib.util.find_spec(name):
             parts.update(getattr(importlib.import_module(name), "live", lambda ctx: {})(ctx) or {})
-    with open(README, encoding="utf-8", newline="") as f:
-        text = f.read()
-    for tag, body in parts.items():
-        text = splice(text, tag, body)
-    with open(README, "w", encoding="utf-8", newline="") as f:
-        f.write(text)
+    # README.en.md carries only some of the markers (the cards); a marker it does not have is skipped there.
+    for path, strict in ((README, True), (README.replace(".md", ".en.md"), False)):
+        if not os.path.exists(path):
+            continue
+        with open(path, encoding="utf-8", newline="") as f:
+            text = f.read()
+        for tag, body in parts.items():
+            if strict or f"<!-- {tag}:START -->" in text:
+                text = splice(text, tag, body)
+        with open(path, "w", encoding="utf-8", newline="") as f:
+            f.write(text)
     check(repos)

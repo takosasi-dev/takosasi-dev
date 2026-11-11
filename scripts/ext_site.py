@@ -62,8 +62,11 @@ def build(ctx):
         "streak": next((i for i, c in enumerate(reversed(past)) if not c), len(past)),
         "idle": next((i for i, c in enumerate(reversed(past)) if c), len(past)),
         "repos": repos,
+        # The featured repos as the stations of one loop line, in the order of the cards.
+        # docs/line/ sends a visitor from one to its neighbour (the station signs in their READMEs link there).
+        "line": [{"repo": repo, "name": name} for repo, name in ctx.get("feat", [])],
     }
-    data["glyphs"] = glyphs(c for r in repos for v in r.values() for c in v if ord(c) > 0x7F)
+    data["glyphs"] = glyphs(c for r in repos + data["line"] for v in r.values() for c in v if ord(c) > 0x7F)
     return data
 
 
@@ -77,10 +80,13 @@ if __name__ == "__main__":  # self-check
     assert g["A"][0] == 8 and len(g["A"][1]) == 32 and g["あ"][0] == 16 and len(g["あ"][1]) == 64
     assert g["\U0001F600"] == glyphs("?")["?"]  # no glyph -> "?", never a crash
     days = [{"contributionCount": c} for c in (0, 3, 1, 2, 0)]
-    d = build({"today": "2026-11-11", "cal": {"weeks": [{"contributionDays": days}]}, "cat_of": {"x": "APPS"},
-               "CAT": {"APPS": ("apps", "アプリ", "アプリ", "A", "#e5404f", GREEN)}, "DESC": {"x": "説明"},
-               "repos": [{"name": "x", "desc": "", "tag": "v1", "tag_date": "2026-11-10", "pushed": "2026-11-11",
-                          "lang": "Python", "releases": 2}]})
+    ctx = {"today": "2026-11-11", "cal": {"weeks": [{"contributionDays": days}]}, "cat_of": {"x": "APPS"},
+           "CAT": {"APPS": ("apps", "アプリ", "アプリ", "A", "#e5404f", GREEN)}, "DESC": {"x": "説明"},
+           "repos": [{"name": "x", "desc": "", "tag": "v1", "tag_date": "2026-11-10", "pushed": "2026-11-11",
+                      "lang": "Python", "releases": 2}]}
+    d = build(ctx)
     assert d["streak"] == 3 and d["idle"] == 0 and d["counts"] == {"repos": 1, "releases": 2, "langs": 1}
-    assert d["repos"][0]["cat"] == "アプリ" and set("アプリ説明") <= set(d["glyphs"])
+    assert d["repos"][0]["cat"] == "アプリ" and set("アプリ説明") <= set(d["glyphs"]) and d["line"] == []
+    d = build({**ctx, "feat": [("x", "駅 X")]})
+    assert d["line"] == [{"repo": "x", "name": "駅 X"}] and "駅" in d["glyphs"]
     print("site ok")

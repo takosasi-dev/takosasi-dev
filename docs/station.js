@@ -13,14 +13,15 @@
   const NAME = /^[A-Za-z0-9._-]{1,100}$/, DATE = /^\d{4}-\d\d-\d\d$/;
 
   // ------------------------------------------------------------------ data
-  let data = { repos: [], counts: null, streak: 0, idle: 0, updated: "" };
+  let data = { repos: [], counts: null, streak: 0, idle: 0, updated: "", line: [] };
   let pushes = [];   // [{name, at}] from the API, newest first
   let tick = "ただいま案内のデータを読めません。時計と発車ベル、ゲームはご利用いただけます。　　　";
 
   function sane(d) {
     const str = (v, n) => (typeof v === "string" ? v.slice(0, n) : "");
     const num = v => (Number.isFinite(v) && v >= 0 ? Math.floor(v) : 0);
-    const out = { repos: [], counts: null, streak: num(d.streak), idle: num(d.idle), updated: DATE.test(d.updated) ? d.updated : "" };
+    const out = { repos: [], counts: null, streak: num(d.streak), idle: num(d.idle), updated: DATE.test(d.updated) ? d.updated : "",
+                  line: (Array.isArray(d.line) ? d.line.slice(0, 20) : []).filter(s => s && NAME.test(s.repo)).map(s => s.repo) };
     for (const r of Array.isArray(d.repos) ? d.repos.slice(0, 300) : []) {
       if (!r || !NAME.test(r.name)) continue;
       out.repos.push({ name: r.name, cat: str(r.cat, 12), col: str(r.col, 7), desc: str(r.desc, 200), tag: str(r.tag, 24),
@@ -44,6 +45,8 @@
         + (c ? `公開リポジトリ ${c.repos} 本、リリース ${c.releases} 回、言語 ${c.langs} 種。　　` : "")
         + "本日もご利用ありがとうございます。　　　";
       say("main-say", "新着リリース: " + releases().map(r => `${r.name} ${r.tag} (${md(r.tag_date)})`).join("、"));
+      // The transfer gate takes a station of the line and sends the visitor one stop on (docs/line/).
+      if (data.line.length) $("ride").href = "line/?from=" + encodeURIComponent(pickOf(data.line)) + "&go=next";
     } catch (e) { /* the board runs on the clock alone */ }
   }
 
@@ -163,6 +166,7 @@
     Sound.note(midi(88), t + .5, .5, .12);   // the door chime
     Sound.note(midi(84), t + .95, .8, .12);
     ring = [performance.now() + t * 1000, performance.now() + (t + 2) * 1000];
+    press("bell");
   });
   $("snd").addEventListener("click", e => {
     Sound.on = !Sound.on;
@@ -213,6 +217,7 @@
     const b = pkB, N = b.narrow, R = b.cols - 5, x0 = N ? 3 : 5;
     if (pk.state === "play" && ms >= pk.end) {
       pk.state = "over";
+      press("packet");
       say("pk-say", `検問終了。正解 ${pk.score}、ミス ${pk.miss}。${pkRank()}`);
     }
     b.begin();
@@ -288,6 +293,7 @@
       if (++ps.level < CROSS.length) psLaunch();
       else {
         ps.state = "over";
+        press("eyes");
         say("ps-say", `5 問中 ${ps.score} 問 正解。${psRank()}`);
       }
     }
@@ -315,6 +321,66 @@
     b.end();
   }
 
+  // ------------------------------------------------------------------ the stamp rally
+  // rally.js keeps the stamps; here they are shown on the card and on a small board. All six: the board celebrates.
+  const rallyB = new Board($("rally-led"), [402, 180], [60, 80]);
+  let got = {}, fresh = "";   // fresh: the stamp pressed just now, for the press-down motion
+
+  function showRally() {
+    got = Rally.read();
+    const n = Rally.IDS.filter(id => got[id]).length;
+    for (const li of $("rally").children) {
+      const at = got[li.dataset.id], d = new Date(at || 0);
+      li.classList.toggle("got", !!at);
+      li.classList.toggle("new", li.dataset.id === fresh);
+      if (at && li.dataset.name) li.querySelector("b").textContent = li.dataset.name;   // the hidden one shows its name once found
+      li.querySelector("i").textContent = at ? `${d.getMonth() + 1}.${two(d.getDate())}` : "";
+    }
+    say("rally-say", n === Rally.IDS.length ? `全駅制覇。スタンプが ${n} つ全部そろいました` : `スタンプ ${n} / ${Rally.IDS.length}`);
+  }
+  function press(id) {
+    if (!Rally.stamp(id)) return;
+    fresh = id;
+    showRally();
+    Sound.sfx("ok");
+  }
+  addEventListener("storage", showRally);    // stamped in another tab (the hidden station, the transfer gate)
+  addEventListener("pageshow", showRally);   // or came back with the back button
+
+  const HINT = { gate: "改札を通る", bell: "発車ベルを鳴らす", packet: "パケット検問を終える", eyes: "動体視力テストを終える",
+                 line: "たこさし線に乗る", kisaragi: "路線図に載っていない駅をさがす" };
+  function drawRally(ms) {
+    const b = rallyB, N = b.narrow, R = b.cols - 5, x0 = N ? 3 : 5, t = ms / 1000;
+    const all = Rally.IDS, n = all.filter(id => got[id]).length;
+    b.begin();
+    if (n === all.length) {
+      const d = new Date(Math.max(...all.map(id => got[id]))), when = `${d.getFullYear()}.${two(d.getMonth() + 1)}.${two(d.getDate())} 達成`;
+      b.text("全駅制覇", N ? (b.cols - width("全駅制覇", 2)) >> 1 : 12, 6, C.AMBER, { scale: 2 });
+      if (N) b.text(when, (b.cols - width(when)) >> 1, 40, C.GREEN);
+      else {
+        b.text(when, R - 6, 6, C.GREEN, { right: true });
+        b.text(`スタンプ ${n}/${n}`, R - 6, 22, C.GREEN, { right: true });
+      }
+      b.ticker("構内スタンプラリー、全駅制覇です。すみずみまで見てくださって、ありがとうございます。　　　", N ? 60 : 42, C.AMBER, calm ? 0 : t);
+      // lamps running round the frame, like the border of a prize board
+      const w = b.cols, h = b.rows, c = b.ci(C.RED), step = calm ? 0 : Math.floor(t * 6);
+      for (let i = 0; i < 2 * (w + h); i++) {
+        if ((i + step) % 6) continue;
+        if (i < w) b.dot(i, 0, c);
+        else if (i < w + h) b.dot(w - 1, i - w, c);
+        else if (i < 2 * w + h) b.dot(2 * w + h - 1 - i, h - 1, c);
+        else b.dot(0, 2 * (w + h) - 1 - i, c);
+      }
+    } else {
+      b.text("スタンプ", x0 + 2, 5, C.GREEN, { invert: true });
+      b.text(`${n}/${all.length}`, N ? 84 : 86, 4, C.AMBER, { scale: 2 });
+      if (N) b.text(`あと ${all.length - n} つ`, x0, 40, C.GREEN);
+      else b.text(`あと ${all.length - n} つ`, R, 12, C.GREEN, { right: true });
+      b.ticker("のこり: " + all.filter(id => !got[id]).map(id => HINT[id]).join("　／　") + "　　　", N ? 60 : 42, C.AMBER, calm ? 0 : t);
+    }
+    b.end();
+  }
+
   // Keys are taken only while a game is waiting for them, so the arrows scroll the page at any other time.
   addEventListener("keydown", e => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -329,9 +395,12 @@
     drawMain(ms);
     drawPk(ms);
     drawPs(ms);
+    drawRally(ms);
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
+  showRally();
+  press("gate");   // coming through the gate is the first stamp
   load();
   poll();
   setInterval(poll, 10 * 60 * 1000);   // 6 calls an hour, far under the 60 an address may make without a token
