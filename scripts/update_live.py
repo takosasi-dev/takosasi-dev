@@ -1,14 +1,22 @@
 #!/usr/bin/env python3
 """Rebuild everything in the profile that depends on live GitHub data.
 
-    assets/activity.svg, assets/stats.svg   (+ m-*.svg, the phone variants)
-    assets/card-*.svg                       featured projects: language, latest release
-    README.md                               the ARCHIVE list between the ARCHIVE markers
+    assets/guide.svg       lines (categories) with their repo counts, latest release in the ticker
+    assets/card-*.svg      featured projects: the repos carrying the GitHub topic "featured"
+    assets/arc-*.svg       the sign on top of each ARCHIVE group
+    assets/stats.svg       repo / release / language counts
+    assets/releases.svg    the six newest releases
+    assets/contrib.svg     one year of contributions
+    README.md              the card links and the ARCHIVE list, between their markers
 
 Run by .github/workflows/activity.yml once a day. Standard library only.
     GITHUB_TOKEN=... python3 scripts/update_live.py   # live (GraphQL needs a token)
     python3 scripts/update_live.py data.json          # from a saved GraphQL response
 """
+import base64
+import bisect
+import datetime
+import glob
 import json
 import os
 import re
@@ -19,9 +27,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 from style import *  # noqa: E402,F403
 
 USER = "takosasi-dev"
-ROOT = os.path.join(os.path.dirname(__file__), "..")
 README = os.path.join(ROOT, "README.md")
-START, END = "<!-- ARCHIVE:START -->", "<!-- ARCHIVE:END -->"
+NOTE = "GitHub の記録から毎日自動で更新"
 
 # ponytail: one page of 100 repos, no cursor paging. Add paging when the account passes 100 public repos.
 QUERY = """query($login: String!) {
@@ -38,12 +45,15 @@ QUERY = """query($login: String!) {
         }
       }
     }
+    contributionsCollection {
+      contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } }
+    }
   }
 }"""
 
 
 def fetch():
-    """Public repos, most recently pushed first."""
+    """(public repos, most recently pushed first; the contribution calendar)."""
     if len(sys.argv) > 1:
         with open(sys.argv[1], encoding="utf-8") as f:
             data = json.load(f)
@@ -56,8 +66,9 @@ def fetch():
             data = json.load(r)
     if data.get("errors"):
         sys.exit(f"GraphQL error: {data['errors']}")
+    user = data["data"]["user"]
     repos = []
-    for n in data["data"]["user"]["repositories"]["nodes"]:
+    for n in user["repositories"]["nodes"]:
         if n["name"] == USER:
             continue
         last = (n["releases"]["nodes"] or [{}])[0]
@@ -71,180 +82,14 @@ def fetch():
             "tag": last.get("tagName") or "",
             "tag_date": (last.get("publishedAt") or "")[:10],
         })
-    return repos
+    return repos, user["contributionsCollection"]["contributionCalendar"]
 
 
-def save(name, svg):
-    with open(os.path.join(ROOT, "assets", name), "w", encoding="utf-8", newline="\n") as f:
-        f.write(svg)
-    print("wrote", name, len(svg))
+def md(date):
+    return f"{date[5:7]}/{date[8:10]}"
 
 
-# --------------------------------------------------------------------------- activity panel
-def activity(repos, mobile=False):
-    repos = repos[:6]
-    W, RH, TOP = (600, 86, 60) if mobile else (1200, 54, 64)
-    H = TOP + RH * len(repos) + 18
-    rows = ""
-    for i, r in enumerate(repos):
-        y = TOP + i * RH
-        lc = LANG_COLOR.get(r["lang"], DIM)
-        name = r["name"] if len(r["name"]) <= 26 else r["name"][:25] + "…"
-        desc = DESC.get(r["name"]) or r["desc"] or "(no description)"
-        if mobile:
-            cells = f'''<text x="42" y="{y + 31}" font-family="{MONO}" font-size="19" font-weight="800" fill="#fff">{esc(name)}</text>
-<text x="{W - 38}" y="{y + 31}" text-anchor="end" font-family="{MONO}" font-size="13" fill="{GREEN}">{esc(r["pushed"])}</text>
-<circle cx="47" cy="{y + 54}" r="5" fill="{lc}"/>
-<text x="60" y="{y + 59}" font-family="{MONO}" font-size="13" fill="{TEXT}">{esc(r["lang"])}</text>
-<text x="160" y="{y + 59}" font-family="{GOTH}" font-size="14" fill="{DIM}">{esc(wrap(desc, 27, 1)[0])}</text>'''
-        else:
-            cells = f'''<text x="42" y="{y + 29}" font-family="{MONO}" font-size="13" fill="{GREEN}">{esc(r["pushed"])}</text>
-<text x="150" y="{y + 29}" font-family="{MONO}" font-size="15" font-weight="800" fill="#fff">{esc(name)}</text>
-<circle cx="420" cy="{y + 24}" r="5" fill="{lc}"/>
-<text x="434" y="{y + 29}" font-family="{MONO}" font-size="12" fill="{TEXT}">{esc(r["lang"])}</text>
-<text x="540" y="{y + 29}" font-family="{GOTH}" font-size="13.5" fill="{DIM}">{esc(wrap(desc, 46, 1)[0])}</text>'''
-        rows += f'''<g class="row" style="animation-delay:{i * 0.18:.2f}s">
-<rect x="20" y="{y}" width="{W - 40}" height="{RH - 8}" fill="{BG2}" stroke="{GREEN}" stroke-opacity=".22"/>
-<rect x="20" y="{y}" width="5" height="{RH - 8}" fill="{GREEN}"/>
-{cells}
-</g>'''
-    n = max(len(repos), 1)
-    if mobile:
-        title = f'<text x="48" y="37" font-family="{MONO}" font-size="15" letter-spacing="4" fill="{GREEN}">RECENT TRANSMISSIONS</text>'
-    else:
-        title = (f'<text x="48" y="37" font-family="{MONO}" font-size="13" letter-spacing="4" fill="{GREEN}">RECENT TRANSMISSIONS // LATEST PUSHES</text>'
-                 f'<text x="{W - 24}" y="37" text-anchor="end" font-family="{MONO}" font-size="11" letter-spacing="3" fill="{DIM}">AUTO-UPDATED BY GITHUB ACTIONS</text>')
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="100%" role="img" aria-label="Recently updated repositories">
-<defs><clipPath id="c"><rect width="{W}" height="{H}" rx="14"/></clipPath>
-<linearGradient id="hl" x1="0" x2="1"><stop offset="0" stop-color="{GREEN}" stop-opacity=".0"/><stop offset=".5" stop-color="{GREEN}" stop-opacity=".16"/><stop offset="1" stop-color="{GREEN}" stop-opacity="0"/></linearGradient></defs>
-<style>.row{{animation:row .5s ease-out both}}@keyframes row{{from{{opacity:0;transform:translateX(-14px)}}to{{opacity:1;transform:none}}}}
-.hl{{animation:hl {n * 1.2:.1f}s steps({n},end) infinite}}@keyframes hl{{to{{transform:translateY({n * RH}px)}}}}
-.bl{{animation:bl 1s steps(1) infinite}}@keyframes bl{{50%{{opacity:.2}}}}{REDUCED}</style>
-<g clip-path="url(#c)">
-<rect width="{W}" height="{H}" fill="{BG}"/>
-<circle class="bl" cx="32" cy="32" r="5" fill="{GREEN}"/>
-{title}
-{rows}
-<rect class="hl" x="20" y="{TOP}" width="{W - 40}" height="{RH - 8}" fill="url(#hl)"/>
-</g>
-<rect x="1" y="1" width="{W - 2}" height="{H - 2}" rx="14" fill="none" stroke="{GREEN}" stroke-opacity=".45" stroke-width="1.5"/>
-</svg>'''
-    save("m-activity.svg" if mobile else "activity.svg", svg)
-
-
-# --------------------------------------------------------------------------- stats panel
-def stats(repos, mobile=False):
-    langs = {}
-    for r in repos:
-        if r["lang"] != "-":
-            langs[r["lang"]] = langs.get(r["lang"], 0) + 1
-    order = sorted(langs.items(), key=lambda kv: (-kv[1], kv[0]))
-    if len(order) > 8:
-        order = order[:7] + [("other", sum(v for _, v in order[7:]))]
-    total = sum(v for _, v in order) or 1
-    newest = max((r for r in repos if r["tag_date"]), key=lambda r: r["tag_date"], default=None)
-    counters = [(len(repos), "PUBLIC REPOS"), (sum(r["releases"] for r in repos), "RELEASES"), (len(langs), "LANGUAGES")]
-    if mobile:
-        W, H, cx0, cdx, nf, ny, lf = 600, 334, 30, 190, 54, 106, 12.5
-        ry, rf, bx, bw, by, cols, ldx, gf = 166, 14, 30, 540, 210, 3, 185, 14
-    else:
-        W, H, cx0, cdx, nf, ny, lf = 1200, 214, 40, 200, 64, 122, 12
-        ry, rf, bx, bw, by, cols, ldx, gf = 186, 13, 660, 500, 92, 4, 125, 13
-    nums = "".join(
-        f'<text x="{cx0 + i * cdx}" y="{ny}" font-family="{MONO}" font-size="{nf}" font-weight="800" fill="#fff">{v}</text>'
-        f'<text x="{cx0 + i * cdx + 2}" y="{ny + 24}" font-family="{MONO}" font-size="{lf}" letter-spacing="3" fill="{AMBER}">{label}</text>'
-        for i, (v, label) in enumerate(counters))
-    latest = ""
-    if newest:
-        latest = (f'<text x="{cx0 + 2}" y="{ry}" font-family="{MONO}" font-size="{rf}" fill="{DIM}" xml:space="preserve">LATEST RELEASE  '
-                  f'<tspan fill="#fff" font-weight="800">{esc(newest["name"])} {esc(newest["tag"])}</tspan>  {esc(newest["tag_date"])}</text>')
-    segs, legend, x = "", "", float(bx)
-    for i, (lang, v) in enumerate(order):
-        col = LANG_COLOR.get(lang, DIM)
-        w = bw * v / total
-        segs += f'<rect x="{x:.1f}" y="{by}" width="{max(w - 2, 1):.1f}" height="18" fill="{col}"/>'
-        x += w
-        lx, ly = bx + (i % cols) * ldx, by + 48 + (i // cols) * 26
-        legend += (f'<circle cx="{lx + 5}" cy="{ly - 5}" r="5" fill="{col}"/>'
-                   f'<text x="{lx + 17}" y="{ly}" font-family="{MONO}" font-size="{gf}" fill="{TEXT}">{esc(lang)} <tspan fill="#fff" font-weight="800">{v}</tspan></text>')
-    if mobile:
-        title = f'<text x="48" y="37" font-family="{MONO}" font-size="15" letter-spacing="4" fill="{AMBER}">FLEET STATUS</text>'
-    else:
-        title = (f'<text x="48" y="37" font-family="{MONO}" font-size="13" letter-spacing="4" fill="{AMBER}">FLEET STATUS // PUBLIC REPOSITORIES</text>'
-                 f'<text x="{W - 24}" y="37" text-anchor="end" font-family="{MONO}" font-size="11" letter-spacing="3" fill="{DIM}">AUTO-UPDATED BY GITHUB ACTIONS</text>')
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="100%" role="img" aria-label="{counters[0][0]} public repositories, {counters[1][0]} releases, {counters[2][0]} languages">
-<defs><clipPath id="c"><rect width="{W}" height="{H}" rx="14"/></clipPath>{hex_pattern("hex", 22, AMBER, 0.06)}</defs>
-<style>.g{{transform-origin:{bx}px 0;animation:g 1.8s cubic-bezier(.2,.8,.2,1) both}}@keyframes g{{from{{transform:scaleX(0)}}}}
-.bl{{animation:bl 1s steps(1) infinite}}@keyframes bl{{50%{{opacity:.2}}}}{REDUCED}</style>
-<g clip-path="url(#c)">
-<rect width="{W}" height="{H}" fill="{BG}"/><rect width="{W}" height="{H}" fill="url(#hex)"/>
-<circle class="bl" cx="32" cy="32" r="5" fill="{AMBER}"/>
-{title}
-{nums}
-{latest}
-<text x="{bx}" y="{by - 14}" font-family="{MONO}" font-size="{lf}" letter-spacing="3" fill="{AMBER}">LANGUAGES // BY REPOSITORY</text>
-<rect x="{bx}" y="{by}" width="{bw}" height="18" fill="{AMBER}" fill-opacity=".12"/>
-<g class="g">{segs}</g>
-{legend}
-</g>
-<rect x="1" y="1" width="{W - 2}" height="{H - 2}" rx="14" fill="none" stroke="{AMBER}" stroke-opacity=".45" stroke-width="1.5"/>
-</svg>'''
-    save("m-stats.svg" if mobile else "stats.svg", svg)
-
-
-# --------------------------------------------------------------------------- project cards
-# (repo, display name, hand-written description, color). Language and release come from the API.
-# The description is two lines at most, broken by hand at "\n" (about 28 full-width characters a line).
-PROJECTS = [
-    ("kanade-daw", "KANADE DAW", "AI 音楽生成・自動採譜を核にした統合 DAW。\nC++20 / JUCE 8、ローカル完結", CYAN),
-    ("koe-loom", "KoeLoom", "Discord などで使える Windows 11 向け\nボイスチェンジャー。DSP のみ、JUCE / C++", MAG),
-    ("rail-rampage", "RailRampage", "トロッコ問題を題材にした横スクロールの\n1ボタン破壊ゲーム（Godot 4）", ORANGE),
-    ("packet-bouncer", "Packet Bouncer", "ブラウザで遊ぶパケット検問ゲーム（Godot 4・開発中）", GREEN),
-    ("padlab", "PadLab", "Windows 向けゲームコントローラー診断ツール。\n入力の可視化・ドリフト・チャタリング・精度テスト", AMBER),
-    ("net-diag", "net-diag", "自宅回線のボトルネックを推測ではなく\n実測で切り分けるネットワーク診断ツール", RED),
-]
-
-
-def card(i, repo, name, desc, col, info):
-    # Drawn at its natural size (no width in README): two fit side by side on a desktop
-    # profile (846px) and they drop to one column on a phone, so the text stays readable.
-    W, H = 412, 150
-    per = 2 * (W + H) - 60
-    lang, tag, date = info.get("lang", "-"), info.get("tag", ""), info.get("tag_date", "")
-    dl = "".join(f'<text x="24" y="{84 + k * 18}" font-family="{GOTH}" font-size="12.5" fill="{TEXT}">{esc(l)}</text>'
-                 for k, l in enumerate(desc.split("\n")))
-    desc = desc.replace("\n", " ")
-    lc = LANG_COLOR.get(lang, col)
-    rel = ""
-    if tag:
-        px = 40 + len(lang) * 7 + 12
-        pw = len(tag) * 6.5 + 14
-        rel = (f'<rect x="{px}" y="119" width="{pw:.0f}" height="18" fill="none" stroke="{col}" stroke-opacity=".7"/>'
-               f'<text x="{px + pw / 2:.0f}" y="132" text-anchor="middle" font-family="{MONO}" font-size="10.5" fill="{col}">{esc(tag)}</text>'
-               f'<text x="{px + pw + 8:.0f}" y="132" font-family="{MONO}" font-size="10.5" fill="{DIM}">{esc(date)}</text>')
-    bars = "".join(f'<rect class="eq" style="animation-delay:{-k * 0.17:.2f}s" x="{W - 76 + k * 8}" y="120" width="4.5" height="16" fill="{col}"/>' for k in range(7))
-    shape = f"M16 1.5H{W-1.5}V{H-16}L{W-16} {H-1.5}H1.5V16Z"
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" role="img" aria-label="{esc(name)}: {esc(desc)}">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{col}" stop-opacity=".16"/><stop offset=".55" stop-color="{BG}" stop-opacity="0"/></linearGradient>
-{hex_pattern("hex", 14, col, 0.07)}</defs>
-<style>.t{{stroke-dasharray:110 {per - 110};animation:t 5s linear infinite}}@keyframes t{{to{{stroke-dashoffset:-{per}}}}}
-.eq{{transform-box:fill-box;transform-origin:bottom;animation:eq 1.1s ease-in-out infinite alternate}}@keyframes eq{{from{{transform:scaleY(.2)}}to{{transform:scaleY(1)}}}}
-.bl{{animation:bl 1.4s steps(1) infinite}}@keyframes bl{{50%{{opacity:.2}}}}{REDUCED}</style>
-<path d="{shape}" fill="{BG}"/><path d="{shape}" fill="url(#hex)"/><path d="{shape}" fill="url(#g)"/>
-<path d="{shape}" fill="none" stroke="{col}" stroke-opacity=".4" stroke-width="1.5"/>
-<path class="t" d="{shape}" fill="none" stroke="{col}" stroke-width="2.5" stroke-linecap="round"/>
-<text x="24" y="28" font-family="{MONO}" font-size="10.5" letter-spacing="2.5" fill="{col}">PRJ-{i:02d} // {esc(repo)}</text>
-<circle class="bl" cx="{W-26}" cy="24" r="3.5" fill="{col}"/>
-<text x="24" y="60" font-family="{MONO}" font-size="23" font-weight="800" fill="#fff">{esc(name)}</text>
-{dl}
-<circle cx="29" cy="128" r="4.5" fill="{lc}"/><text x="40" y="132" font-family="{MONO}" font-size="11.5" fill="{TEXT}">{esc(lang)}</text>
-{rel}
-{bars}
-</svg>'''
-    save(f"card-{repo}.svg", svg)
-
-
-# --------------------------------------------------------------------------- archive list in README.md
+# --------------------------------------------------------------------------- categories
 # Each repo goes to the first category whose test matches (by GitHub topics), so a new
 # repo shows up without touching this file. Nothing matches -> APPS.
 T = lambda *names: lambda r: bool(r["topics"] & set(names))  # noqa: E731
@@ -258,7 +103,17 @@ CATS = [
     ("LINUX / SERVER", T("linux", "tmux")),
     ("APPS", lambda r: True),
 ]
-ORDER = ["GAMES", "APPS", "DIAGNOSTICS", "LINUX / SERVER", "OBSIDIAN", "CHROME EXTENSIONS", "MINECRAFT ADD-ONS", "CLAUDE CODE MODS"]
+# In display order. title: (file slug, tag on a board, name, line symbol, line colour, LED colour)
+CAT = {
+    "GAMES": ("games", "ゲーム", "ゲーム", "G", "#f39700", AMBER),
+    "APPS": ("apps", "アプリ", "アプリ", "A", "#e5404f", GREEN),
+    "DIAGNOSTICS": ("diag", "診断", "診断ツール", "D", "#00a7db", RED),
+    "LINUX / SERVER": ("linux", "サーバ", "Linux・サーバ", "L", "#00a650", GREEN),
+    "OBSIDIAN": ("obsidian", "Obsidian", "Obsidian", "O", "#9b7cb6", AMBER),
+    "CHROME EXTENSIONS": ("chrome", "Chrome", "Chrome 拡張", "C", "#009bbf", GREEN),
+    "MINECRAFT ADD-ONS": ("minecraft", "アドオン", "Minecraft", "M", "#bb641d", AMBER),
+    "CLAUDE CODE MODS": ("claude", "CC mod", "Claude Code", "K", "#c99a00", RED),
+}
 
 # Japanese one-liners for repos whose GitHub description is English or empty.
 DESC = {
@@ -281,50 +136,230 @@ DESC = {
 }
 
 
-def archive(repos):
-    groups = {title: [] for title in ORDER}
+# --------------------------------------------------------------------------- project cards
+# The cards are the repos with the GitHub topic "featured" (six at most). This table only makes
+# them prettier: repo -> (display name, tag, description broken by hand at "\n", about 21
+# full-width characters a line). A featured repo that is not here uses its GitHub name and description.
+PROJECTS = {
+    "kanade-daw": ("KANADE DAW", "音楽", "AI 音楽生成・自動採譜を核にした統合 DAW。\nC++20 / JUCE 8、ローカル完結"),
+    "koe-loom": ("KoeLoom", "音声", "Discord などで使える Windows 11 向け\nボイスチェンジャー。DSP のみ、JUCE / C++"),
+    "rail-rampage": ("RailRampage", None, "トロッコ問題を題材にした横スクロールの\n1ボタン破壊ゲーム（Godot 4）"),
+    "packet-bouncer": ("Packet Bouncer", None, "ブラウザで遊ぶパケット検問ゲーム\n（Godot 4・開発中）"),
+    "padlab": ("PadLab", None, "Windows 向けゲームコントローラー診断ツール\n入力表示・ドリフト・チャタリング・精度"),
+    "net-diag": ("net-diag", None, "自宅回線のボトルネックを推測ではなく\n実測で切り分けるネットワーク診断ツール"),
+}
+
+
+def featured(repos):
+    order = list(PROJECTS)
+    picked = [r for r in repos if "featured" in r["topics"]] or [r for r in repos if r["name"] in PROJECTS]
+    picked.sort(key=lambda r: order.index(r["name"]) if r["name"] in order else len(order))  # stable: the rest stay newest first
+    return picked[:6]
+
+
+def poster(repo, name, col):
+    """The picture on a card: assets/posters/<repo>.jpg (made with make_poster.py), or a plain name plate."""
+    path = os.path.join(ROOT, "assets", "posters", repo + ".jpg")
+    if os.path.exists(path):
+        with open(path, "rb") as f:
+            data = base64.b64encode(f.read()).decode("ascii")
+        img = f'<image x="8" y="8" width="396" height="178" preserveAspectRatio="xMidYMid slice" href="data:image/jpeg;base64,{data}"/>'
+    else:
+        img = (f'<rect x="8" y="8" width="396" height="178" fill="#181b22"/><path d="M8 152L404 104V186H8Z" fill="{col}"/>'
+               f'<path d="M8 146L404 98" stroke="{col}" stroke-width="2" opacity=".5"/>'
+               f'<text x="28" y="74" font-family="{MONO}" font-size="34" font-weight="800" fill="#f2f2ee">{esc(name)}</text>'
+               f'<text x="30" y="98" font-family="{MONO}" font-size="11.5" fill="#aab0b8" letter-spacing="1">{USER} / {esc(repo)}</text>')
+    return (f'<clipPath id="p"><rect x="8" y="8" width="396" height="178" rx="3"/></clipPath><g clip-path="url(#p)">{img}</g>'
+            f'<rect x="8" y="8" width="396" height="178" rx="3" fill="none" stroke="#000" opacity=".5"/>')
+
+
+def card(i, r, cat):
+    # Drawn at its natural size (no width in README): two fit side by side on a desktop
+    # profile (846px) and they drop to one column on a phone.
+    repo, lang = r["name"], "" if r["lang"] == "-" else r["lang"]
+    name, kind, desc = PROJECTS.get(repo, (repo, None, None))
+    _, tag, _, _, col, led = CAT[cat]
+    lines = desc.split("\n") if desc else F12.wrap(DESC.get(repo) or r["desc"], 246)
+    a = Board("a", 8, 208, 198, 20)
+    w = a.put(F16, kind or tag, 3, 2, led, invert=True)
+    a.put(F16, F16.fit(name, 186 - w), 9 + w, 2, AMBER)
+    b = Board("b", 8, 250, 264, 39, 1.5)
+    for k, ln in enumerate(lines[:2]):
+        b.put(F12, F12.fit(ln, 258), 3, 1 + k * 13, GREEN)
+    if r["tag"]:
+        info = f'{r["tag"]}　{md(r["tag_date"])} 発　{lang}'
+        b.put(F12, "公開中", 261, 27, GREEN, right=True)
+    else:
+        info = f"リリース準備中　{lang}"
+        b.put(F12, "開発中", 261, 27, RED, blink=True, right=True)
+    b.put(F12, F12.fit(info.strip(), 214), 3, 27, AMBER)
+    body = (f'<rect x=".5" y=".5" width="411" height="316" rx="8" fill="{BODY}" stroke="{EDGE}"/>' + poster(repo, name, col)
+            + f'<g font-family="{GOTH}" font-size="10" fill="#aab0b8"><text x="14" y="200">種別</text><text x="70" y="200">名前</text>'
+              f'<text x="400" y="200" text-anchor="end" font-family="{MONO}">{i:02d} // {esc(repo)}</text></g>'
+            + a.svg() + b.svg())
+    save(f"card-{repo}.svg", 412, 317, body, f"{name}: {' '.join(lines)}")
+
+
+# --------------------------------------------------------------------------- boards
+def guide(repos, groups):
+    b = Board("g", LED_X, 40, LED_COLS, 98)
+    for i, title in enumerate(CAT):
+        x, y = 5 + (i % 2) * 201, 3 + (i // 2) * 18
+        b.put(F16, CAT[title][2], x, y, AMBER)
+        b.put(F16, f"{len(groups[title])}本", x + 190, y, GREEN, right=True)
+    news = [r for r in repos if r["tag_date"]]
+    tick = ""
+    if news:
+        n = max(news, key=lambda r: r["tag_date"])
+        tick = f'最新リリース: {n["name"]} {n["tag"]}（{md(n["tag_date"])}）　　'
+    tick += "最近の更新: " + "、".join(r["name"] for r in repos[:5]) + "　　　"
+    b.ticker(F16, tick, 80, AMBER)
+    counts = "、".join(f"{CAT[t][2]} {len(groups[t])}" for t in CAT)
+    save("guide.svg", W, 256, casing(W, 256, "系統のご案内", "Lines", NOTE) + b.svg() + seam(b, 76),
+         f"公開リポジトリ {len(repos)} 本。{counts}。{tick.strip()}")
+
+
+def stats(repos):
+    langs = {}
     for r in repos:
-        groups[next(title for title, test in CATS if test(r))].append(r)
-    out = []
-    for i, title in enumerate(ORDER, 1):
-        rows = sorted(groups[title], key=lambda r: r["name"].strip("-").lower())
+        if r["lang"] != "-":
+            langs[r["lang"]] = langs.get(r["lang"], 0) + 1
+    order = sorted(langs.items(), key=lambda kv: (-kv[1], kv[0]))
+    if len(order) > 9:
+        order = order[:8] + [("ほか", sum(v for _, v in order[8:]))]
+    total = sum(v for _, v in order) or 1
+    counters = [(len(repos), "リポジトリ"), (sum(r["releases"] for r in repos), "リリース"), (len(langs), "言語")]
+    rows = -(-len(order) // 3)
+    b = Board("s", LED_X, 40, LED_COLS, 60 + rows * 18)
+    for i, (v, label) in enumerate(counters):
+        w = b.put(F16, str(v), 6 + i * 134, 4, AMBER, scale=2)
+        b.put(F16, label, 10 + i * 134 + w, 20, GREEN)
+    x = 6
+    for i, (lang, v) in enumerate(order):
+        col = LANG_COLOR.get(lang, "#aab0b8")
+        w = 390 - (x - 6) if i == len(order) - 1 else round(390 * v / total)
+        b.bar(x, 42, max(w - 1, 1), 10, col)
+        x += w
+        b.put(F16, F16.fit(f"{lang} {v}", 126), 6 + (i % 3) * 132, 58 + (i // 3) * 18, col)
+    h = 40 + b.h + 17
+    save("stats.svg", W, h, casing(W, h, "運行状況", "Status", NOTE) + b.svg() + seam(b, 38),
+         f"公開リポジトリ {counters[0][0]}、リリース {counters[1][0]}、言語 {counters[2][0]} 種。"
+         + "、".join(f"{lang} {v}" for lang, v in order))
+
+
+def releases(repos, cat_of):
+    rel = sorted((r for r in repos if r["tag_date"]), key=lambda r: r["tag_date"], reverse=True)[:6]
+    b = Board("r", LED_X, 58, LED_COLS, 4 + 20 * len(rel))
+    for i, r in enumerate(rel):
+        y = 4 + i * 20
+        b.put(F16, md(r["tag_date"]), 5, y, GREEN)
+        w = b.put(F16, CAT[cat_of[r["name"]]][1], 54, y, CAT[cat_of[r["name"]]][5], invert=True)
+        tw = b.put(F16, F16.fit(r["tag"], 80), 397, y, GREEN, right=True)
+        b.put(F16, F16.fit(r["name"], 397 - tw - 8 - (60 + w)), 60 + w, y, AMBER)
+    h = 58 + b.h + 17
+    heads = (f'<g font-family="{GOTH}" font-size="10.5" fill="#aab0b8"><text x="31" y="50">日付</text><text x="129" y="50">種別</text>'
+             f'<text x="275" y="50">名前</text><text x="815" y="50" text-anchor="end">版</text></g>')
+    save("releases.svg", W, h, casing(W, h, "新着リリース", "New releases", NOTE) + heads + b.svg(),
+         "新着リリース。" + "、".join(f'{md(r["tag_date"])} {r["name"]} {r["tag"]}' for r in rel))
+
+
+def contrib(cal):
+    days = [d for w in cal["weeks"] for d in w["contributionDays"]]
+    counts = [d["contributionCount"] for d in days]
+    best = run = cur = 0
+    for c in counts:
+        run = run + 1 if c else 0
+        best = max(best, run)
+    for c in reversed(counts[:-1] if counts and not counts[-1] else counts):  # today may still be empty
+        if not c:
+            break
+        cur += 1
+    text = f"過去1年 {cal['totalContributions']:,}回　連続 {cur}日　最長 {best}日"
+    t = Board("c", LED_X, 40, LED_COLS, 20)
+    t.put(F16, F16.fit(text, 392), 5, 2, AMBER)
+    weeks = cal["weeks"][-53:]
+    h = Board("d", (W - 53 * 14) // 2, 92, 53, 7, 14)
+    lit = sorted(c for c in counts if c)
+    for level, op in enumerate((.3, .55, .8, 1)):  # quartiles of the days that have anything
+        rows = [[0] * 53 for _ in range(7)]
+        for x, w in enumerate(weeks):
+            for d in w["contributionDays"]:
+                c = d["contributionCount"]
+                if c and min(3, bisect.bisect_left(lit, c) * 4 // len(lit)) == level:
+                    rows[datetime.date.fromisoformat(d["date"]).isoweekday() % 7][x] = 1
+        h.raw(rows, 0, 0, GREEN, op=op)
+    save("contrib.svg", W, 208, casing(W, 208, "稼働記録", "Contributions", NOTE) + t.svg() + h.svg(), text)
+
+
+def strip(title, n):
+    """The sign on top of one ARCHIVE group: the line symbol with the repo count, like a station number."""
+    slug, _, ja, sym, col, _ = CAT[title]
+    body = (f'<g font-family="{GOTH}"><rect x="1" y="1" width="418" height="44" rx="6" fill="{PLATE}" stroke="{PLATE_EDGE}" stroke-width="1.5"/>'
+            f'<circle cx="25" cy="23" r="16" fill="#fff" stroke="{col}" stroke-width="5"/>'
+            f'<text x="25" y="21" text-anchor="middle" font-size="12" font-weight="800" fill="#111">{sym}</text>'
+            f'<text x="25" y="33" text-anchor="middle" font-size="11" font-weight="800" fill="#111">{n:02d}</text>'
+            f'<text x="54" y="30" font-size="19" font-weight="700" fill="#111">{ja}</text>'
+            f'<text x="406" y="29" text-anchor="end" font-size="11" fill="#666" font-family="{MONO}" letter-spacing="1.5">{title}</text></g>')
+    save(f"arc-{slug}.svg", 420, 46, body, f"{ja} {n} 本")
+
+
+# --------------------------------------------------------------------------- README.md
+def splice(text, tag, body):
+    a, b = f"<!-- {tag}:START -->", f"<!-- {tag}:END -->"
+    return text[:text.index(a) + len(a)] + "\n" + body + "\n" + text[text.index(b):]
+
+
+def cards_md(feat):
+    return "\n".join(f'<a href="https://github.com/{USER}/{r["name"]}"><img src="assets/card-{r["name"]}.svg" '
+                     f'alt="{esc(PROJECTS.get(r["name"], (r["name"],))[0])}"></a>' for r in feat)
+
+
+def archive_md(groups):
+    out = [""]
+    for title, rows in groups.items():
         if not rows:
             continue
-        out.append(f"<details>\n<summary><b>ARCHIVE {i:02d} // {title}</b> ({len(rows)})</summary>\n<br>\n\n"
+        slug, _, ja, *_ = CAT[title]
+        out.append(f'<details>\n<summary><img src="assets/arc-{slug}.svg" height="40" alt="{ja} / {title} ({len(rows)})"></summary>\n<br>\n\n'
                    "| Repo | 内容 | Lang | Release |\n|---|---|---|---|")
         for r in rows:
             desc = (DESC.get(r["name"]) or r["desc"] or "-").replace("|", "\\|")
             out.append(f"| [{r['name']}](https://github.com/{USER}/{r['name']}) | {desc} | {r['lang']} | {r['tag'] or '-'} |")
         out.append("\n</details>\n")
-    with open(README, encoding="utf-8", newline="") as f:
-        md = f.read()
-    a, b = md.index(START) + len(START), md.index(END)
-    md = md[:a] + "\n\n" + "\n".join(out) + "\n" + md[b:]
-    with open(README, "w", encoding="utf-8", newline="") as f:
-        f.write(md)
-    print("wrote README archive:", len(repos), "repos")
+    return "\n".join(out)
 
 
 def check(repos):
     """Stop the run (and so the commit) if README would point at something that is not there."""
     with open(README, encoding="utf-8") as f:
-        md = f.read()
-    files = set(re.findall(r'(?:src|srcset)="(?:https://raw\.githubusercontent\.com/[^/]+/[^/]+/main/)?(assets/[^"]+)"', md))
+        text = f.read()
+    files = set(re.findall(r'(?:src|srcset)="(assets/[^"]+)"', text))
     missing = sorted(p for p in files if not os.path.exists(os.path.join(ROOT, p)))
-    unlisted = sorted(r["name"] for r in repos if f"(https://github.com/{USER}/{r['name']})" not in md)
+    unlisted = sorted(r["name"] for r in repos if f"(https://github.com/{USER}/{r['name']})" not in text)
     if missing or unlisted:
         sys.exit(f"check failed: missing files {missing}, repos not listed {unlisted}")
     print("check ok:", len(files), "asset files,", len(repos), "repos listed")
 
 
 if __name__ == "__main__":
-    repos = fetch()
-    by_name = {r["name"]: r for r in repos}
-    activity(repos)
-    activity(repos, mobile=True)
+    repos, cal = fetch()
+    cat_of = {r["name"]: next(title for title, test in CATS if test(r)) for r in repos}
+    groups = {title: sorted((r for r in repos if cat_of[r["name"]] == title), key=lambda r: r["name"].strip("-").lower())
+              for title in CAT}
+    feat = featured(repos)
+    for old in glob.glob(os.path.join(ROOT, "assets", "card-*.svg")):  # cards of repos that are no longer featured
+        os.remove(old)
+    for i, r in enumerate(feat, 1):
+        card(i, r, cat_of[r["name"]])
+    for title in CAT:
+        strip(title, len(groups[title]))
+    guide(repos, groups)
     stats(repos)
-    stats(repos, mobile=True)
-    for i, (repo, name, desc, col) in enumerate(PROJECTS, 1):
-        card(i, repo, name, desc, col, by_name.get(repo, {}))
-    archive(repos)
+    releases(repos, cat_of)
+    contrib(cal)
+    with open(README, encoding="utf-8", newline="") as f:
+        text = f.read()
+    text = splice(splice(text, "CARDS", cards_md(feat)), "ARCHIVE", archive_md(groups))
+    with open(README, "w", encoding="utf-8", newline="") as f:
+        f.write(text)
     check(repos)

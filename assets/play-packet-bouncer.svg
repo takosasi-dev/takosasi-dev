@@ -1,13 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 72" width="100%" role="img" aria-label="PLAY IN BROWSER: Packet Bouncer">
-<style>.t{stroke-dasharray:90 912;animation:t 4s linear infinite}@keyframes t{to{stroke-dashoffset:-1002}}
-.bl{animation:bl 1.4s steps(1) infinite}@keyframes bl{50%{opacity:.2}}@media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
-<path d="M14 1.5H438.5V58L426 70.5H1.5V14Z" fill="#05070d"/>
-<path d="M14 1.5H438.5V58L426 70.5H1.5V14Z" fill="none" stroke="#39ff88" stroke-opacity=".4" stroke-width="1.5"/>
-<path class="t" d="M14 1.5H438.5V58L426 70.5H1.5V14Z" fill="none" stroke="#39ff88" stroke-width="3" stroke-linecap="round"/>
-<rect x="16" y="14" width="44" height="44" fill="#39ff88"/>
-<polygon points="31,24 31,48 50,36" fill="#06080c"/>
-<text x="74" y="29" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="11" letter-spacing="3" fill="#39ff88">PLAY IN BROWSER</text>
-<text x="74" y="55" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="22" font-weight="800" fill="#fff">Packet Bouncer</text>
-<text x="400" y="41" text-anchor="end" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="11" letter-spacing="2" fill="#5f7387">OPEN &gt;</text>
-<circle class="bl" cx="414" cy="37" r="4" fill="#39ff88"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 72" width="440" height="72" role="img" aria-label="ブラウザで遊ぶ　PLAY Packet Bouncer"><rect x="1" y="1" width="438" height="70" rx="7" fill="#1d4f9e" stroke="#0d2a57" stroke-width="2"/><circle cx="36" cy="36" r="24" fill="#fff"/><path d="M28 23v26l22-13z" fill="#1d4f9e"/><text x="76" y="28" font-family="'Yu Gothic UI','Hiragino Sans','Noto Sans CJK JP',Meiryo,sans-serif" font-size="13" font-weight="700" fill="#fff" opacity=".85" letter-spacing="1">ブラウザで遊ぶ　PLAY</text><text x="76" y="55" font-family="'JetBrains Mono','Cascadia Code',Consolas,'SFMono-Regular',Menlo,'DejaVu Sans Mono',monospace" font-size="22" font-weight="800" fill="#fff">Packet Bouncer</text><path d="M388 36h30m-11-11l11 11l-11 11" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
