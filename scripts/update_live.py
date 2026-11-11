@@ -52,7 +52,7 @@ QUERY = """query($login: String!) {
           totalCount
           nodes { tagName publishedAt }
         }
-        stargazers(last: 10) { edges { starredAt node { login avatarUrl } } }
+        stargazerCount
       }
     }
     contributionsCollection {
@@ -60,6 +60,26 @@ QUERY = """query($login: String!) {
     }
   }
 }"""
+
+
+def stargazers(name):
+    """Who starred one repo: [{"starredAt", "node": {"login", "avatarUrl"}}].
+    The token of a workflow may not read the stars of the other repos through GraphQL ("Resource not
+    accessible by integration"), so each repo is asked over REST (the list needs a login, so there is
+    no way around the token). STARS_TOKEN, if set, is used instead of GITHUB_TOKEN.
+    Whatever goes wrong, the answer is "nobody": a missing passenger must not stop the daily run."""
+    # ponytail: the first 100 stars of a repo (the oldest). Read the last page instead when a repo passes 100.
+    token = os.environ.get("STARS_TOKEN") or os.environ.get("GITHUB_TOKEN", "")
+    try:
+        req = urllib.request.Request(
+            f"https://api.github.com/repos/{USER}/{name}/stargazers?per_page=100",
+            headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.star+json", "User-Agent": USER})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return [{"starredAt": s["starred_at"], "node": {"login": s["user"]["login"], "avatarUrl": s["user"]["avatar_url"]}}
+                    for s in json.load(r)]
+    except Exception as e:  # noqa: BLE001
+        print(f"stargazers of {name}: {type(e).__name__} {e}")
+        return []
 
 
 def fetch():
@@ -81,7 +101,10 @@ def fetch():
     for n in user["repositories"]["nodes"]:
         # Stars on any repo, this one included. One entry per person (the newest star). The login and the
         # avatar address end up in pictures and file names, so anything that is not the plain form is dropped.
-        for e in (n.get("stargazers") or {}).get("edges") or []:
+        edges = (n.get("stargazers") or {}).get("edges")  # a saved response may carry them
+        if edges is None and len(sys.argv) < 2 and n.get("stargazerCount"):
+            edges = stargazers(n["name"])
+        for e in edges or []:
             s = {"login": e["node"]["login"], "avatar": e["node"]["avatarUrl"], "at": e["starredAt"], "repo": n["name"]}
             if (s["login"] != USER and re.fullmatch(r"[A-Za-z0-9-]{1,39}", s["login"])
                     and s["avatar"].startswith("https://avatars.githubusercontent.com/")
