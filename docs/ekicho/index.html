@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- This page talks to nobody: the word is checked here, in the browser. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>駅長室 | たこさし駅</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../station.css">
+</head>
+<body>
+<main>
+
+<header class="name">
+  <p class="name-ja">駅長室</p>
+  <p class="name-en">STATION MASTER <span>Staff only</span></p>
+  <div class="band"><a href="../">◀ 構内</a><span>この先 行き止まり</span></div>
+</header>
+
+<noscript><p class="note">扉の鍵は JavaScript で動きます。JavaScript が無いと、扉は開きません。</p></noscript>
+
+<section class="case" aria-labelledby="h-door">
+  <div class="strip"><h2 id="h-door">扉</h2><span>Door</span><small id="state">鍵がかかっています</small></div>
+  <div class="led" id="board" role="img" aria-label="LED の表示。扉の鍵の状態"></div>
+  <div id="lock">
+    <p class="note center"><label for="word">合言葉をご存じの方は、どうぞ。</label></p>
+    <div class="keys">
+      <input id="word" type="text" maxlength="40" autocomplete="off" autocapitalize="none" spellcheck="false">
+      <button type="button" id="open">開ける</button>
+    </div>
+  </div>
+  <p class="note center" id="msg" role="status"></p>
+</section>
+
+<section class="case" id="inside" aria-labelledby="h-jirei" hidden>
+  <div class="strip"><h2 id="h-jirei">辞令</h2><span>Letter of appointment</span><small>扉を開けた人だけの紙</small></div>
+  <div class="jirei">
+    <h3>辞　令</h3>
+    <p>あなたを</p>
+    <p class="post">たこさし駅 名誉駅長</p>
+    <p>に任ずる</p>
+    <p class="day" id="when"></p>
+    <p class="sign">たこさし駅 駅長　たこ <span class="seal">駅長<br>之印</span></p>
+  </div>
+  <p class="note center">よくこの扉を開けました。名誉駅長の仕事は、ときどきこの駅を見に来ることだけです。</p>
+  <p class="note center" id="rally-note"></p>
+</section>
+
+<nav class="exits" aria-label="出口">
+  <a class="play" href="../"><small>のりかえ　CONCOURSE</small>たこさし駅 構内</a>
+  <a href="https://github.com/takosasi-dev"><small>出口　EXIT</small>GitHub のプロフィール</a>
+</nav>
+
+<footer><p>合言葉は、この端末の中だけで確かめています。どこにも送りません。</p></footer>
+
+</main>
+<script src="../font.js"></script>
+<script src="../led.js"></script>
+<script src="../rally.js"></script>
+<script src="ekicho.js"></script>
+</body>
+</html>

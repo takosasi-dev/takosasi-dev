@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """The big full-colour LED screen in front of the station: one day goes by in 60 seconds.
 
-    assets/diorama.svg     sky, sun and moon, a skyline, an elevated line with a station, trains, a bus
+    assets/diorama.svg        sky, sun and moon, a skyline, an elevated line with a station, trains, a bus
+    assets/diorama-dark.svg   the same for GitHub's dark theme, with one thing more (see "things nobody is told about")
 
     python3 scripts/ext_diorama.py     # self-check
 
@@ -190,6 +191,70 @@ def bus_frames():
     return pts + [(LOOP, -30)]
 
 
+# --------------------------------------------------------------------------- things nobody is told about
+# 1. A train that is not in the timetable. Once in GHOST_EVERY days of the loop (so not in the first four
+#    minutes), at night, in a gap between two real trains, it goes through the wrong way without stopping.
+GHOST_EVERY, GHOST_AT, GHOST_SECS = 5, 15.8, 3.5   # every n-th day; the second of that day; seconds to cross
+# 2. The lamp of the starting signal keeps sending one word in Morse code. The word opens a door on the Pages site.
+WORD, UNIT = "WASABI", .3                          # UNIT: seconds of one dot
+CODE = dict(zip("ABCDEFGHIJKLMNOPQRSTUVWXYZ", (".- -... -.-. -.. . ..-. --. .... .. .--- -.- .-.. -- -. --- .--. --.- "
+                                               ".-. ... - ..- ...- .-- -..- -.-- --..").split()))
+# 3. Only in the picture for the dark theme: somebody stands at the end of the platform all night. (start, end)
+#    are picked so that a leaving train uncovers the figure and the passing train of 36.5 takes it away.
+WAIT = (13, 38.5)
+FIGURE = [".f.", ".f.", "www", "www", "www", ".w.", ".w."]
+
+
+def morse(word):
+    """[(lamp on?, units)] for one round: dot 1, dash 3, 1 between them, 3 between letters, 7 after the word."""
+    out = []
+    for ch in word:
+        for s in CODE[ch]:
+            out += [(1, 1 if s == "." else 3), (0, 1)]
+        out[-1] = (0, 3)
+    out[-1] = (0, 7)
+    return out
+
+
+def ghost():
+    """(css, svg) of the train that is not in the timetable: pale, half transparent, right to left."""
+    total = GHOST_EVERY * LOOP
+    a = (total - LOOP + GHOST_AT) / total * 100
+    css = (f"@keyframes gt{{0%{{transform:translateX({TRAIN_OUT}px);animation-timing-function:step-end}}"
+           f"{a:.3f}%{{transform:translateX({TRAIN_OUT}px);animation-timing-function:steps({TRAIN_OUT - TRAIN_IN})}}"
+           f"{a + GHOST_SECS / total * 100:.3f}%,to{{transform:translateX({TRAIN_IN}px)}}}}"
+           f".gt{{animation:gt {total}s linear {-T0:g}s infinite}}")
+    g = Layer()
+    for k in range(4):
+        g.art(k * 26, 63, CAR, {"b": "#9fb6e0", "w": "#101830", "d": "#8aa0c8", "s": "#c7d6f5", "u": "#5a6890"})  # no light inside
+    # With motion off it stays where the inline style puts it: outside the screen.
+    return css, f'<g class="gt" style="transform:translateX({TRAIN_OUT}px)" opacity=".42">{g.svg()}</g>'
+
+
+def signal():
+    """(css, svg) of the starting signal past the end of the platform, in front of the trains so that its lamp
+    is never covered. With motion off the lamp is simply green."""
+    sig = morse(WORD)
+    total = sum(n for _, n in sig)
+    pts, t = "", 0
+    for on, n in sig:
+        pts += f"{t / total * 100:.2f}".rstrip("0").rstrip(".") + f"%{{opacity:{on}}}"
+        t += n
+    css = f"@keyframes ms{{{pts}}}.ms{{animation:ms {total * UNIT:g}s step-end {-T0:g}s infinite}}"
+    s = Pair()
+    s.box(283, 60, 2, 10, "#7d8794")
+    s.box(282, 56, 4, 4, "#1a1d26", "#0a0c12")
+    return css, s.svg() + '<path fill="#0f3d20" d="M283 57h2v2h-2z"/><path class="ms" fill="#4dff7a" d="M283 57h2v2h-2z"/>'
+
+
+def waiter():
+    """(css, svg) of whoever stands on the platform at night. Behind the trains; never gets on one."""
+    f = Layer()
+    f.art(260, 63, FIGURE, {"f": "#eef3ff", "w": "#b9c8ee"})
+    css = loop("gh") + frames("gh", [(0, 0, "step-end"), (WAIT[0], .8, "step-end"), (WAIT[1], 0, "step-end"), (LOOP, 0)])
+    return css, f'<g class="gh" opacity=".8">{f.svg()}</g>'
+
+
 # --------------------------------------------------------------------------- the city
 def totals(cal):
     return [sum(d["contributionCount"] for d in w["contributionDays"]) for w in cal["weeks"][-53:]] or [0]
@@ -376,10 +441,13 @@ def weather(wx):
     return out
 
 
-def build(cal, wx=None):
-    """(SVG body, text for people who cannot see it). wx: ctx["weather"], or None for the picture without weather."""
+def build(cal, wx=None, dark=False):
+    """(SVG body, text for people who cannot see it). wx: ctx["weather"], or None for the picture without weather.
+    dark: the picture shown to people who use GitHub's dark theme; it has one more thing in it."""
     tot = totals(cal)
     sky_wx = weather(wx)
+    (ghost_css, ghost_svg), (signal_css, signal_svg) = ghost(), signal()
+    waiter_css, waiter_svg = waiter() if dark else ("", "")
     rnd = random.Random("diorama")
     css = [loop("dy"), frames("dy", DAY), loop("dk"), frames("dk", DUSK), loop("dw"), frames("dw", DAWN),
            loop("lp"), switch("lp", *LAMPS),
@@ -563,15 +631,15 @@ def build(cal, wx=None):
     body = (
         casing(W, H, "たこさし駅前", "Station front", "ビルの高さは週ごとの活動量。60 秒で 1 日")
         + f'<rect x="{LED_X - 3}" y="{Y0 - 3}" width="{w + 6}" height="{h + 6}" rx="2" fill="#000" stroke="#15171a"/>'
-        + f'<style>{"".join(css + sky_wx["css"])}</style><defs>{grads}</defs>'
+        + f'<style>{"".join(css + sky_wx["css"] + [ghost_css, signal_css, waiter_css])}</style><defs>{grads}</defs>'
         + f'{place} shape-rendering="crispEdges">'
-        + sky + town + back.svg() + f'<g class="lp">{glow.svg()}</g>' + train
-        + fg.svg() + sign.svg() + f'<g id="db" class="lp">{fl.svg()}</g>' + tako_svg + bus_svg + sky_wx["front"] + "</g>"
+        + sky + town + back.svg() + f'<g class="lp">{glow.svg()}</g>' + waiter_svg + train + ghost_svg
+        + fg.svg() + sign.svg() + signal_svg + f'<g id="db" class="lp">{fl.svg()}</g>' + tako_svg + bus_svg + sky_wx["front"] + "</g>"
         + f'<rect x="{LED_X}" y="{Y0}" width="{w}" height="{h}" fill="url(#dm)"/>'
         + f'{place}><g filter="url(#df)" opacity=".55"><use href="#da" clip-path="url(#dh)"/><use href="#db"/></g></g>')
     label = (f"たこさし駅前の大型 LED ビジョン。60 秒で朝・昼・夕・夜が巡り、高架の駅に列車が発着する。"
              f"ビル {len(tot)} 棟は過去 1 年の週ごとの活動量で、いちばん高いビルの週は {max(tot)} 回、建設中の右端が今週の {tot[-1]} 回。"
-             + sky_wx["words"])
+             + sky_wx["words"] + ("夜のホームに、だれか立っている。" if dark else ""))
     return body, label
 
 
@@ -579,8 +647,9 @@ def live(ctx):
     wx = ctx.get("weather")
     if os.environ.get("DIORAMA_WX"):  # try a weather by hand
         wx = {"kind": os.environ["DIORAMA_WX"], "tmax": 15, "tmin": 8}
-    body, label = build(ctx["cal"], wx)
-    save("diorama.svg", W, H, body, label)
+    # The README shows the second one to dark-theme readers (<picture>, prefers-color-scheme).
+    for name, dark in (("diorama.svg", False), ("diorama-dark.svg", True)):
+        save(name, W, H, *build(ctx["cal"], wx, dark))
     return {}
 
 
@@ -608,4 +677,23 @@ if __name__ == "__main__":  # self-check
         assert len(plain[0]) < len(body) < 200_000 and "nan" not in body.lower() and f"天気は{ja}、最高 -3 度" in label, kind
         assert build(cal, {"kind": kind, "tmax": "<svg>", "tmin": None})[1].endswith(f"天気は{ja}。")  # odd temperatures are left out
     assert all(F12.glyph(ch) != F12.glyph("?") for ch in "東京℃/-0123456789" + "".join(WX_JA.values()))
+    # the hidden things. The lamp: read the code back the way a person with a table would.
+    back, word, sym = {v: k for k, v in CODE.items()}, "", ""
+    for on, n in morse(WORD):
+        assert (on, n) in ((1, 1), (1, 3), (0, 1), (0, 3), (0, 7))
+        if on:
+            sym += ".-"[n == 3]
+        elif n >= 3:
+            word, sym = word + back[sym], ""
+    assert word == WORD and len(back) == 26 and sum(n for _, n in morse(WORD)) == 58, word
+    # the unlisted train: at night, with the lamps on, while the real train is away, and never on the first day
+    end = GHOST_AT + GHOST_SECS
+    assert DAY[3] == (12, 0) and DAY[4] == (40, 0) and 12 <= GHOST_AT < end <= 40 and LAMPS[0] <= GHOST_AT and GHOST_EVERY > 1
+    assert any(a[1] == TRAIN_OUT and a[0] <= GHOST_AT and end <= b[0] for a, b in zip(pts, pts[1:])), "the ghost meets a train"
+    assert f"{(GHOST_EVERY - 1) * LOOP + GHOST_AT:g}" == "255.8" and "86.433%" in ghost()[0]  # (240 + 15.8 + 3.5) / 300
+    # the dark picture has the figure and says so; the plain one has neither; the word is written in no picture
+    night = build(cal, dark=True)
+    assert 'class="gh"' in night[0] and 'class="gh"' not in plain[0] and night[1] == plain[1] + "夜のホームに、だれか立っている。"
+    assert night[0].replace(waiter()[0], "").replace(waiter()[1], "") == plain[0]
+    assert 12 <= WAIT[0] < WAIT[1] <= 40 and all(WORD.lower() not in s.lower() for s in night + plain)
     print("diorama ok")

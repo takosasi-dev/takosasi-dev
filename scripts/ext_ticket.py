@@ -42,6 +42,10 @@ INK, STAMP = "#22201c", "#d6402b"
 PAPER = "M12 1H588a11 11 0 0 1 11 11V288a11 11 0 0 1-11 11H539v-11a9 9 0 0 0-18 0v11H12a11 11 0 0 1-11-11V12A11 11 0 0 1 12 1z"
 NOTES = "経由:GitHub　発行日から無期限有効　下車前途無効"
 SAMPLE = {"login": "your-name", "no": 0, "date": "2026-11-11"}
+# The paper: (ground, the wave pattern, the edge). Lucky numbers are printed on gold; nothing on the page says so.
+GREEN_PAPER = ("#e6f1de", "#bfdab2", "#8fa886")
+GOLD_PAPER = ("url(#gd)", "#cfa646", "#9c7a25")
+MSG_GOLD = "金のきっぷが出ました。"
 
 
 def blank():
@@ -62,6 +66,11 @@ def load():
     return {"count": max([int(raw.get("count", 0))] + [v["no"] for v in issued.values()]), "issued": issued}
 
 
+def lucky(no):
+    """The numbers that get a gold ticket: 1, 7, 10, every hundred, and 11 or more with all digits the same."""
+    return no in (1, 7, 10) or (no > 0 and no % 100 == 0) or (no >= 11 and len(set(str(no))) == 1)
+
+
 def issue(state, title, login, today):
     """(new state, the comment to answer with, the ticket or None). Anything that is not exactly right leaves the state as it is."""
     if not isinstance(title, str) or not TITLE_RE.fullmatch(title):
@@ -74,7 +83,7 @@ def issue(state, title, login, today):
     new = {"count": max(state["count"], t["no"]), "issued": {**state["issued"], key: t}}
     url = RAW + key + ".svg"
     head = "きっぷは発行済みです。同じ番号で作り直しました。" if old else "きっぷを発行しました。"
-    return new, (f"{head}通し番号は No.{t['no']:05d} です。\n\n"
+    return new, (f"{head}通し番号は No.{t['no']:05d} です。{MSG_GOLD if lucky(t['no']) else ''}\n\n"
                  f"![たこさし駅の乗車券]({url})\n\n"
                  "自分の README に貼るときは、次の 1 行をどうぞ。\n\n"
                  f"```md\n[![たこさし駅の乗車券]({url})](https://github.com/{USER})\n```\n\n"
@@ -128,14 +137,22 @@ def draw(t, sample=False):
              f'<path d="M479 85h62M479 107h62" stroke="{STAMP}" stroke-width="2"/>'
              + ink(F12, "たこさし", 486, 69, 1, STAMP)[0] + ink(F12, f"{y[2:]}.{m}.{d}", 486, 90, 1, STAMP)[0] + ink(F12, "改札", 498, 110, 1, STAMP)[0] + "</g>")
     over = ink(F16, "見本", 372, 134, 4, STAMP, bold=True)[0].replace("<path ", '<path opacity=".6" ') if sample else ""
-    body = (f'<defs><pattern id="jm" width="24" height="12" patternUnits="userSpaceOnUse"><path d="M0 6q6-7 12 0t12 0" fill="none" stroke="#bfdab2" stroke-width="1.3"/></pattern>'
-            f'<clipPath id="pp"><path d="{PAPER}"/></clipPath></defs>'
-            f'<path d="{PAPER}" fill="#e6f1de"/><path d="{PAPER}" fill="url(#jm)"/>'
-            f'<g clip-path="url(#pp)"><rect y="62" width="{TW}" height="1.5" fill="{INK}" opacity=".55"/>'
+    gold = lucky(t["no"]) and not sample
+    ground, wave, edge = GOLD_PAPER if gold else GREEN_PAPER
+    # Gold: a foil gradient, and a band of light that crosses the paper now and then (it waits off the paper, so no motion = no band).
+    foil = ('<linearGradient id="gd" x2="1" y2="1"><stop offset="0" stop-color="#f6e5a6"/><stop offset=".42" stop-color="#e3c164"/>'
+            '<stop offset=".58" stop-color="#f9edbe"/><stop offset="1" stop-color="#d9b250"/></linearGradient>'
+            '<style>@keyframes gs{0%,72%{transform:translateX(0)}100%{transform:translateX(900px)}}.gs{animation:gs 7s ease-in-out infinite}'
+            '@media (prefers-reduced-motion:reduce){.gs{animation:none}}</style>') if gold else ""
+    shine = '<g transform="skewX(-20)"><rect class="gs" x="-150" y="-10" width="90" height="320" fill="#fff" opacity=".4"/></g>' if gold else ""
+    body = (f'<defs><pattern id="jm" width="24" height="12" patternUnits="userSpaceOnUse"><path d="M0 6q6-7 12 0t12 0" fill="none" stroke="{wave}" stroke-width="1.3"/></pattern>'
+            f'<clipPath id="pp"><path d="{PAPER}"/></clipPath>{foil}</defs>'
+            f'<path d="{PAPER}" fill="{ground}"/><path d="{PAPER}" fill="url(#jm)"/>'
+            f'<g clip-path="url(#pp)">{shine}<rect y="62" width="{TW}" height="1.5" fill="{INK}" opacity=".55"/>'
             f'<path d="M24 206H576" stroke="{INK}" stroke-width="1.5" stroke-dasharray="3 3" opacity=".7"/>'
             f'<g fill="none" stroke-width="1" shape-rendering="crispEdges">{out}{stamp}{over}</g></g>'
-            f'<path d="{PAPER}" fill="none" stroke="#8fa886" stroke-width="1.5"/>')
-    return body, (f"乗車券{'の見本' if sample else ''}。たこさし → {name}、通し番号 {serial}、発行日 {t['date']}、改札印つき")
+            f'<path d="{PAPER}" fill="none" stroke="{edge}" stroke-width="1.5"/>')
+    return body, (f"{'金の' if gold else ''}乗車券{'の見本' if sample else ''}。たこさし → {name}、通し番号 {serial}、発行日 {t['date']}、改札印つき")
 
 
 def write(t):
@@ -149,8 +166,12 @@ def write(t):
 
 
 def static():
-    """The sample ticket, the sign that opens the issue, and the sign on top of the block."""
+    """The sample ticket, the sign that opens the issue, and the sign on top of the block.
+    The tickets already handed out are printed again too, so they follow a change of the drawing
+    (the daily run does not commit tickets/: run build_assets.py by hand and commit them)."""
     save("ticket-sample.svg", TW, TH, *draw(SAMPLE, sample=True))
+    for t in load()["issued"].values():
+        write(t)
     body = (f'<rect x="1" y="1" width="298" height="62" rx="7" fill="#1d4f9e" stroke="#0d2a57" stroke-width="2"/>'
             f'<circle cx="32" cy="32" r="21" fill="#fff"/>'
             f'<path d="M18 24h28v5a3 3 0 0 0 0 6v5H18v-5a3 3 0 0 0 0-6z" fill="#1d4f9e"/>'
@@ -179,6 +200,13 @@ def selfcheck():
         body, label = draw({"login": login, "no": 99999, "date": day})
         u = name_scale("@" + login)
         assert 1.5 <= u <= 3.5 and F16.width("@" + login) * u <= 552 and login in label, (login, u)
+    # gold: 1, 7, 10, the hundreds and the repdigits; never the sample; told in the answer by one fixed sentence
+    assert [n for n in range(201) if lucky(n)] == [1, 7, 10, 11, 22, 33, 44, 55, 66, 77, 88, 99, 100, 111, 200]
+    assert lucky(77777) and lucky(1000) and not lucky(0) and not lucky(70) and not lucky(101)
+    assert MSG_GOLD in issue(s, "ticket", "Alice", day)[1] and MSG_GOLD not in issue(s1, "ticket", "bob-2", day)[1]
+    for no, sample, gold in ((1, False, True), (2, False, False), (0, True, False), (7, True, False)):
+        body, label = draw({"login": "a", "no": no, "date": day}, sample=sample)
+        assert ("url(#gd)" in body) == ('id="gd"' in body) == label.startswith("金の") == gold, (no, sample)
     for font, text in ((F16, "記念乗車券たこさし駅発行→自動発券機見本￥@No.-"), (F12, NOTES + "たこさし改札")):  # every printed character has a glyph
         assert all(font.glyph(ch) != font.glyph("?") for ch in text), text
     print("ticket ok")

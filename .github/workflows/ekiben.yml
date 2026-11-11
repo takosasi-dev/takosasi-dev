@@ -1,0 +1,41 @@
+name: Sell an ekiben
+
+# A counter that is on no sign: whoever opens an issue titled exactly "ekiben" or "駅弁" is told
+# today's boxed lunch, and the issue is closed. Nothing is kept and nothing is committed.
+#
+# The issue comes from a stranger. Nothing from the event is ever written into a script: the
+# title reaches scripts/ext_ekiben.py through env only, the script accepts nothing but the exact
+# pattern, the body and the login are never read, and the answer is a fixed sentence chosen by
+# the date. Any other title starts nothing here and gets no answer.
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  serve:
+    # "==" does not look at letter case here, so "Ekiben" also starts the job; the script takes that too.
+    if: github.event.issue.title == 'ekiben' || github.event.issue.title == '駅弁'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false # nothing is pushed from here
+      - name: Pick today's box
+        env:
+          TITLE: ${{ github.event.issue.title }}
+        run: python3 scripts/ext_ekiben.py serve > "$RUNNER_TEMP/answer.txt"
+      - name: Answer and close the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: |
+          # An empty answer means the script refused the title: leave the issue alone.
+          if [ -s "$RUNNER_TEMP/answer.txt" ]; then
+            gh issue close "$ISSUE" --repo "$GITHUB_REPOSITORY" --comment "$(cat "$RUNNER_TEMP/answer.txt")"
+          fi

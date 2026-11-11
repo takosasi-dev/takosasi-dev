@@ -327,6 +327,7 @@ OPENED = "2026-11-11"  # the day this profile went up
 SPECIAL = {
     "01-01": "謹賀新年。本年も当駅をよろしくお願いいたします。", "01-02": "謹賀新年。本年も当駅をよろしくお願いいたします。",
     "01-03": "謹賀新年。本年も当駅をよろしくお願いいたします。",
+    "02-29": "本日は 2 月 29 日、4 年に 1 度の臨時ダイヤで運転しています。",
     "04-01": "本日に限り、すべての列車が定刻どおりに運転しています。",
     "07-07": "七夕です。短冊には「バグが出ませんように」と書きました。",
     "10-14": "本日は鉄道の日です。",
@@ -343,9 +344,23 @@ SEASON = {12: SNOW, 1: SNOW, 2: SNOW, 3: SAKURA, 4: SAKURA, 6: ("雨", ["#6aa8ff
           7: STAR, 8: STAR, 10: LEAF, 11: LEAF}
 
 
+def omen(today):
+    """What the date does to the header on a few days a year, said nowhere on the page:
+    "ghost" on Friday the 13th (every destination on the flaps turns into the station that is on no map),
+    "lamps" when all the digits of the month and the day are the same, 2/2, 2/22, 11/11 ... (a lamp test of the LEDs)."""
+    day = datetime.date.fromisoformat(today)
+    if day.day == 13 and day.weekday() == 4:
+        return "ghost"
+    return "lamps" if len(set(f"{day.month}{day.day}")) == 1 else ""
+
+
 def notices(today):
     day = datetime.date.fromisoformat(today)
     out = []
+    if omen(today) == "ghost":
+        out.append("行先の表示に乱れが出ておりますが、気のせいです。")
+    if omen(today) == "lamps":
+        out.append("本日はぞろ目の日につき、表示器の全点灯試験を行っています。")
     if today[5:] == OPENED[5:]:
         years = day.year - int(OPENED[:4])
         out.append(f"本日は当駅の開業記念日です。開業から {years} 年。" if years else "本日、当駅は開業しました。")
@@ -380,6 +395,8 @@ def header(repos, cal, today, stars=()):
         tag = news["tag"].upper()
         turn.append(f'{("NEW " + news["name"].upper())[:23 - len(tag)]} {tag}')
     turn += [f'{len(repos)} REPOS  {sum(r["releases"] for r in repos)} RELEASES', "インフラ ネットワーク セキュリティ"]
+    if omen(today) == "ghost":
+        turn = ["きさらぎ ゆき", "FOR KISARAGI", "つぎの れっしゃ みてい", "NEXT TRAIN UNKNOWN"]
     f1, _, _ = flap.board("a", 22.5, 61, [["TAKOSASI-DEV"]], 12, 64, 80, gap=3)
     f2, _, _ = flap.board("e", 22, 150, [[s.center(24) for s in turn]], 24, 31.5, 40)
     ROWS = 45
@@ -406,6 +423,8 @@ def header(repos, cal, today, stars=()):
             for x, y in dots:
                 rows[y][x] = 1
             b.raw(rows, 0, 0, c, blink=bool(i), op=.8)
+    if omen(today) == "lamps":
+        b.lamps([RED, GREEN, AMBER])
     spots = "".join(
         f'<circle cx="{968 + i * 44}" cy="56" r="15" fill="{c}"/>'
         f'<text x="{968 + i * 44}" y="62" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">{i + 1}</text>'
@@ -585,6 +604,7 @@ def check(repos):
 if __name__ == "__main__":
     # PROFILE_DATE=2026-12-31 lets you look at another day (season, notices, the daily draws).
     today = os.environ.get("PROFILE_DATE") or datetime.datetime.now(JST).date().isoformat()
+    assert [omen(d) for d in ("2026-11-13", "2026-11-11", "2026-02-22", "2026-11-12", "2026-12-12")] == ["ghost", "lamps", "lamps", "", ""]
     repos, cal, stars, extra = fetch(today)
     cat_of = {r["name"]: next(title for title, test in CATS if test(r)) for r in repos}
     groups = {title: sorted((r for r in repos if cat_of[r["name"]] == title), key=lambda r: r["name"].strip("-").lower())

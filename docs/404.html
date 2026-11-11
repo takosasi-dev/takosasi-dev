@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- GitHub Pages answers with this page for every address under /takosasi-dev/ that does not exist, at any depth,
+     so every address in it starts at the root. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>のりすごし | この駅はありません</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/takosasi-dev/station.css">
+</head>
+<body>
+<main>
+
+<header class="name">
+  <p class="name-ja">のりすごし</p>
+  <p class="name-en">NORISUGOSHI <span>404 / Not found</span></p>
+  <div class="band"><a href="/takosasi-dev/">◀ たこさし</a><span>この先 線路なし ▶</span></div>
+</header>
+
+<section class="case" aria-labelledby="h-board">
+  <div class="strip"><h2 id="h-board">発車案内</h2><span>Departures</span><small>乗り過ごしました</small></div>
+  <div class="led" id="board" role="img" aria-label="LED の発車標。この駅はありません。乗り過ごしました"></div>
+  <p class="note center">この駅はありません。お探しのページは、路線図に載っていないか、もう廃止されています。</p>
+  <p class="note center" id="asked"></p>
+</section>
+
+<nav class="exits" aria-label="出口">
+  <a class="play" href="/takosasi-dev/"><small>折り返し　RETURN</small>たこさし駅 構内へ</a>
+  <a href="https://github.com/takosasi-dev"><small>出口　EXIT</small>GitHub のプロフィール</a>
+</nav>
+
+<footer><p>寝過ごしたお客様も、打ちまちがえたお客様も、折り返しの列車は無料です。</p></footer>
+
+</main>
+<script src="/takosasi-dev/font.js"></script>
+<script src="/takosasi-dev/led.js"></script>
+<script src="/takosasi-dev/lost.js"></script>
+</body>
+</html>

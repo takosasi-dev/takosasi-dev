@@ -5,20 +5,22 @@
 const Rally = (() => {
   const KEY = "takosasi-dev.rally";
   const IDS = ["gate", "bell", "packet", "eyes", "line", "kisaragi"];
+  const EXTRA = ["ekicho"];   // not one of the six: "all stations" does not need it, and the card shows no place for it until it is pressed
+  const ALL = [...IDS, ...EXTRA];
   const mem = {};   // id -> time, the stamps pressed on this page
 
   function read() {
     const out = { ...mem };
     try {
       const o = JSON.parse(localStorage.getItem(KEY) || "{}");
-      for (const id of IDS) if (o && Number.isFinite(o[id]) && o[id] > 0) out[id] = o[id];
+      for (const id of ALL) if (o && Number.isFinite(o[id]) && o[id] > 0) out[id] = o[id];
     } catch (e) { /* no storage: this visit only */ }
     return out;
   }
 
   /* Press one stamp. True if it is new. */
   function stamp(id) {
-    if (!IDS.includes(id)) return false;
+    if (!ALL.includes(id)) return false;
     const s = read();
     if (s[id]) return false;
     s[id] = mem[id] = Date.now();
@@ -26,5 +28,5 @@ const Rally = (() => {
     return true;
   }
 
-  return { IDS, read, stamp };
+  return { IDS, EXTRA, read, stamp };
 })();

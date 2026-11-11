@@ -1,7 +1,7 @@
 <div align="center">
 
 <img src="assets/header.svg" width="100%" alt="TAKOSASI-DEV 発車案内 // インフラ・ネットワーク・セキュリティ。ゲーム、デスクトップツール、プラグインなど、思いついた物を作っています">
-<img src="assets/diorama.svg" width="100%" alt="たこさし駅前の大型 LED ビジョン: 60 秒で朝・昼・夕・夜が巡り、高架の駅に列車が発着する。ビルの高さは過去 1 年の週ごとの活動量。今日の東京の天気に合わせて、雨や雪が降る">
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/diorama-dark.svg"><img src="assets/diorama.svg" width="100%" alt="たこさし駅前の大型 LED ビジョン: 60 秒で朝・昼・夕・夜が巡り、高架の駅に列車が発着する。ビルの高さは過去 1 年の週ごとの活動量。今日の東京の天気に合わせて、雨や雪が降る"></picture>
 
 <a href="https://x.com/kou111011051"><img src="assets/link-x.svg" width="330" alt="X (Twitter): @kou111011051"></a>
 <a href="https://takosasi-dev.github.io/takosasi-dev/"><img src="assets/gate.svg" width="330" alt="改札口: 構内(GitHub Pages)へ。実時刻の発車標・発車ベル・キーボードで遊べるゲーム・構内スタンプラリー"></a>

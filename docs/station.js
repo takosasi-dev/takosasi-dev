@@ -109,6 +109,11 @@
     const b = main, N = b.narrow, R = b.cols - 5, now = new Date(), t = ms / 1000;
     const colon = calm || now.getMilliseconds() < 500 ? ":" : " ";
     b.begin();
+    if (ms < run) {
+      drawTako(b, ms);
+      b.end();
+      return;
+    }
     b.text(two(now.getHours()) + colon + two(now.getMinutes()) + colon + two(now.getSeconds()), 6, 4, C.AMBER, { scale: 2 });
     const date = `${now.getMonth() + 1}月${now.getDate()}日(${"日月火水木金土"[now.getDay()]})`;
     if (N) {
@@ -149,6 +154,51 @@
     }
     b.ticker(tick, yT, C.AMBER, calm ? 0 : t);
     b.end();
+  }
+
+  // ------------------------------------------------------------------ the hidden command
+  // Up up down down left right left right B A on the keyboard, or seven taps on the station name sign within three seconds: for eight seconds
+  // the departure board belongs to the station master, who runs across it and back. Written nowhere on the page.
+  // The left half of the body with a glad face (scripts/ext_tako.py draws the same one in the README); the right half is its mirror image.
+  const HALF = ["........AAAAAAAAA", ".......AAAAAAAAAA", ".......AAAAAAAAAW", "........AAAAAAAAW", ".........WWWWWWWW", "........AAAAAAAAA",
+                "........RRRRRRRRR", ".......RRRRRRRRRR", "......RRRRRRRRRRR", "......RRRRRRRRRRR", "......RRRR..RRRRR", "......RRR.RR.RRRR",
+                "......RRRRRRRRRRR", "......RRRRRRRRRRR", "......RRRRRRRR.RR", "......RRRRRRRRR..", ".......RRRRRRRRRR", "........RRRRRRRRR",
+                ".......RRRRRRRRRR", "....RRRRRRRRRRRRR", "..RRRR.RR.RRR.RR.", ".RRR...RR..RR.RR.", ".RR...RRR..RR.RR.", ".RR...RR..RRR.RR.",
+                ".RRR..RR..RR..RR.", "..RRR.RRR.RR.RRR.", "...R...RR.RRR.RR."];
+  const LEGS = 19, INK = { A: C.AMBER, W: C.WHITE, R: C.RED };
+  const KONAMI = "ArrowUp,ArrowUp,ArrowDown,ArrowDown,ArrowLeft,ArrowRight,ArrowLeft,ArrowRight,b,a";
+  let run = 0, typed = [], taps = [];   // run: the board is the station master's until this time (ms on the page clock)
+
+  function runTako() {
+    if (performance.now() < run) return;
+    run = performance.now() + 8000;
+    Sound.sfx("go");
+  }
+  document.querySelector(".name").addEventListener("click", e => {
+    if (e.target.closest("a")) return;
+    const now = performance.now();
+    taps = [...taps.filter(t => now - t < 3000), now];
+    if (taps.length >= 7) {
+      taps = [];
+      runTako();
+    }
+  });
+
+  function drawTako(b, ms) {
+    const N = b.narrow, k = N ? 2 : 3, w = 34 * k, t = 1 - (run - ms) / 8000, s = ms / 1000;   // t: 0 at the start, 1 at the end
+    const span = b.cols + w, top = N ? 96 : 56;
+    // to the right edge and out, then back in and out on the left; standing in the middle for a visitor who asked for less motion
+    const x0 = calm ? (b.cols - w) >> 1 : Math.round(t < .5 ? span * t * 2 - w : b.cols - span * (t - .5) * 2);
+    const hop = calm ? 0 : Math.round(Math.abs(Math.sin(s * 9)) * 2) * k;
+    const say = "駅長が通過します", sk = N ? 1 : 2;
+    if (calm || s % .8 < .55) b.text(say, (b.cols - width(say, sk)) >> 1, N ? 30 : 8, C.RED, { scale: sk });
+    HALF.forEach((half, r) => {
+      const sway = r >= LEGS && !calm ? Math.round(Math.sin(s * 14 + r * .9)) * k : 0;   // the legs paddle
+      [...half + [...half].reverse().join("")].forEach((ch, i) => {
+        if (INK[ch]) b.rect(x0 + i * k + sway, top - hop + r * k, k, k, INK[ch]);
+      });
+    });
+    b.ticker("駅長、構内を走らないでください。　　　", N ? 206 : 158, C.AMBER, calm ? 0 : s, 60);
   }
 
   // The bell: a tune written for this page, in D major. [MIDI note, beats]
@@ -329,14 +379,18 @@
   function showRally() {
     got = Rally.read();
     const n = Rally.IDS.filter(id => got[id]).length;
+    const more = Rally.EXTRA.some(id => got[id]);
+    $("rally").classList.toggle("more", more);
     for (const li of $("rally").children) {
       const at = got[li.dataset.id], d = new Date(at || 0);
+      if (Rally.EXTRA.includes(li.dataset.id)) li.hidden = !at;   // no place on the card until it is pressed
       li.classList.toggle("got", !!at);
       li.classList.toggle("new", li.dataset.id === fresh);
       if (at && li.dataset.name) li.querySelector("b").textContent = li.dataset.name;   // the hidden one shows its name once found
       li.querySelector("i").textContent = at ? `${d.getMonth() + 1}.${two(d.getDate())}` : "";
     }
-    say("rally-say", n === Rally.IDS.length ? `全駅制覇。スタンプが ${n} つ全部そろいました` : `スタンプ ${n} / ${Rally.IDS.length}`);
+    say("rally-say", (n === Rally.IDS.length ? `全駅制覇。スタンプが ${n} つ全部そろいました` : `スタンプ ${n} / ${Rally.IDS.length}`)
+      + (more ? "。ほかに、駅長室の印が 1 つ" : ""));
   }
   function press(id) {
     if (!Rally.stamp(id)) return;
@@ -351,7 +405,7 @@
                  line: "たこさし線に乗る", kisaragi: "路線図に載っていない駅をさがす" };
   function drawRally(ms) {
     const b = rallyB, N = b.narrow, R = b.cols - 5, x0 = N ? 3 : 5, t = ms / 1000;
-    const all = Rally.IDS, n = all.filter(id => got[id]).length;
+    const all = Rally.IDS, n = all.filter(id => got[id]).length, more = Rally.EXTRA.some(id => got[id]);
     b.begin();
     if (n === all.length) {
       const d = new Date(Math.max(...all.map(id => got[id]))), when = `${d.getFullYear()}.${two(d.getMonth() + 1)}.${two(d.getDate())} 達成`;
@@ -359,9 +413,10 @@
       if (N) b.text(when, (b.cols - width(when)) >> 1, 40, C.GREEN);
       else {
         b.text(when, R - 6, 6, C.GREEN, { right: true });
-        b.text(`スタンプ ${n}/${n}`, R - 6, 22, C.GREEN, { right: true });
+        b.text(`スタンプ ${n}/${n}` + (more ? " +1" : ""), R - 6, 22, C.GREEN, { right: true });
       }
-      b.ticker("構内スタンプラリー、全駅制覇です。すみずみまで見てくださって、ありがとうございます。　　　", N ? 60 : 42, C.AMBER, calm ? 0 : t);
+      b.ticker("構内スタンプラリー、全駅制覇です。すみずみまで見てくださって、ありがとうございます。　　　"
+               + (more ? "駅長室の扉まで開けたのは、あなたくらいです。　　　" : ""), N ? 60 : 42, C.AMBER, calm ? 0 : t);
       // lamps running round the frame, like the border of a prize board
       const w = b.cols, h = b.rows, c = b.ci(C.RED), step = calm ? 0 : Math.floor(t * 6);
       for (let i = 0; i < 2 * (w + h); i++) {
@@ -373,7 +428,8 @@
       }
     } else {
       b.text("スタンプ", x0 + 2, 5, C.GREEN, { invert: true });
-      b.text(`${n}/${all.length}`, N ? 84 : 86, 4, C.AMBER, { scale: 2 });
+      const cw = b.text(`${n}/${all.length}`, N ? 84 : 86, 4, C.AMBER, { scale: 2 });
+      if (more) b.text("+1", (N ? 84 : 86) + cw + 4, 18, C.GREEN);
       if (N) b.text(`あと ${all.length - n} つ`, x0, 40, C.GREEN);
       else b.text(`あと ${all.length - n} つ`, R, 12, C.GREEN, { right: true });
       b.ticker("のこり: " + all.filter(id => !got[id]).map(id => HINT[id]).join("　／　") + "　　　", N ? 60 : 42, C.AMBER, calm ? 0 : t);
@@ -387,7 +443,16 @@
     if (pk.state === "play" && (e.key === "ArrowLeft" || e.key === "ArrowRight")) pkAnswer(e.key === "ArrowRight");
     else if (ps.state === "ask" && /^[0-9]$/.test(e.key)) psType(e.key);
     else if (ps.state === "ask" && e.key === "Backspace") psType(null);
-    else return;
+    else {
+      // Not a key of a game. While no game is waiting for keys it may be the next key of the hidden command;
+      // nothing is prevented here, so the arrows scroll the page as always.
+      typed = pk.state === "play" || ps.state === "ask" ? [] : [...typed, e.key.length === 1 ? e.key.toLowerCase() : e.key].slice(-10);
+      if (typed.join() === KONAMI) {
+        typed = [];
+        runTako();
+      }
+      return;
+    }
     e.preventDefault();
   });
 
@@ -404,4 +469,14 @@
   load();
   poll();
   setInterval(poll, 10 * 60 * 1000);   // 6 calls an hour, far under the 60 an address may make without a token
+
+  // An announcement for whoever opens the developer tools: the name in LED dots (two rows of dots to a line), and a hint.
+  const dots = [..."TAKOSASI"].map(ch => ((window.FONT || {})[ch] || [8, ""])[1]);
+  const art = Array.from({ length: 8 }, (_, l) => dots.map(hex => {
+    const up = parseInt(hex.substr(l * 4, 2), 16) || 0, down = parseInt(hex.substr(l * 4 + 2, 2), 16) || 0;
+    return Array.from({ length: 8 }, (_, i) => " ▄▀█"[(up >> (7 - i) & 1) * 2 + (down >> (7 - i) & 1)]).join("");
+  }).join("")).join("\n");
+  console.log("%c" + art, "font: 12px/1 monospace; color: #ffab1f; background: #080706; padding: 6px 0");
+  console.log("%c構内放送%c 開発者ツールをご利用のお客様へ。駅長室の鍵は、駅前の信号機が知っています。",
+              "background: #ff4a36; color: #080706; font-weight: 700; padding: 1px 6px", "");
 })();

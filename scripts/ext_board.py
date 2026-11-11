@@ -39,6 +39,11 @@ WOOD, WOOD_EDGE, SLATE = "#8a5a34", "#5e3b1f", "#2c5a43"
 CHALK, YELLOW, BLUE = "#f3f2e8", "#ffe27a", "#a9dcf5"
 ROW, TOP = 40, 96                 # height of one line, top of the first line
 X_DATE, X_TEXT, X_NAME, NAME_W = 30, 132, 506, 320
+# The octopus somebody draws in chalk once the board is full: head, eyes, mouth, four legs. 44 wide, in the top right corner.
+DOODLE_W = 54
+DOODLE = (f'<g transform="translate({W - 72} 13) rotate(-7 22 22)" fill="none" stroke="{CHALK}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity=".85">'
+          '<path d="M9 23c-6-12 2-21 13-21s19 9 13 21q-13 5-26 0M16.5 11v3M27.5 11v3M22 17.5a2.3 2.3 0 1 0 .01 0'
+          'M11 25c-1 7-3 11-9 9M18 27c0 7-1 11-6 13M26 27c0 7 1 11 6 13M33 25c1 7 3 11 9 9"/></g>')
 
 
 def blank():
@@ -106,8 +111,11 @@ def draw(state):
     rule = "".join(f"M22 {TOP + i * ROW}H{W - 22}" for i in range(rows))
     out += (f'<path d="{rule}M{X_TEXT - 12} 62V{bottom - 8}M{X_NAME - 12} 62V{bottom - 8}" stroke="{CHALK}" stroke-width="1.5" opacity=".3"/>'
             f'<path d="M22 60H{W - 22}" stroke="{CHALK}" stroke-width="2" opacity=".55"/>')
+    full = len(posts) == KEEP
+    if full:  # every line is taken: someone has doodled an octopus in the top right corner (the note moves over for it)
+        out += DOODLE
     text = [ink(F16, "伝言板", 26, 20, 2, CHALK, bold=True)[0], ink(F12, "MESSAGE BOARD", 136, 36, 1, CHALK)[0],
-            ink(F12, "下の札から 1 行書けます。新しい伝言が上", W - 26, 34, 1, CHALK, right=True)[0],
+            ink(F12, "下の札から 1 行書けます。新しい伝言が上", W - 26 - (DOODLE_W if full else 0), 34, 1, CHALK, right=True)[0],
             ink(F12, "月日", X_DATE, 70, 1.5, CHALK)[0], ink(F12, "伝言", X_TEXT, 70, 1.5, CHALK)[0], ink(F12, "お名前", X_NAME, 70, 1.5, CHALK)[0]]
     for i, p in enumerate(posts):
         y = TOP + i * ROW + 4
@@ -126,7 +134,7 @@ def draw(state):
                 f'<g clip-path="url(#bc)"><rect class="bw" opacity="0" x="12" y="{TOP + 2}" width="{W - 24}" height="{ROW - 4}" fill="{SLATE}"/></g>')
     label = "駅の伝言板。" + ("、".join(f"{p['date'][5:7]}/{p['date'][8:10]} {esc(p['login'])}「{PHRASES[p['n'] - 1]}」" for p in posts)
                           if posts else "まだ伝言はありません。最初の伝言をお待ちしています。")
-    return out, label, h
+    return out, label + ("。隅に、チョークで描いたたこの落書きがある" if full else ""), h
 
 
 def write(state):
@@ -179,6 +187,8 @@ def selfcheck():
         body, label, h = draw(st)
         assert body.count("<svg") == 0 and "nan" not in body and h == TOP + max(len(st["posts"]), 4) * ROW + 36
         assert all(p["login"] in label for p in st["posts"]) and (st["posts"] or "お待ち" in body or "お待ち" in label)
+        assert (DOODLE in body) == ("落書き" in label) == (len(st["posts"]) == KEEP)  # the doodle: on a full board only
+    assert DOODLE not in draw({"posts": s2["posts"][:KEEP - 1]})[0]
     for login in ("a", "W" * 39, "your-name"):
         assert F16.width(login) * name_scale(login) <= NAME_W and name_scale(login) >= 1, login
     assert max(F16.width(p) for p in PHRASES) * 2 <= X_NAME - 12 - X_TEXT - 6

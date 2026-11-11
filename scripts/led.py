@@ -109,7 +109,7 @@ class Board:
     def __init__(self, uid, x, y, cols, rows, p=2):
         self.uid, self.x, self.y, self.cols, self.nrows, self.p = uid, x, y, cols, rows, p
         self.w, self.h = cols * p, rows * p
-        self.static, self.tick, self.css, self.loose = [], "", "", ""
+        self.static, self.tick, self.css, self.loose, self.top = [], "", "", "", ""
 
     def raw(self, rows, cx, cy, col, blink=False, op=1):
         a = (f' class="{self.uid}bl"' if blink else "") + (f' opacity="{op}"' if op != 1 else "")
@@ -162,6 +162,17 @@ class Board:
             f".{u}tk{{animation:{u}tk {period}s infinite}}"
         )
 
+    def lamps(self, cols, each=.8, period=60):
+        """A lamp test: every dot lit in each colour of `cols` in turn, `each` seconds apiece, once every `period`,
+        over everything else. With motion off it never shows."""
+        u, d = self.uid, path_d([[1] * self.cols] * self.nrows)
+        self.css += f"@media (prefers-reduced-motion:reduce){{.{u}lt{{animation:none!important}}}}"
+        for i, c in enumerate(cols):
+            a, z = (f"{each * k / period * 100:.2f}" for k in (i, i + 1))
+            self.top += f'<path class="{u}lt {u}l{i}" stroke="{c}" opacity="0" d="{d}"/>'
+            self.css += (f"@keyframes {u}l{i}{{{a}%{{opacity:1}}{z}%,100%{{opacity:0}}}}"
+                         f".{u}l{i}{{animation:{u}l{i} {period}s steps(1) infinite}}")
+
     def svg(self):
         u, x, y, p = self.uid, self.x, self.y, self.p
         g = (
@@ -188,7 +199,7 @@ class Board:
         out += f'<use href="#{u}s" filter="url(#{u}g)" opacity=".55"/><use href="#{u}s"/>'
         if self.tick:
             out += f'<use href="#{u}t" filter="url(#{u}g)" opacity=".45"/><use href="#{u}t"/>'
-        return out + "</g>"
+        return out + self.top + "</g>"
 
 
 if __name__ == "__main__":  # self-check: python3 scripts/led.py

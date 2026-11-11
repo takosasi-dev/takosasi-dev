@@ -16,7 +16,7 @@ This profile is drawn as a Japanese railway station. The pictures are SVG files 
 
 <div align="center">
 
-<img src="assets/diorama.svg" width="100%" alt="The station front on a large LED screen: a whole day passes in 60 seconds">
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/diorama-dark.svg"><img src="assets/diorama.svg" width="100%" alt="The station front on a large LED screen: a whole day passes in 60 seconds"></picture>
 
 </div>
 
