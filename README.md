@@ -519,7 +519,7 @@ Issue は自動で返事が付いて閉じられます。同じ人が何度出�
 
 <img src="assets/riders.svg" width="100%" alt="スターを付けた方を乗せた列車と、乗客の名前の一覧">
 
-私の公開リポジトリのどれかにスターを付けると、乗客として列車の窓に載ります(反映は翌朝。このリポジトリへのスターなら数分で載ります)。
+<a href="https://github.com/takosasi-dev/takosasi-dev">このリポジトリ</a>にスターを付けると、数分であなたのアイコンが列車の窓に載ります。
 
 <a href="https://takosasi-dev.github.io/takosasi-dev/kisaragi/"><img src="assets/qr.svg" width="100%" alt="連絡のりば: LED の点で描いた QR コード。スマホのカメラで読むと、路線図に載っていない隠し駅へ行ける"></a>
 

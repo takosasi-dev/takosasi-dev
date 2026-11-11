@@ -23,6 +23,9 @@ jobs:
       - name: Rebuild the live panels, project cards and the archive list
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          # Optional. The token above can list the stars of this repo only; with a read-only personal token
+          # stored as the secret STARS_TOKEN, the passengers' train also carries who starred the other repos.
+          STARS_TOKEN: ${{ secrets.STARS_TOKEN }}
         run: python3 scripts/update_live.py
       - name: Commit if changed
         run: |
