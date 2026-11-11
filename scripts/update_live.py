@@ -29,13 +29,14 @@ import sys
 import urllib.request
 
 sys.path.insert(0, os.path.dirname(__file__))
+import flap  # noqa: E402
 from style import *  # noqa: E402,F403
 
 USER = "takosasi-dev"
 README = os.path.join(ROOT, "README.md")
 # Optional modules in scripts/. Each may define static() (called by build_assets.py) and
 # live(ctx) -> {MARKER: text}; the text replaces what is between <!-- MARKER:START --> and <!-- MARKER:END --> in README.
-EXTENSIONS = ["ext_train", "ext_tako", "ext_data", "ext_games"]
+EXTENSIONS = ["ext_train", "ext_tako", "ext_data", "ext_games", "ext_diorama", "ext_riders", "ext_ticket", "ext_site", "ext_qr"]
 NOTE = "GitHub の記録から毎日自動で更新"
 
 # ponytail: one page of 100 repos, no cursor paging. Add paging when the account passes 100 public repos.
@@ -51,6 +52,7 @@ QUERY = """query($login: String!) {
           totalCount
           nodes { tagName publishedAt }
         }
+        stargazers(last: 10) { edges { starredAt node { login avatarUrl } } }
       }
     }
     contributionsCollection {
@@ -61,7 +63,7 @@ QUERY = """query($login: String!) {
 
 
 def fetch():
-    """(public repos, most recently pushed first; the contribution calendar)."""
+    """(public repos, most recently pushed first; the contribution calendar; who starred, newest first)."""
     if len(sys.argv) > 1:
         with open(sys.argv[1], encoding="utf-8") as f:
             data = json.load(f)
@@ -75,8 +77,16 @@ def fetch():
     if data.get("errors"):
         sys.exit(f"GraphQL error: {data['errors']}")
     user = data["data"]["user"]
-    repos = []
+    repos, stars = [], {}
     for n in user["repositories"]["nodes"]:
+        # Stars on any repo, this one included. One entry per person (the newest star). The login and the
+        # avatar address end up in pictures and file names, so anything that is not the plain form is dropped.
+        for e in (n.get("stargazers") or {}).get("edges") or []:
+            s = {"login": e["node"]["login"], "avatar": e["node"]["avatarUrl"], "at": e["starredAt"], "repo": n["name"]}
+            if (s["login"] != USER and re.fullmatch(r"[A-Za-z0-9-]{1,39}", s["login"])
+                    and s["avatar"].startswith("https://avatars.githubusercontent.com/")
+                    and s["at"] > stars.get(s["login"], {"at": ""})["at"]):
+                stars[s["login"]] = s
         if n["name"] == USER:
             continue
         last = (n["releases"]["nodes"] or [{}])[0]
@@ -91,7 +101,8 @@ def fetch():
             "tag": last.get("tagName") or "",
             "tag_date": (last.get("publishedAt") or "")[:10],
         })
-    return repos, user["contributionsCollection"]["contributionCalendar"]
+    return (repos, user["contributionsCollection"]["contributionCalendar"],
+            sorted(stars.values(), key=lambda s: s["at"], reverse=True))
 
 
 def md(date):
@@ -265,8 +276,9 @@ def notices(today):
     return out
 
 
-def header(repos, cal, today):
-    """The departure board. The status line, the notices and what falls on the board follow the real data and the date."""
+def header(repos, cal, today, stars=()):
+    """The departure board: split-flap rows for the name, an LED window for the status line and the notices.
+    The status, the notices and what falls on the LEDs follow the real data and the date."""
     cur, _, idle = streaks(cal)
     yesterday = (datetime.date.fromisoformat(today) - datetime.timedelta(days=1)).isoformat()
     fresh = [r for r in repos if r["tag_date"] >= yesterday]
@@ -279,26 +291,36 @@ def header(repos, cal, today):
         col, status = AMBER, f"増発中 連続{cur}日"
     else:
         col, status = GREEN, "全系統 正常稼働中"
-    b = Board("h", LED_X, 61, LED_COLS, 86)
-    b.put(F16, "TAKOSASI-DEV", 5, 4, AMBER, scale=2, bold=True)
-    b.put(F16, "インフラ/ネットワーク", 207, 4, GREEN)
-    b.put(F16, "/セキュリティ", 207, 21, GREEN)
-    w = b.put(F16, "運行情報", 7, 44, RED, invert=True)
-    pw =b.put(F16, f"のりば 1-{len(LINE)}", 397, 44, AMBER, right=True)
-    b.put(F16, F16.fit(status, 397 - pw - 8 - (15 + w)), 15 + w, 44, col)
+    # The flaps: the name turns up once when the page opens; the row under it keeps turning.
+    news = max((r for r in repos if r["tag_date"]), key=lambda r: r["tag_date"], default=None)
+    turn = ["INFRA NETWORK SECURITY"]
+    if news:
+        tag = news["tag"].upper()
+        turn.append(f'{("NEW " + news["name"].upper())[:23 - len(tag)]} {tag}')
+    turn += [f'{len(repos)} REPOS  {sum(r["releases"] for r in repos)} RELEASES', "インフラ ネットワーク セキュリティ"]
+    f1, _, _ = flap.board("a", 22.5, 61, [["TAKOSASI-DEV"]], 12, 64, 80, gap=3)
+    f2, _, _ = flap.board("e", 22, 150, [[s.center(24) for s in turn]], 24, 31.5, 40)
+    ROWS = 45
+    b = Board("h", LED_X, 199, LED_COLS, ROWS)
+    w = b.put(F16, "運行情報", 7, 4, RED, invert=True)
+    pw = b.put(F16, f"のりば 1-{len(LINE)}", 397, 4, AMBER, right=True)
+    b.put(F16, F16.fit(status, 397 - pw - 8 - (15 + w)), 15 + w, 4, col)
     extra = notices(today)
-    b.ticker(F16, "".join(s + "　　" for s in extra)
+    # Whoever starred in the last two weeks is thanked by name; the passengers' train (ext_riders) keeps everyone.
+    since = (datetime.date.fromisoformat(today) - datetime.timedelta(days=14)).isoformat()
+    thanks = "".join(f'{s["login"]} 様、ご乗車ありがとうございます。　　' for s in list(stars)[:3] if s["at"][:10] >= since)
+    b.ticker(F16, "".join(s + "　　" for s in extra) + thanks
              + "ゲーム、デスクトップツール、プラグインなど、思いついた物を作っています。　　"
-               "GAMES, DESKTOP TOOLS, PLUGINS AND WHATEVER COMES TO MIND.　　　", 66, AMBER)
+               "GAMES, DESKTOP TOOLS, PLUGINS AND WHATEVER COMES TO MIND.　　　", 26, AMBER)
     _, cols, secs, piece = SEASON.get(int(today[5:7]), ("", [], 0, []))
     rnd = random.Random("season" + today)
     for i, c in enumerate(cols * 2):
-        spots = [(rnd.randrange(2, LED_COLS - 3), rnd.randrange(2, 82)) for _ in range(18 // len(cols))]
+        spots = [(rnd.randrange(2, LED_COLS - 3), rnd.randrange(2, ROWS - 4)) for _ in range(8 // len(cols))]
         dots = [(x + dx, y + dy) for x, y in spots for dx, dy in piece]
         if secs:
             b.drift(dots, c, secs + i * 4, op=.8)  # two layers at different speeds
         else:  # stars do not fall: one half is steady, the other half blinks
-            rows = [[0] * LED_COLS for _ in range(86)]
+            rows = [[0] * LED_COLS for _ in range(ROWS)]
             for x, y in dots:
                 rows[y][x] = 1
             b.raw(rows, 0, 0, c, blink=bool(i), op=.8)
@@ -308,16 +330,16 @@ def header(repos, cal, today):
         for i, c in enumerate(LINE))
     body = (
         f'<g transform="scale(.705)"><rect x="180" width="14" height="30" fill="#33373e"/><rect x="1006" width="14" height="30" fill="#33373e"/>'
-        f'<rect x="6" y="24" width="1188" height="328" rx="10" fill="{BODY}" stroke="{EDGE}"/>'
+        f'<rect x="6" y="24" width="1188" height="408" rx="10" fill="{BODY}" stroke="{EDGE}"/>'
         f'<rect x="16" y="26" width="1168" height="2" fill="#6a717b" opacity=".45"/>'
         f'<g font-family="{GOTH}"><rect x="30" y="38" width="36" height="36" rx="5" fill="#1d63c4"/>'
         f'<path d="M40 49h16a3 3 0 0 1 3 3v11a3 3 0 0 1-3 3H40a3 3 0 0 1-3-3V52a3 3 0 0 1 3-3zm1 4v6h14v-6zm1 9.5a1.5 1.5 0 1 0 .01 0zm12 0a1.5 1.5 0 1 0 .01 0zM42 66l-3 4m15-4l3 4" fill="#fff" stroke="#fff" stroke-width="1.6" fill-rule="evenodd"/>'
         f'<text x="80" y="66" font-size="26" font-weight="700" fill="#f2f2ee" letter-spacing="4">発車案内</text>'
         f'<text x="214" y="65" font-size="15" fill="#aab0b8" letter-spacing="1">Departures</text>'
         f'<text x="886" y="62" font-size="15" fill="#aab0b8">のりば</text>{spots}</g></g>'
-        + b.svg() + seam(b, 41) + seam(b, 63))
-    save("header.svg", W, 252, body,
-         f"TAKOSASI-DEV 発車案内。インフラ、ネットワーク、セキュリティ。運行情報: {status}。" + "".join(extra))
+        + f1 + f2 + b.svg() + seam(b, 23))
+    save("header.svg", W, 309, body,
+         f"TAKOSASI-DEV 発車案内。インフラ、ネットワーク、セキュリティ。運行情報: {status}。" + "".join(extra) + thanks)
 
 
 # --------------------------------------------------------------------------- boards
@@ -479,7 +501,7 @@ def check(repos):
 
 
 if __name__ == "__main__":
-    repos, cal = fetch()
+    repos, cal, stars = fetch()
     cat_of = {r["name"]: next(title for title, test in CATS if test(r)) for r in repos}
     groups = {title: sorted((r for r in repos if cat_of[r["name"]] == title), key=lambda r: r["name"].strip("-").lower())
               for title in CAT}
@@ -496,12 +518,12 @@ if __name__ == "__main__":
     contrib(cal)
     # PROFILE_DATE=2026-12-31 lets you look at another day (season, notices, the daily draws).
     today = os.environ.get("PROFILE_DATE") or datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date().isoformat()
-    header(repos, cal, today)
+    header(repos, cal, today, stars)
     luck, pick = fortune(repos, today)
     parts = {"CARDS": cards_md(feat), "ARCHIVE": archive_md(groups), "FORTUNE": pick}
     # Everything an extension needs, so that it never has to import this file.
     ctx = {"repos": repos, "cal": cal, "cat_of": cat_of, "groups": groups, "today": today, "luck": luck,
-           "CAT": CAT, "DESC": DESC, "USER": USER}
+           "CAT": CAT, "DESC": DESC, "USER": USER, "stars": stars}
     for name in EXTENSIONS:
         if importlib.util.find_spec(name):
             parts.update(getattr(importlib.import_module(name), "live", lambda ctx: {})(ctx) or {})

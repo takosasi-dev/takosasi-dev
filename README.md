@@ -1,8 +1,10 @@
 <div align="center">
 
 <img src="assets/header.svg" width="100%" alt="TAKOSASI-DEV 発車案内 // インフラ・ネットワーク・セキュリティ。ゲーム、デスクトップツール、プラグインなど、思いついた物を作っています">
+<img src="assets/diorama.svg" width="100%" alt="たこさし駅前の大型 LED ビジョン: 60 秒で朝・昼・夕・夜が巡り、高架の駅に列車が発着する。ビルの高さは過去 1 年の週ごとの活動量">
 
 <a href="https://x.com/kou111011051"><img src="assets/link-x.svg" width="330" alt="X (Twitter): @kou111011051"></a>
+<a href="https://takosasi-dev.github.io/takosasi-dev/"><img src="assets/gate.svg" width="330" alt="改札口: 構内(GitHub Pages)へ。実時刻の発車標・発車ベル・キーボードで遊べるゲーム"></a>
 
 <a href="#noriba-1"><img src="assets/nav-1.svg" height="34" alt="1 番線 ご案内 へ"></a>
 <a href="#noriba-2"><img src="assets/nav-2.svg" height="34" alt="2 番線 制作物 へ"></a>
@@ -22,7 +24,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 
 <a name="noriba-1"></a>
 <img src="assets/sec-01.svg" width="100%" alt="1 番線 ご案内 INFORMATION">
-<img src="assets/tako.svg" width="100%" alt="駅長室: 旗を振るタコの駅長と、毎朝かわる駅長の一言">
+<img src="assets/tako.svg" width="100%" alt="駅長室: タコの駅長が歩いてきて旗を上げ、列車を見送る。毎朝かわる駅長の一言">
 <img src="assets/guide.svg" width="100%" alt="系統のご案内: 分類ごとの公開リポジトリ数と、最新のリリース">
 
 <img src="assets/rail.svg" width="100%" alt="線路を、新着リリースの名前を付けた列車が横切る">
@@ -204,6 +206,10 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </div>
 
 列車を待つあいだに遊べるミニゲームです。札を押すと開きます。答えは選択肢を押すと出ます。
+
+改札の先(GitHub Pages)には、実時刻で動く発車標、発車ベル(押したときだけ鳴ります)、キーボードで遊べるゲームがあります。
+
+<a href="https://takosasi-dev.github.io/takosasi-dev/"><img src="assets/gate.svg" width="330" alt="改札口: 構内(GitHub Pages)へ。実時刻の発車標・発車ベル・キーボードで遊べるゲーム"></a>
 
 <details>
 <summary><picture><img src="assets/game-1.svg" height="40" align="middle" alt="ゲーム 1: パケット検問ミニ"></picture></summary>
@@ -491,7 +497,31 @@ Issue は自動で返事が付いて閉じられます。絵が変わるまで�
 
 </details>
 
+<details open>
+<summary><picture><img src="assets/ticket-plate.svg" height="40" align="middle" alt="きっぷうりば"></picture></summary>
+<br>
+
+たこさし駅から、あなたの GitHub アカウントまでの記念乗車券を発行します。下の札を押し、開いた画面でそのまま緑のボタンを押してください(GitHub へのログインが要ります)。あなたの名前と通し番号が入ったきっぷの画像が、Issue の返事で届きます。自分の README に貼る 1 行も付いてきます。
+
 <div align="center">
+
+<img src="assets/ticket-sample.svg" width="480" alt="記念乗車券の見本。たこさし → @your-name、通し番号、発行日、改札印">
+
+<a href="https://github.com/takosasi-dev/takosasi-dev/issues/new?title=ticket&amp;body=%E9%A1%8C%E5%90%8D%E3%82%92%E5%A4%89%E3%81%88%E3%81%9A%E3%81%AB%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E7%B7%91%E3%81%AE%E3%83%9C%E3%82%BF%E3%83%B3%E3%82%92%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82"><img src="assets/ticket-go.svg" width="300" alt="きっぷを発行する"></a>
+
+</div>
+
+Issue は自動で返事が付いて閉じられます。同じ人が何度出しても、番号は最初の 1 枚と同じです。
+
+</details>
+
+<div align="center">
+
+<img src="assets/riders.svg" width="100%" alt="スターを付けた方を乗せた列車と、乗客の名前の一覧">
+
+私の公開リポジトリのどれかにスターを付けると、乗客として列車の窓に載ります(反映は翌朝。このリポジトリへのスターなら数分で載ります)。
+
+<a href="https://takosasi-dev.github.io/takosasi-dev/kisaragi/"><img src="assets/qr.svg" width="100%" alt="連絡のりば: LED の点で描いた QR コード。スマホのカメラで読むと、路線図に載っていない隠し駅へ行ける"></a>
 
 <img src="assets/footer.svg" width="100%" alt="本日もご利用ありがとうございました">
 

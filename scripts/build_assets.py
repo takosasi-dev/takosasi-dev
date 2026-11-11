@@ -84,8 +84,13 @@ def routemap():
 
 
 def sign(name, play, small, big):
-    """A guidance sign, 440x72: yellow for the way out to X, blue for the games you can play in a browser."""
-    if play:
+    """A guidance sign, 440x72: yellow for the way out to X, blue for the games you can play in a browser,
+    green (play="gate") for the ticket gate that leads to the Pages site."""
+    if play == "gate":
+        bg, edge, fg = "#0b7a43", "#064a28", "#fff"
+        mark = ('<rect x="12" y="16" width="13" height="42" rx="3" fill="#fff"/><rect x="47" y="16" width="13" height="42" rx="3" fill="#fff"/>'
+                '<path d="M25 30l11 7l-11 7zM47 30l-11 7l11 7z" fill="#fff" opacity=".8"/>')
+    elif play:
         bg, edge, fg = "#1d4f9e", "#0d2a57", "#fff"
         mark = '<circle cx="36" cy="36" r="24" fill="#fff"/><path d="M28 23v26l22-13z" fill="#1d4f9e"/>'
     else:
@@ -203,7 +208,9 @@ if __name__ == "__main__":
     import importlib
     import importlib.util
 
-    for name in ["ext_train", "ext_tako", "ext_data", "ext_games"]:  # optional modules, see update_live.py
+    from update_live import EXTENSIONS
+
+    for name in EXTENSIONS:  # optional modules, see update_live.py
         if importlib.util.find_spec(name):
             getattr(importlib.import_module(name), "static", lambda: None)()
     games()
@@ -212,6 +219,7 @@ if __name__ == "__main__":
         section(n)
     routemap()
     sign("link-x.svg", False, "のりかえ　X (Twitter)", "@kou111011051")
+    sign("gate.svg", "gate", "改札口　GATE", "構内へ入る")
     sign("play-packet-bouncer.svg", True, "ブラウザで遊ぶ　PLAY", "Packet Bouncer")
     sign("play-rail-rampage.svg", True, "ブラウザで遊ぶ　PLAY", "RailRampage")
     footer()

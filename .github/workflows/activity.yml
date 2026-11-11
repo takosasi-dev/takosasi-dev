@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: "17 21 * * *" # 06:17 JST, once a day
   workflow_dispatch:
+  watch:
+    types: [started] # someone starred this repo: put them on the passengers' train right away
 
 permissions:
   contents: write
@@ -24,7 +26,7 @@ jobs:
         run: python3 scripts/update_live.py
       - name: Commit if changed
         run: |
-          git add README.md assets
+          git add README.md assets docs
           if git diff --cached --quiet; then
             echo "no change"
             exit 0

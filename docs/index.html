@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- The only place this page talks to, apart from itself, is the public GitHub API. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>たこさし駅 構内 | takosasi-dev</title>
+<meta name="description" content="takosasi-dev のプロフィールの改札の先。実時刻で動く LED の発車標、発車ベル、キーボードで遊べるミニゲーム。">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="station.css">
+</head>
+<body>
+<main>
+
+<header class="name">
+  <p class="name-ja">たこさし</p>
+  <p class="name-en">TAKOSASI <span>構内 / Concourse</span></p>
+  <div class="band">
+    <a href="https://github.com/takosasi-dev">◀ 改札 (GitHub のプロフィール)</a>
+    <a href="#games">待合室 (ゲーム) ▶</a>
+  </div>
+</header>
+
+<noscript><p class="note">このページは JavaScript で動きます。JavaScript を有効にすると、発車標とゲームが出ます。</p></noscript>
+
+<section class="case" aria-labelledby="h-board">
+  <div class="strip"><h2 id="h-board">発車案内</h2><span>Departures</span><small>時計はあなたの端末の時刻です</small></div>
+  <div class="led" id="main" role="img" aria-label="LED の発車標。現在時刻、新着リリース、最近の push、運行情報"></div>
+  <p class="say" id="main-say" aria-live="off"></p>
+  <div class="keys">
+    <button type="button" id="bell">発車ベルを鳴らす</button>
+    <button type="button" id="snd" aria-pressed="false">ゲームの効果音: 切</button>
+    <small>音は、ボタンを押したときだけ鳴ります。</small>
+  </div>
+</section>
+
+<h2 class="sec" id="games"><span>遊</span>待合室 <small>WAITING ROOM</small></h2>
+
+<section class="case" aria-labelledby="h-pk">
+  <div class="strip"><h2 id="h-pk">パケット検問</h2><span>Packet check</span><small>← 落とす　→ 通す　30 秒</small></div>
+  <p class="note">あなたはファイアウォールです。規則を上から順に見て、最初に合った行のとおりに決めてください。</p>
+  <ol class="rules">
+    <li><b class="ng">落とす</b> 送信元が 198.51.100.0/24 なら、全部</li>
+    <li><b class="ok">通す</b> TCP の、宛先ポート 443</li>
+    <li><b class="ok">通す</b> UDP の、宛先ポート 53</li>
+    <li><b class="ok">通す</b> 送信元が 192.0.2.0/24 の、TCP の、宛先ポート 22</li>
+    <li class="rest"><b class="ng">落とす</b> どれにも合わないとき</li>
+  </ol>
+  <div class="led" id="pk" role="img" aria-label="パケット検問の LED 表示"></div>
+  <p class="say" id="pk-say" aria-live="polite"></p>
+  <div class="keys">
+    <button type="button" id="pk-ng" class="ng">← 落とす</button>
+    <button type="button" id="pk-start">はじめる</button>
+    <button type="button" id="pk-ok" class="ok">通す →</button>
+  </div>
+</section>
+
+<section class="case" aria-labelledby="h-ps">
+  <div class="strip"><h2 id="h-ps">通過列車の動体視力テスト</h2><span>Passing train</span><small>4 けたの番号を打つ　全 5 問</small></div>
+  <p class="note">列車の案内が一瞬で通過します。4 けたの列車番号を読み取って、数字キー(または下のボタン)で答えてください。だんだん速くなります。</p>
+  <div class="led" id="ps" role="img" aria-label="動体視力テストの LED 表示"></div>
+  <p class="say" id="ps-say" aria-live="polite"></p>
+  <div class="keys pad" id="ps-pad">
+    <button type="button" id="ps-start">はじめる</button>
+  </div>
+</section>
+
+<nav class="exits" aria-label="出口">
+  <a href="https://github.com/takosasi-dev"><small>出口　EXIT</small>GitHub のプロフィール</a>
+  <a class="play" href="https://takosasi-dev.github.io/packet-bouncer/"><small>のりかえ　PLAY</small>Packet Bouncer</a>
+  <a class="play" href="https://takosasi-dev.github.io/rail-rampage/"><small>のりかえ　PLAY</small>RailRampage</a>
+</nav>
+
+<footer>
+  <p>発車標の内容は、GitHub の記録から毎朝 6 時すぎに作り直しています。最近の push だけ、GitHub の公開 API からその場で読みます。</p>
+  <p>LED の字は東雲フォント(パブリックドメイン)です。このページは、外部の計測や広告を読み込みません。</p>
+</footer>
+
+</main>
+<script src="font.js"></script>
+<script src="led.js"></script>
+<script src="station.js"></script>
+</body>
+</html>

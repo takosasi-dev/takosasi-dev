@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ja" class="kisaragi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>きさらぎ | 路線図に載っていない駅</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../station.css">
+</head>
+<body>
+<main>
+
+<header class="name">
+  <p class="name-ja">きさらぎ</p>
+  <p class="name-en">KISARAGI</p>
+  <div class="band"><span>◀ やみ</span><span>かたす ▶</span></div>
+</header>
+
+<noscript><p class="note">発車標は JavaScript で動きます。「次の列車 未定」とだけ出ています。</p></noscript>
+
+<section class="case" aria-labelledby="h-board">
+  <div class="strip"><h2 id="h-board">発車案内</h2><span>Departures</span><small>この駅は路線図に載っていません</small></div>
+  <div class="led" id="board" role="img" aria-label="LED の発車標。次の列車 未定。行先 未定"></div>
+</section>
+
+<section class="case" aria-labelledby="h-stamp">
+  <div class="strip"><h2 id="h-stamp">到達証明</h2><span>You found it</span><small>ここまで来た人だけの印</small></div>
+  <p class="note">よくここまで来ました。迷路の線路を歩いても、LED の QR を読んでも、ソースをたどっても、着く駅は同じです。隠し駅を見つけるような人に、作った物を見てもらえるのがいちばんうれしいです。</p>
+  <div class="stamp"><div><b>きさらぎ</b>到達<br><span id="when"></span></div></div>
+  <p class="note center">遠くで太鼓と鈴の音がします。気のせいでしょう。</p>
+  <div class="keys">
+    <button type="button" id="listen">耳をすます</button>
+    <small>音は、ボタンを押したときだけ鳴ります。</small>
+  </div>
+</section>
+
+<section class="case" aria-labelledby="h-table">
+  <div class="strip"><h2 id="h-table">時刻表</h2><span>Timetable</span><small>白紙です</small></div>
+  <table class="table">
+    <caption>平日・土休日とも</caption>
+    <tbody id="hours"></tbody>
+  </table>
+</section>
+
+<nav class="exits" aria-label="出口">
+  <a href="../"><small>出口　EXIT</small>本物の駅へ戻る</a>
+  <a href="https://github.com/takosasi-dev"><small>出口　EXIT</small>GitHub のプロフィール</a>
+</nav>
+
+<footer><p>線路を歩いて帰るのは危険です。上の出口をご利用ください。</p></footer>
+
+</main>
+<script src="../font.js"></script>
+<script src="../led.js"></script>
+<script src="kisaragi.js"></script>
+</body>
+</html>

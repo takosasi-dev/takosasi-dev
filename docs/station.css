@@ -1,0 +1,94 @@
+/* The concourse and the hidden station. Colours follow scripts/style.py: dark board casings, white printed signs. */
+:root {
+  --body: #25282e; --edge: #444a53; --plate: #f4f4ef; --plate-edge: #8a9099;
+  --line: #8f76d6; --amber: #ffab1f; --green: #4df06c; --red: #ff4a36;
+  --goth: "Yu Gothic UI", "Hiragino Sans", "Noto Sans CJK JP", Meiryo, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Code", Consolas, "SFMono-Regular", Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html { background: #0d1117; color: #e6edf3; font: 15px/1.7 var(--goth); }
+body { margin: 0; }
+main { max-width: 878px; margin: 0 auto; padding: 16px; }
+a { color: #7fb6ff; }
+h2, p { margin: 0; }
+:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+
+/* station name sign */
+.name { background: var(--plate); color: #111; border: 2px solid var(--plate-edge); border-radius: 8px; text-align: center; overflow: hidden; }
+.name-ja { font-size: 44px; font-weight: 800; letter-spacing: .25em; text-indent: .25em; line-height: 1.5; padding-top: 6px; }
+.name-en { font: 700 15px/1.4 var(--mono); letter-spacing: .2em; padding-bottom: 8px; }
+.name-en span { font: 12px var(--goth); letter-spacing: .05em; color: #555; margin-left: 8px; }
+.band { display: flex; justify-content: space-between; gap: 8px; background: var(--line); padding: 6px 14px; }
+.band a, .band span { color: #fff; font-weight: 700; font-size: 14px; text-decoration: none; }
+.band a:hover { text-decoration: underline; }
+
+/* a board casing with its printed strip */
+.case { background: var(--body); border: 1px solid var(--edge); border-radius: 8px; margin: 14px 0; padding: 0 20px 14px; }
+.strip { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 10px; padding: 9px 0 7px; border-top: 2px solid rgba(106, 113, 123, .45); margin: 2px -10px 0; padding-left: 10px; padding-right: 10px; }
+.strip h2 { font-size: 17px; letter-spacing: .18em; color: #f2f2ee; }
+.strip span { font-size: 11.5px; color: #aab0b8; letter-spacing: .06em; }
+.strip small { margin-left: auto; font-size: 11px; color: #8d949d; }
+.note { font-size: 13.5px; color: #c9d1d9; margin: 2px 0 8px; }
+
+.led { position: relative; width: 100%; background: #080706; border: 3px solid #000; outline: 1px solid #15171a; border-radius: 2px; overflow: hidden; }
+.led canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.led .glow { filter: blur(1.8px); opacity: .5; mix-blend-mode: screen; pointer-events: none; }
+
+/* text for screen readers (and for checks): what the LEDs show */
+.say { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.keys { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; }
+.keys small { color: #8d949d; font-size: 12px; flex-basis: 100%; text-align: center; }
+button { font: 700 15px var(--goth); color: #111; background: var(--plate); border: 2px solid var(--plate-edge); border-radius: 6px; padding: 8px 16px; min-width: 48px; min-height: 44px; cursor: pointer; }
+button:hover { background: #fff; }
+button:active { transform: translateY(1px); }
+button.ok { border-color: #1f9d3f; box-shadow: inset 0 -4px #4df06c; }
+button.ng { border-color: #c5301f; box-shadow: inset 0 -4px #ff4a36; }
+button[aria-pressed="true"] { background: var(--amber); border-color: #9a6400; }
+#bell { background: #ffd500; border-color: #1a1a1a; }
+
+.rules { margin: 0 0 10px; padding-left: 2em; font-size: 14px; color: #e6edf3; }
+.rules li.rest { list-style: "* "; }
+.rules b { display: inline-block; min-width: 4.2em; text-align: center; border-radius: 3px; padding: 0 4px; margin-right: 6px; color: #111; font-size: 13px; }
+.rules b.ok { background: var(--green); }
+.rules b.ng { background: var(--red); }
+
+/* platform sign above the games */
+.sec { display: flex; align-items: center; gap: 12px; background: var(--plate); color: #111; border: 2px solid var(--plate-edge); border-radius: 8px; padding: 6px 14px; margin-top: 22px; font-size: 22px; letter-spacing: .1em; scroll-margin-top: 12px; }
+.sec span { display: grid; place-items: center; width: 38px; height: 38px; border: 5px solid var(--line); border-radius: 50%; font-size: 16px; letter-spacing: 0; background: #fff; }
+.sec small { font: 11px var(--mono); color: #666; letter-spacing: .15em; margin-left: auto; }
+
+/* way out: yellow, like the exit signs of a station; blue for a transfer */
+.exits { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+.exits a { flex: 1 1 240px; background: #ffd500; color: #1a1a1a; border: 2px solid #1a1a1a; border-radius: 7px; padding: 8px 14px; text-decoration: none; font: 800 19px var(--mono); }
+.exits a small { display: block; font: 700 12px var(--goth); letter-spacing: .08em; opacity: .85; }
+.exits a.play { background: #1d4f9e; color: #fff; border-color: #0d2a57; }
+.exits a:hover { filter: brightness(1.08); }
+
+footer { color: #8d949d; font-size: 12.5px; padding: 4px 4px 24px; }
+
+@media (max-width: 640px) {
+  main { padding: 10px; }
+  .case { padding: 0 10px 12px; }
+  .strip { margin: 2px -4px 0; padding-left: 4px; padding-right: 4px; }
+  .strip small { margin-left: 0; flex-basis: 100%; }
+  .name-ja { font-size: 34px; }
+  .band a, .band span { font-size: 12px; }
+  .pad button { flex: 0 0 17%; padding: 8px 0; }
+  .pad #ps-start { flex-basis: 100%; }
+}
+
+/* ---- the hidden station ---- */
+.kisaragi { background: #07080b; }
+.kisaragi .name { background: #d9d6c8; border-color: #5d5a50; filter: saturate(.6); }
+.kisaragi .band { background: #4a4560; }
+.kisaragi .band span { opacity: .75; }
+.kisaragi .case { background: #1a1c20; border-color: #2e3238; }
+.table { width: 100%; border-collapse: collapse; background: #e9e6da; color: #222; font: 13px var(--mono); }
+.table caption { caption-side: top; text-align: left; color: #aab0b8; font: 12px var(--goth); padding: 0 0 4px; }
+.table th { width: 3em; background: #cfcbbb; border: 1px solid #8f8b7c; font-weight: 700; }
+.table td { border: 1px solid #8f8b7c; height: 1.9em; }
+.stamp { display: grid; place-items: center; width: 168px; height: 168px; margin: 18px auto 6px; border: 4px double #c5301f; border-radius: 50%; color: #c5301f; text-align: center; transform: rotate(-8deg); font-weight: 800; line-height: 1.5; }
+.stamp b { display: block; font-size: 26px; letter-spacing: .15em; }
+.stamp span { font: 700 12px var(--mono); }
+.kisaragi .center { text-align: center; }

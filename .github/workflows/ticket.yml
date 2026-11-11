@@ -1,0 +1,70 @@
+name: Issue a ticket
+
+# A visitor opens an issue titled "ticket" (the sign in README does that) and gets a ticket from
+# たこさし to their own GitHub name: a picture in tickets/, linked from the answer.
+#
+# The issue comes from a stranger. Nothing from the event is ever written into a script: the
+# title and the login reach scripts/ext_ticket.py through env only, the script accepts nothing
+# but the exact patterns, the body is never read, and the answer is fixed sentences plus the
+# login after it passed the check.
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+# One ticket at a time, so two runs never hand out the same number. ponytail: GitHub keeps only
+# one waiting run per group, so of several issues opened within the same few seconds only the
+# first and the last get an answer. Fine for a toy; move to a queue (a label swept by a scheduled
+# run) if that ever matters.
+concurrency:
+  group: ticket
+  cancel-in-progress: false
+
+jobs:
+  issue:
+    # "==" does not look at letter case here, so "Ticket" also starts the job; the script then refuses it.
+    if: github.event.issue.title == 'ticket'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Print the ticket
+        env:
+          TITLE: ${{ github.event.issue.title }}
+          LOGIN: ${{ github.event.issue.user.login }}
+        run: python3 scripts/ext_ticket.py issue > "$RUNNER_TEMP/answer.txt"
+      - name: Commit the ticket
+        run: |
+          mkdir -p tickets
+          git add tickets data/tickets.json
+          if git diff --cached --quiet; then
+            echo "no change"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: issue a ticket"
+          # The train (train.yml) or the daily run (activity.yml) may push at the same moment: they
+          # touch other files, so a rebase always applies, and a lost race is simply tried again.
+          for try in 1 2 3; do
+            if git pull --rebase && git push; then
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "きっぷを発行できませんでした。少し時間をおいて、もう一度お試しください。" > "$RUNNER_TEMP/answer.txt"
+          exit 1
+      - name: Answer and close the issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: |
+          if [ ! -s "$RUNNER_TEMP/answer.txt" ]; then
+            echo "きっぷを発行できませんでした。少し時間をおいて、もう一度お試しください。" > "$RUNNER_TEMP/answer.txt"
+          fi
+          gh issue close "$ISSUE" --repo "$GITHUB_REPOSITORY" --comment "$(cat "$RUNNER_TEMP/answer.txt")"
