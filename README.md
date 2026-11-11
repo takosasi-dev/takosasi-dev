@@ -41,7 +41,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 <!-- ARCHIVE:START -->
 
 <details>
-<summary><img src="assets/arc-games.svg" height="40" alt="ゲーム / GAMES (6)"></summary>
+<summary><img src="assets/arc-games.svg" height="40" align="middle" alt="ゲーム / GAMES (6)"></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -56,7 +56,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/arc-apps.svg" height="40" alt="アプリ / APPS (9)"></summary>
+<summary><img src="assets/arc-apps.svg" height="40" align="middle" alt="アプリ / APPS (9)"></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -74,7 +74,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/arc-diag.svg" height="40" alt="診断ツール / DIAGNOSTICS (6)"></summary>
+<summary><img src="assets/arc-diag.svg" height="40" align="middle" alt="診断ツール / DIAGNOSTICS (6)"></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -89,7 +89,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/arc-linux.svg" height="40" alt="Linux・サーバ / LINUX / SERVER (5)"></summary>
+<summary><img src="assets/arc-linux.svg" height="40" align="middle" alt="Linux・サーバ / LINUX / SERVER (5)"></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -103,7 +103,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/arc-obsidian.svg" height="40" alt="Obsidian / OBSIDIAN (14)"></summary>
+<summary><img src="assets/arc-obsidian.svg" height="40" align="middle" alt="Obsidian / OBSIDIAN (14)"></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -126,7 +126,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/arc-chrome.svg" height="40" alt="Chrome 拡張 / CHROME EXTENSIONS (6)"></summary>
+<summary><img src="assets/arc-chrome.svg" height="40" align="middle" alt="Chrome 拡張 / CHROME EXTENSIONS (6)"></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -141,7 +141,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/arc-minecraft.svg" height="40" alt="Minecraft / MINECRAFT ADD-ONS (8)"></summary>
+<summary><img src="assets/arc-minecraft.svg" height="40" align="middle" alt="Minecraft / MINECRAFT ADD-ONS (8)"></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -158,7 +158,7 @@ Most of the repositories are documented in Japanese. The numbers and lists on th
 </details>
 
 <details>
-<summary><img src="assets/arc-claude.svg" height="40" alt="Claude Code / CLAUDE CODE MODS (5)"></summary>
+<summary><img src="assets/arc-claude.svg" height="40" align="middle" alt="Claude Code / CLAUDE CODE MODS (5)"></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
