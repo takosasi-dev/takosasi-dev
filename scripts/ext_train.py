@@ -94,7 +94,7 @@ def draw(state):
             f'<circle cx="-11" cy="7" r="2.2" fill="#ffd500"/><circle cx="11" cy="7" r="2.2" fill="#ffd500"/></g></g>')
 
     y0 = 318
-    b = Board("t", LED_X, y0 + 40, LED_COLS, 140)
+    b = Board("t", LED_X, y0 + 40, LED_COLS, 50 + 18 * max(len(state["recent"][:KEEP]), 2))  # no empty rows while few have driven
     w = b.put(F16, "現在", 7, 4, GREEN, invert=True)
     b.put(F16, f"{name}駅", 15 + w, 4, AMBER)
     b.put(F16, f"{lap}周目", 397, 4, AMBER, right=True)

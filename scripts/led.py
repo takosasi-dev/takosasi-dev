@@ -69,8 +69,9 @@ class Font:
             out = out[:lines - 1] + [self.fit("".join(out[lines - 1:]), maxw)]
         return [ln.strip() for ln in out]
 
-    def rows(self, s, scale=1, invert=False, pad=2):
-        """Text -> rows of 0/1. scale=2 lights 2x2 LEDs per font dot, the way real boards double text."""
+    def rows(self, s, scale=1, invert=False, pad=2, bold=False):
+        """Text -> rows of 0/1. scale=2 lights 2x2 LEDs per font dot, the way real boards double text.
+        bold thickens every stroke by one LED to the right (after scaling, so letters keep a gap)."""
         out = [[] for _ in range(self.h)]
         for ch in s:
             w, g = self.glyph(ch)
@@ -81,6 +82,8 @@ class Font:
             out = [[1] * len(out[0])] + out + [[1] * len(out[0])]
         if scale > 1:
             out = [[b for b in row for _ in range(scale)] for row in out for _ in range(scale)]
+        if bold:
+            out = [[a | b for a, b in zip(row, [0] + row[:-1])] for row in out]
         return out
 
 
@@ -112,8 +115,8 @@ class Board:
         a = (f' class="{self.uid}bl"' if blink else "") + (f' opacity="{op}"' if op != 1 else "")
         self.static.append(f'<path{a} stroke="{col}" d="{path_d(rows, cx, cy)}"/>')
 
-    def put(self, font, s, cx, cy, col, scale=1, invert=False, blink=False, right=False):
-        rows = font.rows(s, scale, invert)
+    def put(self, font, s, cx, cy, col, scale=1, invert=False, blink=False, right=False, bold=False):
+        rows = font.rows(s, scale, invert, bold=bold)
         w = len(rows[0])
         self.raw(rows, cx - w if right else cx, cy - (scale if invert else 0), col, blink)
         return w
@@ -177,14 +180,14 @@ class Board:
             f'<filter id="{u}g" x="-5%" y="-30%" width="110%" height="160%"><feGaussianBlur stdDeviation="{min(p * .9, 3):.1f}"/></filter>'
             f'{g}<g id="{u}s">{"".join(self.static)}</g>{self.tick}</g></defs>'
             f'<rect x="{x}" y="{y}" width="{self.w}" height="{self.h}" fill="#080706"/>'
-            f'<rect x="{x}" y="{y}" width="{self.w}" height="{self.h}" fill="url(#{u}o)"/>'
-            f'{g}<use href="#{u}s" filter="url(#{u}g)" opacity=".55"/><use href="#{u}s"/>'
+            f'<rect x="{x}" y="{y}" width="{self.w}" height="{self.h}" fill="url(#{u}o)"/>{g}'
         )
-        if self.tick:
-            out += f'<use href="#{u}t" filter="url(#{u}g)" opacity=".45"/><use href="#{u}t"/>'
-        if self.loose:
+        if self.loose:  # drawn first, so the falling dots pass behind the text
             out += (f'<clipPath id="{u}w"><rect x="-.5" y="-.5" width="{self.cols}" height="{self.nrows}"/></clipPath>'
                     f'<g clip-path="url(#{u}w)">{self.loose}</g>')
+        out += f'<use href="#{u}s" filter="url(#{u}g)" opacity=".55"/><use href="#{u}s"/>'
+        if self.tick:
+            out += f'<use href="#{u}t" filter="url(#{u}g)" opacity=".45"/><use href="#{u}t"/>'
         return out + "</g>"
 
 

@@ -25,7 +25,7 @@ def nav():
         save(f"nav-{n}.svg", 124, 40, body, f"{n} 番線 {ja}")
 
 
-SECTIONS =[("ご案内", "INFORMATION"), ("技術領域", "SKILLS"), ("制作物", "PROJECTS"), ("運行記録", "ACTIVITY"),
+SECTIONS = [("ご案内", "INFORMATION"), ("制作物", "PROJECTS"), ("技術領域", "SKILLS"), ("運行記録", "ACTIVITY"),
             ("待合室", "WAITING ROOM")]
 
 
@@ -64,7 +64,7 @@ def routemap():
     out = (f'<g font-family="{GOTH}"><rect x="1" y="1" width="{W - 2}" height="{H - 2}" rx="7" fill="{PLATE}" stroke="{PLATE_EDGE}" stroke-width="2"/>'
            f'<text x="24" y="38" font-size="23" font-weight="700" fill="#111" letter-spacing="4">路線図</text>'
            f'<text x="112" y="37" font-size="12" fill="#666" font-family="{MONO}" letter-spacing="2">SKILL MAP</text>'
-           f'<text x="{W - 24}" y="37" text-anchor="end" font-size="12" fill="#666" font-family="{MONO}" letter-spacing="2">TAKOSASI-DEV / 02</text>')
+           f'<text x="{W - 24}" y="37" text-anchor="end" font-size="12" fill="#666" font-family="{MONO}" letter-spacing="2">TAKOSASI-DEV / 03</text>')
     for (name, col, stops), y in zip(ROUTES, ys):
         step = 140 if len(stops) <= 4 else 115
         xs = [250 + i * step for i in range(len(stops))]

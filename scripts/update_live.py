@@ -166,18 +166,24 @@ def featured(repos):
     return picked[:6]
 
 
-def poster(repo, name, col):
-    """The picture on a card: assets/posters/<repo>.jpg (made with make_poster.py), or a plain name plate."""
+def poster(repo, name, col, kind):
+    """The picture on a card: assets/posters/<repo>.jpg (made with make_poster.py), or a destination roll sign."""
     path = os.path.join(ROOT, "assets", "posters", repo + ".jpg")
     if os.path.exists(path):
         with open(path, "rb") as f:
             data = base64.b64encode(f.read()).decode("ascii")
         img = f'<image x="8" y="8" width="396" height="178" preserveAspectRatio="xMidYMid slice" href="data:image/jpeg;base64,{data}"/>'
     else:
-        img = (f'<rect x="8" y="8" width="396" height="178" fill="#181b22"/><path d="M8 152L404 104V186H8Z" fill="{col}"/>'
-               f'<path d="M8 146L404 98" stroke="{col}" stroke-width="2" opacity=".5"/>'
-               f'<text x="28" y="74" font-family="{MONO}" font-size="34" font-weight="800" fill="#f2f2ee">{esc(name)}</text>'
-               f'<text x="30" y="98" font-family="{MONO}" font-size="11.5" fill="#aab0b8" letter-spacing="1">{USER} / {esc(repo)}</text>')
+        # No screenshot yet: the navy roll sign of an old train, with the kind where the train type goes.
+        size = min(50, 560 / max(len(name), 1))
+        kw = max(len(kind) * 20, 40) + 28
+        img = (f'<rect x="8" y="8" width="396" height="178" fill="#15223f"/>'
+               f'<rect x="16" y="16" width="380" height="162" rx="4" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="1.5"/>'
+               f'<rect x="{206 - kw / 2}" y="30" width="{kw}" height="34" rx="3" fill="{col}"/>'
+               f'<text x="206" y="55" text-anchor="middle" font-family="{GOTH}" font-size="21" font-weight="700" fill="#fff" letter-spacing="3">{esc(kind)}</text>'
+               f'<text x="206" y="{112 + size * .34:.0f}" text-anchor="middle" font-family="{GOTH}" font-size="{size:.0f}" font-weight="700" fill="#fff" letter-spacing="1">{esc(name)}</text>'
+               f'<rect x="60" y="146" width="292" height="1.5" fill="#fff" opacity=".5"/>'
+               f'<text x="206" y="166" text-anchor="middle" font-family="{MONO}" font-size="11.5" fill="#c7d0e0" letter-spacing="2">{USER.upper()} / {esc(repo.upper())}</text>')
     return (f'<clipPath id="p"><rect x="8" y="8" width="396" height="178" rx="3"/></clipPath><g clip-path="url(#p)">{img}</g>'
             f'<rect x="8" y="8" width="396" height="178" rx="3" fill="none" stroke="#000" opacity=".5"/>')
 
@@ -202,7 +208,7 @@ def card(i, r, cat):
         info = f"リリース準備中　{lang}"
         b.put(F12, "開発中", 261, 27, RED, blink=True, right=True)
     b.put(F12, F12.fit(info.strip(), 214), 3, 27, AMBER)
-    body = (f'<rect x=".5" y=".5" width="411" height="316" rx="8" fill="{BODY}" stroke="{EDGE}"/>' + poster(repo, name, col)
+    body = (f'<rect x=".5" y=".5" width="411" height="316" rx="8" fill="{BODY}" stroke="{EDGE}"/>' + poster(repo, name, col, kind or tag)
             + f'<g font-family="{GOTH}" font-size="10" fill="#aab0b8"><text x="14" y="200">種別</text><text x="70" y="200">名前</text>'
               f'<text x="400" y="200" text-anchor="end" font-family="{MONO}">{i:02d} // {esc(repo)}</text></g>'
             + a.svg() + b.svg())
@@ -236,11 +242,11 @@ SPECIAL = {
     "12-31": "大みそかです。本年もご利用ありがとうございました。",
 }
 # month -> (what falls on the board, colours, seconds for one pass (0 = it stays and twinkles), the dots of one piece)
-SNOW = ("雪", ["#e8f0ff"], 15, [(0, 0), (1, 0), (0, 1), (1, 1)])
-SAKURA = ("桜", ["#ff9ec4"], 17, [(0, 0), (1, 0), (0, 1)])
-LEAF = ("紅葉", ["#ff7a3d", "#ffc04d"], 19, [(0, 0), (1, 0), (1, 1), (2, 1)])
+SNOW = ("雪", ["#e8f0ff"], 15, [(0, 0), (-1, 0), (1, 0), (0, -1), (0, 1)])
+SAKURA = ("桜", ["#ff9ec4"], 17, [(0, 0), (1, 0), (-1, 1), (0, 1), (1, 1), (0, 2)])
+LEAF = ("紅葉", ["#ff7a3d", "#ffc04d"], 19, [(1, 0), (0, 1), (1, 1), (2, 1), (1, 2), (0, 3)])
 STAR = ("星", ["#fff3a0"], 0, [(0, 0), (-1, 0), (1, 0), (0, -1), (0, 1)])
-SEASON = {12: SNOW, 1: SNOW, 2: SNOW, 3: SAKURA, 4: SAKURA, 6: ("雨", ["#6aa8ff"], 3, [(0, 0), (0, 1), (0, 2)]),
+SEASON = {12: SNOW, 1: SNOW, 2: SNOW, 3: SAKURA, 4: SAKURA, 6: ("雨", ["#6aa8ff"], 3, [(0, 0), (0, 1), (0, 2), (0, 3)]),
           7: STAR, 8: STAR, 10: LEAF, 11: LEAF}
 
 
@@ -274,11 +280,11 @@ def header(repos, cal, today):
     else:
         col, status = GREEN, "全系統 正常稼働中"
     b = Board("h", LED_X, 61, LED_COLS, 86)
-    b.put(F16, "TAKOSASI-DEV", 5, 4, AMBER, scale=2)
+    b.put(F16, "TAKOSASI-DEV", 5, 4, AMBER, scale=2, bold=True)
     b.put(F16, "インフラ/ネットワーク", 207, 4, GREEN)
     b.put(F16, "/セキュリティ", 207, 21, GREEN)
     w = b.put(F16, "運行情報", 7, 44, RED, invert=True)
-    pw = b.put(F16, f"のりば 1-{len(LINE)}", 397, 44, AMBER, right=True)
+    pw =b.put(F16, f"のりば 1-{len(LINE)}", 397, 44, AMBER, right=True)
     b.put(F16, F16.fit(status, 397 - pw - 8 - (15 + w)), 15 + w, 44, col)
     extra = notices(today)
     b.ticker(F16, "".join(s + "　　" for s in extra)
@@ -287,7 +293,7 @@ def header(repos, cal, today):
     _, cols, secs, piece = SEASON.get(int(today[5:7]), ("", [], 0, []))
     rnd = random.Random("season" + today)
     for i, c in enumerate(cols * 2):
-        spots = [(rnd.randrange(2, LED_COLS - 3), rnd.randrange(2, 84)) for _ in range(22 // len(cols))]
+        spots = [(rnd.randrange(2, LED_COLS - 3), rnd.randrange(2, 82)) for _ in range(18 // len(cols))]
         dots = [(x + dx, y + dy) for x, y in spots for dx, dy in piece]
         if secs:
             b.drift(dots, c, secs + i * 4, op=.8)  # two layers at different speeds
@@ -356,7 +362,7 @@ def stats(repos):
         x += w
         b.put(F16, F16.fit(f"{lang} {v}", 126), 6 + (i % 3) * 132, 58 + (i // 3) * 18, col)
     h = 40 + b.h + 17
-    save("stats.svg", W, h, casing(W, h, "運行状況", "Status", NOTE) + b.svg() + seam(b, 38),
+    save("stats.svg", W, h, casing(W, h, "運行状況", "Status", "公開リポジトリの集計") + b.svg() + seam(b, 38),
          f"公開リポジトリ {counters[0][0]}、リリース {counters[1][0]}、言語 {counters[2][0]} 種。"
          + "、".join(f"{lang} {v}" for lang, v in order))
 
@@ -373,7 +379,7 @@ def releases(repos, cat_of):
     h = 58 + b.h + 17
     heads = (f'<g font-family="{GOTH}" font-size="10.5" fill="#aab0b8"><text x="31" y="50">日付</text><text x="129" y="50">種別</text>'
              f'<text x="275" y="50">名前</text><text x="815" y="50" text-anchor="end">版</text></g>')
-    save("releases.svg", W, h, casing(W, h, "新着リリース", "New releases", NOTE) + heads + b.svg(),
+    save("releases.svg", W, h, casing(W, h, "新着リリース", "New releases") + heads + b.svg(),
          "新着リリース。" + "、".join(f'{md(r["tag_date"])} {r["name"]} {r["tag"]}' for r in rel))
 
 
@@ -384,7 +390,7 @@ def contrib(cal):
     t = Board("c", LED_X, 40, LED_COLS, 20)
     t.put(F16, F16.fit(text, 392), 5, 2, AMBER)
     weeks = cal["weeks"][-53:]
-    h = Board("d", (W - 53 * 14) // 2, 92, 53, 7, 14)
+    h = Board("d", LED_X + (LED_COLS * 2 - 53 * 15) // 2, 92, 53, 7, 15)  # as wide as the text window above it
     lit = sorted(c for c in counts if c)
     for level, op in enumerate((.3, .55, .8, 1)):  # quartiles of the days that have anything
         rows = [[0] * 53 for _ in range(7)]
@@ -394,7 +400,7 @@ def contrib(cal):
                 if c and min(3, bisect.bisect_left(lit, c) * 4 // len(lit)) == level:
                     rows[datetime.date.fromisoformat(d["date"]).isoweekday() % 7][x] = 1
         h.raw(rows, 0, 0, GREEN, op=op)
-    save("contrib.svg", W, 208, casing(W, 208, "稼働記録", "Contributions", NOTE) + t.svg() + h.svg(), text)
+    save("contrib.svg", W, 215, casing(W, 215, "稼働記録", "Contributions", "1 マスが 1 日。明るいほど活動が多い") + t.svg() + h.svg(), text)
 
 
 def strip(title, n):
