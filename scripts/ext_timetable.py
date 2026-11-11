@@ -41,11 +41,21 @@ def table(commits):
     return cells, (ORDER[used[0]:used[-1] + 1] if used else [])
 
 
-def shown(ms):
+def shown(ms, per=PER):
     """(the minutes printed, how many are left out). A cell that is too full ends with "ほか n 本" in its last two places."""
     # ponytail: the left-out ones are the latest of the hour, so the last train's mark is not drawn in a cell this full.
-    keep = ms if len(ms) <= PER * LINES else ms[:PER * LINES - 2]
+    keep = ms if len(ms) <= per * LINES else ms[:per * LINES - 2]
     return keep, len(ms) - len(keep)
+
+
+def layout(total):
+    """(x of the hour column, [(column 0 weekday / 1 weekend, left edge, width, minutes on a line)]).
+    Two columns with the hours between them; when only one of them has any train, that one alone, full width,
+    with the hours on the left (half a board saying "no trains" is a waste of the board)."""
+    if bool(total[0]) != bool(total[1]):
+        x = 24 + HOUR_W
+        return 24, [(0 if total[0] else 1, x, 822 - x, (822 - x - 6) // PITCH)]
+    return HOUR_X, [(c, COLS[c][0], COL_W, PER) for c in (0, 1)]
 
 
 def ends(cells, hours, col):
@@ -67,33 +77,37 @@ def draw(commits, today):
 
     y0 = 102
     out, y = "", y0
+    hour_x, cols = layout(total)
     for i, h in enumerate(rows):
-        lines = max(1, *(-(-min(len(cells.get((h, c), [])), PER * LINES) // PER) for c in (0, 1)))
+        lines = max(1, *(-(-min(len(cells.get((h, c), [])), per * LINES) // per) for c, _, _, per in cols))
         hgt = lines * LH + 4
         if i % 2:
             out += f'<rect x="24" y="{y}" width="798" height="{hgt}" fill="#e9eae3"/>'
-        out += (f'<rect x="{HOUR_X}" y="{y}" width="{HOUR_W}" height="{hgt}" fill="{"#ffd500" if h == peak else "#d9dcd3"}"/>'
-                f'<text x="{HOUR_X + HOUR_W / 2}" y="{y + hgt / 2 + 7}" font-size="20" font-weight="800" fill="#111">{h}</text>')
-        for col, (x, _, _) in enumerate(COLS):
-            ms, more = shown(cells.get((h, col), []))
+        out += (f'<rect x="{hour_x}" y="{y}" width="{HOUR_W}" height="{hgt}" fill="{"#ffd500" if h == peak else "#d9dcd3"}"/>'
+                f'<text x="{hour_x + HOUR_W / 2}" y="{y + hgt / 2 + 7}" font-size="20" font-weight="800" fill="#111">{h}</text>')
+        for col, x, _, per in cols:
+            ms, more = shown(cells.get((h, col), []), per)
             first, last = ends(cells, hours, col)
             for k, m in enumerate(ms):
-                cx, by = x + 20 + (k % PER) * PITCH, y + 24 + (k // PER) * LH
+                cx, by = x + 20 + (k % per) * PITCH, y + 24 + (k // per) * LH
                 mark = "#111" if (h, m) == first and k == 0 else "#d2283a" if (h, m) == last and k == len(ms) - 1 and not more else ""
                 if mark:
                     out += f'<rect x="{cx - 16}" y="{by - 21}" width="32" height="26" rx="4" fill="{mark}"/>'
                 white = ' fill="#fff"' if mark else ""
                 out += f'<text x="{cx}" y="{by}"{white}>{m:02d}</text>'
             if more:
-                out += (f'<text x="{x + 20 + (PER - 1.5) * PITCH}" y="{y + 22 + (LINES - 1) * LH}" font-size="13" fill="#555">ほか {more} 本</text>')
+                out += (f'<text x="{x + 20 + (per - 1.5) * PITCH}" y="{y + 22 + (LINES - 1) * LH}" font-size="13" fill="#555">ほか {more} 本</text>')
         y += hgt
         out += f'<rect x="24" y="{y - .5}" width="798" height="1" fill="#c3c6bd"/>'
-    for col, (x, _, _) in enumerate(COLS):
+    for col, x, w, _ in cols:
         if not total[col]:
-            out += f'<text x="{x + COL_W / 2}" y="{(y0 + y) / 2 + 5}" font-size="15" font-weight="400" fill="#888">{NONE}</text>'
+            out += f'<text x="{x + w / 2}" y="{(y0 + y) / 2 + 5}" font-size="15" font-weight="400" fill="#888">{NONE}</text>'
     H = y + 46
-    heads = "".join(f'<rect x="{x}" y="74" width="{COL_W}" height="28" fill="{c}"/>'
-                    f'<text x="{x + COL_W / 2}" y="94" font-size="16" fill="#fff" letter-spacing="4">{t}</text>' for x, t, c in COLS)
+    heads = "".join(f'<rect x="{x}" y="74" width="{w}" height="28" fill="{COLS[col][2]}"/>'
+                    f'<text x="{x + w / 2}" y="94" font-size="16" fill="#fff" letter-spacing="4">{COLS[col][1]}</text>' for col, x, w, _ in cols)
+    if len(cols) == 1:  # say on the board why the other column is not there
+        other = COLS[1 - cols[0][0]][1]
+        heads += f'<text x="810" y="93" text-anchor="end" font-size="12" font-weight="400" fill="#fff" opacity=".9">{other}の運転はありません</text>'
     legend = (f'<g font-size="12.5" font-weight="400" fill="#444" text-anchor="start">'
               f'<rect x="24" y="{y + 14}" width="26" height="18" rx="4" fill="#111"/><text x="56" y="{y + 28}">始発</text>'
               f'<rect x="96" y="{y + 14}" width="26" height="18" rx="4" fill="#d2283a"/><text x="128" y="{y + 28}">終電</text>'
@@ -106,8 +120,8 @@ def draw(commits, today):
             f'<text x="24" y="62" font-size="13" fill="#555">たこさし駅　コミット線　発車時刻</text>'
             f'<text x="{W - 24}" y="62" text-anchor="end" font-size="12" fill="#666" font-family="{MONO}">{period}</text>'
             f'<g text-anchor="middle" font-weight="700" fill="#111" style="font-variant-numeric:tabular-nums">{heads}'
-            f'<rect x="{HOUR_X}" y="74" width="{HOUR_W}" height="28" fill="#222"/>'
-            f'<text x="{HOUR_X + HOUR_W / 2}" y="94" font-size="15" fill="#fff">時</text>'
+            f'<rect x="{hour_x}" y="74" width="{HOUR_W}" height="28" fill="#222"/>'
+            f'<text x="{hour_x + HOUR_W / 2}" y="94" font-size="15" fill="#fff">時</text>'
             f'<g font-size="22">{out}</g></g>'
             f'<rect x="24" y="74" width="798" height="{y - 74}" fill="none" stroke="#8a9099" stroke-width="1.5"/>{legend}</g>')
     label = f"時刻表。過去 4 週間({period})の公開コミット {n} 本を、コミットした時刻で並べた駅の時刻表。平日 {total[0]} 本、土・休日 {total[1]} 本。"
@@ -136,6 +150,11 @@ def selfcheck():
     assert table([]) == ({}, []) and ends({}, [], 0) == (None, None)
     full = PER * LINES  # a full cell is printed whole; one more and the last two places go to "ほか n 本"
     assert shown(list(range(full))) == (list(range(full)), 0) and shown(list(range(40))) == (list(range(full - 2)), 42 - full)
+    # both columns when both have trains or neither has; one full-width column when only one has
+    assert [c for c, *_ in layout([3, 2])[1]] == [0, 1] == [c for c, *_ in layout([0, 0])[1]]
+    for total, col in (([3, 0], 0), ([0, 2], 1)):
+        hx, [(c, x, w, per)] = layout(total)
+        assert c == col and hx + HOUR_W == x and x + w == 822 and x + 20 + (per - 1) * PITCH + 16 <= 822 and per > PER
     print("timetable ok")
 
 

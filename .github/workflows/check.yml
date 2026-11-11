@@ -1,0 +1,36 @@
+name: Check the scripts
+
+# Runs every self-check and then draws the whole profile once from the live API, without committing.
+# The self-checks cover what strangers can reach (the titles and logins that the train, the ticket
+# office and the message board accept), so a change that loosens them fails here before it is used.
+
+on:
+  push:
+    paths: ["scripts/**", ".github/workflows/**", "README.md", "README.en.md"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Self-checks
+        run: |
+          for f in scripts/led.py scripts/flap.py scripts/ext_*.py; do
+            echo "== $f"
+            python3 "$f"
+          done
+      - name: Draw everything once (nothing is committed)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/build_assets.py
+          python3 scripts/update_live.py
