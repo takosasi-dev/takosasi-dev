@@ -74,7 +74,7 @@ def night_css(body):
 
 
 # The printed signs, by file name. Tickets, the chalkboard and the coloured exit signs are things, not paper: they stay.
-SIGNS = ("nav-", "sec-", "arc-", "game-", "routemap", "maze-map", "stamps", "lost-delay", "map-all", "amida", "history",
+SIGNS = ("nav-", "sec-", "arc-", "game-", "routemap", "maze-map", "stamps", "lost-delay", "map-all", "amida", "history", "depot",
          "stations/", "timetable", "train.svg", "train-m.svg")
 
 
