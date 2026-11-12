@@ -195,6 +195,7 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 <a name="noriba-3"></a>
 <img src="assets/sec-03.svg" width="100%" alt="3 番線 技術領域 SKILLS">
 <picture><source media="(max-width: 600px)" srcset="assets/routemap-m.svg"><img src="assets/routemap.svg" width="100%" alt="路線図。インフラ線: Linux, Windows Server, VMware, AWS。セキュリティ線: Network, Security, ModSecurity, Snort。開発線: Godot, C++ / JUCE, TypeScript, Python, C#"></picture>
+<img src="assets/inspect.svg" width="100%" alt="検車区: ヘルメットをかぶったタコの点検員が歩いてきて、列車の車輪をハンマーでたたき、指を差して「ヨシ!」と確かめる。板には、自動テスト(CI)のあるリポジトリのうち合格した数と、直しが要る数が出る">
 <picture><source media="(max-width: 600px)" srcset="assets/depot-m.svg"><img src="assets/depot.svg" width="100%" alt="車両基地。使っている機材とソフト。1 号車(デスクトップ): CPU Intel Core i7-11700F、GPU GeForce RTX 3070 Ti、GPU 2 GeForce GTX 1050 Ti、メモリ 32GB DDR4、マザーボード MSI MPG Z490 GAMING PLUS、ストレージ NVMe 1TB + SATA 1TB、OS Windows 11 Home。2 号車(ノート PC): 機種 dynabook X、CPU Intel Core i5-1340P、GPU Intel Iris Xe Graphics、メモリ 16GB、ストレージ SSD 256GB、画面 13.3 型 WUXGA、OS Windows 11。装備(周辺機器): モニター iiyama ×2 + SHARP ×1、サウンド Sound BlasterX AE-5 Plus、マイク M-AUDIO Uber Mic、カメラ Logicool C920、キャプチャ AVerMedia Live Gamer Ultra、キーボード Logicool G913 TKL、マウス Logicool PRO X SUPERLIGHT 2。工具(ソフト): エディタ VS Code、AI Claude Code、ノート Obsidian、Linux WSL2 / Arch Linux、版管理 Git / GitHub CLI、ブラウザ Chrome"></picture>
 
 <a name="noriba-4"></a>

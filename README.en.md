@@ -67,6 +67,7 @@ The full list of public repositories, grouped by kind, is in the [Japanese page]
 <div align="center">
 
 <picture><source media="(max-width: 600px)" srcset="assets/routemap-m.svg"><img src="assets/routemap.svg" width="100%" alt="Skills as a route map. Infrastructure line: Linux, Windows Server, VMware, AWS. Security line: Network, Security, ModSecurity, Snort. Development line: Godot, C++ / JUCE, TypeScript, Python, C#"></picture>
+<img src="assets/inspect.svg" width="100%" alt="The inspection pit: an octopus in a helmet walks up to a train, taps a wheel with a hammer, then points at it and calls ヨシ! (all clear). The board says how many repositories pass their automatic tests today and how many need repair">
 <picture><source media="(max-width: 600px)" srcset="assets/depot-m.svg"><img src="assets/depot.svg" width="100%" alt="The depot: the hardware and software in use. Car 1, the desktop: CPU Intel Core i7-11700F, GPU GeForce RTX 3070 Ti and GeForce GTX 1050 Ti, 32GB DDR4 memory, MSI MPG Z490 GAMING PLUS motherboard, NVMe 1TB + SATA 1TB storage, Windows 11 Home. Car 2, the laptop: dynabook X, CPU Intel Core i5-1340P, GPU Intel Iris Xe Graphics, 16GB memory, SSD 256GB, 13.3-inch WUXGA display, Windows 11. Peripherals: two iiyama monitors and one SHARP, Sound BlasterX AE-5 Plus sound card, M-AUDIO Uber Mic, Logicool C920 camera, AVerMedia Live Gamer Ultra capture, Logicool G913 TKL keyboard, Logicool PRO X SUPERLIGHT 2 mouse. Tools: VS Code, Claude Code, Obsidian, WSL2 / Arch Linux, Git / GitHub CLI, Chrome"></picture>
 
 </div>

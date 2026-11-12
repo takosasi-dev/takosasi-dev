@@ -37,7 +37,7 @@ README = os.path.join(ROOT, "README.md")
 # Optional modules in scripts/. Each may define static() (called by build_assets.py) and
 # live(ctx) -> {MARKER: text}; the text replaces what is between <!-- MARKER:START --> and <!-- MARKER:END --> in README.
 EXTENSIONS = ["ext_train", "ext_tako", "ext_data", "ext_games", "ext_diorama", "ext_riders", "ext_ticket", "ext_site", "ext_qr",
-              "ext_status", "ext_history", "ext_timetable", "ext_commuter", "ext_board", "ext_stations", "ext_og", "ext_depot", "ext_works", "ext_annual"]
+              "ext_status", "ext_history", "ext_timetable", "ext_commuter", "ext_board", "ext_stations", "ext_og", "ext_depot", "ext_works", "ext_annual", "ext_inspect"]
 NOTE = "GitHub の記録から毎日自動で更新"
 
 # ponytail: one page of 100 repos, no cursor paging. Add paging when the account passes 100 public repos.
