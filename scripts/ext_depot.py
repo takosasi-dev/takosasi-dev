@@ -31,6 +31,7 @@ GEAR = [
         ("マイク", "M-AUDIO Uber Mic"),
         ("カメラ", "Logicool C920"),
         ("キャプチャ", "AVerMedia Live Gamer Ultra"),
+        ("キーボード", "Logicool G913 TKL"),
     ]),
     ("工具", "ソフト", "TOOLS", "#009bbf", [
         ("エディタ", "VS Code"),
