@@ -26,17 +26,19 @@ GEAR = [
         ("ストレージ", "NVMe 1TB + SATA 1TB"),
         ("OS", "Windows 11 Home"),
     ]),
-    # The laptop: what holds for every 13th-generation Core i5 model of the X series (the exact model is not known).
+    # The laptop. CPU, GPU, memory and screen were read on the machine; the exact model (X6 or XZ) is not known,
+    # and the storage is the catalogue value of every X-series model with this CPU.
     ("2 号車", "ノート PC", "LAPTOP", "#f39700", [
         ("機種", "dynabook X"),
-        ("CPU", "Core i5 (13th Gen)"),
+        ("CPU", "Intel Core i5-1340P"),
+        ("GPU", "Intel Iris Xe Graphics"),
+        ("メモリ", "16GB"),
+        ("ストレージ", "SSD 512GB"),
         ("画面", "13.3 型 WUXGA"),
-        ("重さ", "約 0.9kg"),
-        ("バッテリー", "自分で交換できる"),
         ("OS", "Windows 11"),
     ]),
     ("装備", "周辺機器", "GEAR", "#8f76d6", [
-        ("モニター", "iiyama ×2"),
+        ("モニター", "iiyama ×2 + SHARP ×1"),
         ("サウンド", "Sound BlasterX AE-5 Plus"),
         ("マイク", "M-AUDIO Uber Mic"),
         ("カメラ", "Logicool C920"),
