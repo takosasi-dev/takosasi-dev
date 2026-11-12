@@ -27,13 +27,13 @@ GEAR = [
         ("OS", "Windows 11 Home"),
     ]),
     # The laptop. CPU, GPU, memory and screen were read on the machine; the exact model (X6 or XZ) is not known,
-    # and the storage is the catalogue value of every X-series model with this CPU.
+    # the storage is what the owner said.
     ("2 号車", "ノート PC", "LAPTOP", "#f39700", [
         ("機種", "dynabook X"),
         ("CPU", "Intel Core i5-1340P"),
         ("GPU", "Intel Iris Xe Graphics"),
         ("メモリ", "16GB"),
-        ("ストレージ", "SSD 512GB"),
+        ("ストレージ", "SSD 256GB"),
         ("画面", "13.3 型 WUXGA"),
         ("OS", "Windows 11"),
     ]),
