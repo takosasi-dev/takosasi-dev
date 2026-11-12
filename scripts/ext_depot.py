@@ -24,6 +24,7 @@ GEAR = [
         ("マザーボード", "MSI MPG Z490 GAMING PLUS"),
         ("ストレージ", "NVMe 1TB + SATA 1TB"),
         ("OS", "Windows 11 Home"),
+        ("ノート PC", "dynabook X (13th Gen i5)"),
     ]),
     ("装備", "周辺機器", "GEAR", "#8f76d6", [
         ("モニター", "iiyama ×2"),
