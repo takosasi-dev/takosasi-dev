@@ -85,6 +85,18 @@
   </div>
 </section>
 
+<section class="case" aria-labelledby="h-dn">
+  <div class="strip"><h2 id="h-dn">打音検査</h2><span>Hammer test</span><small>たたいて、ひびのある 1 輪をさがす　全 5 問</small></div>
+  <p class="note">あなたは検車係です。車輪をたたくと、響きの形が板に出ます。上の「ゲームの効果音」を入にすると、音も鳴ります。6 輪のうち 1 輪だけ、ひびが入っています(音が低く、短く、にごります)。見つけたら、その車輪をたたいて選んだまま「この車輪が異常」を押してください。音なしでも、響きの形だけで見分けられます。だんだん差が小さくなります。</p>
+  <div class="led" id="dn" role="img" aria-label="打音検査の LED 表示。たたいた車輪の響きの形"></div>
+  <p class="say" id="dn-say" aria-live="polite"></p>
+  <div class="keys wheels" id="dn-wheels" role="group" aria-label="車輪"></div>
+  <div class="keys">
+    <button type="button" id="dn-start">はじめる</button>
+    <button type="button" id="dn-report" class="ng">この車輪が異常</button>
+  </div>
+</section>
+
 <section class="case" aria-labelledby="h-rally">
   <div class="strip"><h2 id="h-rally">構内スタンプラリー</h2><span>Stamp rally</span><small>記録はこの端末のブラウザにだけ残ります</small></div>
   <p class="note">構内を回ると、台紙に印が増えます。6 つそろうと、記念の表示が出ます。</p>
@@ -120,6 +132,7 @@
 <script src="led.js"></script>
 <script src="rally.js"></script>
 <script src="station.js"></script>
+<script src="daon.js"></script>
 <script src="live.js"></script>
 </body>
 </html>

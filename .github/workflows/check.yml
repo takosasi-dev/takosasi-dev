@@ -6,7 +6,7 @@ name: Check the scripts
 
 on:
   push:
-    paths: ["scripts/**", ".github/workflows/**", "README.md", "README.en.md"]
+    paths: ["scripts/**", ".github/workflows/**", "README.md", "README.en.md", "docs/*.js"]
   pull_request:
 
 permissions:
@@ -30,6 +30,8 @@ jobs:
             echo "== $f"
             python3 "$f"
           done
+          echo "== docs/daon.js"
+          node docs/daon.js
       - name: Draw everything once (nothing is committed)
         env:
           GITHUB_TOKEN: ${{ github.token }}

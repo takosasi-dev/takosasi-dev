@@ -58,6 +58,17 @@ button[aria-pressed="true"] { background: var(--amber); border-color: #9a6400; }
 .rules b.ok { background: var(--green); }
 .rules b.ng { background: var(--red); }
 
+/* the hammer test: six wheels to tap. The one tapped last has the amber ring; after the answer the cracked one has the red ring */
+.wheels { --wheel: radial-gradient(circle, #15171a 0 34%, #6a717b 35% 40%, #3a3f47 41% 66%, #8d949d 67% 76%, #25282e 77%); gap: 8px; }
+.wheels button, .wheels button:hover, .wheels button[aria-pressed="true"] { width: 56px; height: 56px; min-width: 0; padding: 0; border: 2px solid #000; border-radius: 50%; background: var(--wheel); color: #f2f2ee; font: 700 17px var(--mono); }
+.wheels button:hover { filter: brightness(1.25); }
+.wheels button[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--amber); }
+.wheels button.bad { box-shadow: 0 0 0 3px var(--red), 0 0 0 6px #080706; }
+.wheels button.bad[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--red), 0 0 0 6px var(--amber); }
+@keyframes hit { 35% { transform: translateY(3px) rotate(-8deg); } }
+.wheels button.hit { animation: hit .2s; }
+@media (prefers-reduced-motion: reduce) { .wheels button.hit { animation: none; } }
+
 /* the stamp card of the rally: a ring of dashes until the stamp is pressed, red ink after */
 .rally { list-style: none; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px 6px; margin: 4px 0 12px; padding: 12px 8px; background: var(--plate); border: 2px solid var(--plate-edge); border-radius: 6px; color: #333; }
 .rally li { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
@@ -103,6 +114,8 @@ footer { color: #8d949d; font-size: 12.5px; padding: 4px 4px 24px; }
   .band a, .band span { font-size: 12px; }
   .pad button { flex: 0 0 17%; padding: 8px 0; }
   .pad #ps-start { flex-basis: 100%; }
+  .wheels { gap: 6px; }
+  .wheels button, .wheels button:hover, .wheels button[aria-pressed="true"] { width: 48px; height: 48px; }
   .cam { aspect-ratio: 402 / 208; overflow-x: auto; scrollbar-width: thin; }   /* twice as large; push it sideways */
   .cam iframe { width: 200%; }
   .rally, .rally.more { grid-template-columns: repeat(3, 1fr); }
