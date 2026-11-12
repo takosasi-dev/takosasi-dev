@@ -30,6 +30,7 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 <img src="assets/tako.svg" width="100%" alt="駅長室: タコの駅長が歩いてきて旗を上げ、列車を見送る。毎朝かわる駅長の一言">
 <img src="assets/guide.svg" width="100%" alt="系統のご案内: 分類ごとの公開リポジトリ数と、最新のリリース">
 <img src="assets/service.svg" width="100%" alt="列車運行情報: 分類(路線)ごとに、各リポジトリの自動テスト(CI)の結果を「平常運転・調整中・遅延・情報なし」で表示">
+<picture><source media="(max-width: 600px)" srcset="assets/works-m.svg"><img src="assets/works.svg" width="100%" alt="工事のお知らせ: 最近 14 日に push したリポジトリを、工事中の区間として新しい順に 5 つまで並べた掲示。その間に作った物は「新設」、前からある物は「改良」。分類と、最後に作業した日が付く"></picture>
 
 <img src="assets/rail.svg" width="100%" alt="線路を、新着リリースの名前を付けた列車が横切る">
 
@@ -207,6 +208,10 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 <img src="assets/lost.svg" width="100%" alt="お忘れ物センター: いちばん長く push していないリポジトリと、その日数">
 <picture><source media="(max-width: 600px)" srcset="assets/lost-delay-m.svg"><img src="assets/lost-delay.svg" width="100%" alt="遅延証明書: 注目のリポジトリのうち、リリースがいちばん遅れている 1 本"></picture>
 <picture><source media="(max-width: 600px)" srcset="assets/history-m.svg"><img src="assets/history.svg" width="100%" alt="沿革: GitHub への登録、いちばん古い公開リポジトリ、10・25・50 本目、いちばん多く新設した月、このプロフィールの公開日、今の本数とリリース数を古い順に並べた年表"></picture>
+<!-- The annual report is on show in December only. scripts/ext_annual.py fills this in. -->
+<!-- ANNUAL:START -->
+
+<!-- ANNUAL:END -->
 
 <a name="noriba-5"></a>
 <img src="assets/sec-05.svg" width="100%" alt="5 番線 待合室 WAITING ROOM">

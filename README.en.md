@@ -56,10 +56,11 @@ The full list of public repositories, grouped by kind, is in the [Japanese page]
 
 <picture><source media="(max-width: 600px)" srcset="assets/map-all-m.svg"><img src="assets/map-all.svg" width="100%" alt="Route map of every public repository: each category is a line, each repository a station"></picture>
 <img src="assets/service.svg" width="100%" alt="Service status: the result of the automatic tests of each category of repositories">
+<picture><source media="(max-width: 600px)" srcset="assets/works-m.svg"><img src="assets/works.svg" width="100%" alt="Works notice: the repositories pushed in the last 14 days, newest first, five at most, shown as sections under construction. 新設 marks a repository made in that time, 改良 an older one; each row carries its category and the day of the last work"></picture>
 
 </div>
 
-**Route map and service status.** Every category is a railway line and every repository a station. The status board reads the CI result of each repository: 平常運転 is "running normally", 遅延 is "delayed" (a failing test), 情報なし is "no information" (no CI).
+**Route map and service status.** Every category is a railway line and every repository a station. The status board reads the CI result of each repository: 平常運転 is "running normally", 遅延 is "delayed" (a failing test), 情報なし is "no information" (no CI). The works notice (工事のお知らせ) under it lists what is being worked on now: 新設 is a new repository, 改良 an improvement to an older one, きょう is today and きのう yesterday.
 
 ## Platform 3: Skills
 
