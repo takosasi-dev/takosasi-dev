@@ -12,7 +12,8 @@ permissions:
 
 concurrency:
   group: activity
-  cancel-in-progress: true
+  # Not cancelled: someone starring and unstarring in a loop would otherwise keep every run from finishing.
+  cancel-in-progress: false
 
 jobs:
   update:
@@ -20,6 +21,10 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # the head of the branch now: a run that waited behind another one would otherwise redraw on top of the
+          # commit before that one's, and its push would not apply
+          ref: ${{ github.ref }}
       - name: Rebuild the live panels, project cards and the archive list
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -29,7 +34,8 @@ jobs:
         run: python3 scripts/update_live.py
       - name: Commit if changed
         run: |
-          git add README.md assets docs
+          # README.en.md too: update_live.py rewrites its cards, and a file left changed makes the pull below refuse.
+          git add README.md README.en.md assets docs
           if git diff --cached --quiet; then
             echo "no change"
             exit 0

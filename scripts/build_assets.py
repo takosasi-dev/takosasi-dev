@@ -81,6 +81,35 @@ def routemap():
             f'<text x="60" y="{ys[0] - 30}" text-anchor="middle" font-size="15" font-weight="700" fill="#111">当駅</text></g>')
     label = "路線図。" + "。".join(f"{n}: {'、'.join(s for s, _ in stops)}" for n, _, stops in ROUTES)
     save("routemap.svg", W, H, out, label)
+    routemap_m(label)
+
+
+def routemap_m(label):
+    """The same map for a phone: the lines leave this station to the right and turn down, one under the other,
+    so every name is set level and large, with what is under it on the next line."""
+    tall = lambda stops: 62 + sum(64 if under else 46 for _, under in stops)  # noqa: E731
+    tops, y = [], 116
+    for _, _, stops in ROUTES:
+        tops.append(y)
+        y += tall(stops) + 18
+    H = y - 24
+    out = f'<g font-family="{GOTH}">' + sign_m(H, "路線図", "SKILL MAP")
+    for (name, col, stops), y0 in zip(ROUTES, tops):
+        pw = text_w(name, 20) + 28
+        end = y0 + tall(stops) - 30
+        out += (f'<path d="M36 {y0}H86q14 0 14 14V{end}" fill="none" stroke="{col}" stroke-width="10" stroke-linecap="round"/>'
+                f'<rect x="122" y="{y0 - 17}" width="{pw:.0f}" height="34" rx="17" fill="{col}"/>'
+                f'<text x="{122 + pw / 2:.0f}" y="{y0 + 7}" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">{name}</text>')
+        sy = y0 + 62
+        for stop, under in stops:
+            out += (f'<circle cx="100" cy="{sy}" r="11" fill="#fff" stroke="#222" stroke-width="4"/>'
+                    f'<text x="124" y="{sy + 9}" font-size="25" font-weight="700" fill="#111">{esc(stop)}</text>')
+            if under:
+                out += f'<text x="125" y="{sy + 34}" font-size="{SMALL}" fill="#555">{esc(" ・ ".join(under))}</text>'
+            sy += 64 if under else 46
+    out += (f'<rect x="20" y="{tops[0] - 20}" width="32" height="{tops[-1] - tops[0] + 40}" rx="16" fill="#fff" stroke="#222" stroke-width="5"/>'
+            f'<text x="36" y="{tops[0] - 30}" text-anchor="middle" font-size="{SMALL}" font-weight="700" fill="#111">当駅</text></g>')
+    save("routemap-m.svg", WM, H, out, label)
 
 
 def sign(name, play, small, big):

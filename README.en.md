@@ -54,7 +54,7 @@ The full list of public repositories, grouped by kind, is in the [Japanese page]
 
 <div align="center">
 
-<img src="assets/map-all.svg" width="100%" alt="Route map of every public repository: each category is a line, each repository a station">
+<picture><source media="(max-width: 600px)" srcset="assets/map-all-m.svg"><img src="assets/map-all.svg" width="100%" alt="Route map of every public repository: each category is a line, each repository a station"></picture>
 <img src="assets/service.svg" width="100%" alt="Service status: the result of the automatic tests of each category of repositories">
 
 </div>
@@ -65,7 +65,7 @@ The full list of public repositories, grouped by kind, is in the [Japanese page]
 
 <div align="center">
 
-<img src="assets/routemap.svg" width="100%" alt="Skills as a route map. Infrastructure line: Linux, Windows Server, VMware, AWS. Security line: Network, Security, ModSecurity, Snort. Development line: Godot, C++ / JUCE, TypeScript, Python, C#">
+<picture><source media="(max-width: 600px)" srcset="assets/routemap-m.svg"><img src="assets/routemap.svg" width="100%" alt="Skills as a route map. Infrastructure line: Linux, Windows Server, VMware, AWS. Security line: Network, Security, ModSecurity, Snort. Development line: Godot, C++ / JUCE, TypeScript, Python, C#"></picture>
 
 </div>
 
@@ -76,9 +76,9 @@ The full list of public repositories, grouped by kind, is in the [Japanese page]
 <img src="assets/stats.svg" width="100%" alt="Counts of public repositories, releases and languages">
 <img src="assets/releases.svg" width="100%" alt="The newest releases">
 <img src="assets/contrib.svg" width="100%" alt="One year of contributions">
-<img src="assets/timetable.svg" width="100%" alt="A station timetable made of commit times">
+<picture><source media="(max-width: 600px)" srcset="assets/timetable-m.svg"><img src="assets/timetable.svg" width="100%" alt="A station timetable made of commit times"></picture>
 <img src="assets/commuter.svg" width="480" alt="A commuter pass that is valid for as long as the current streak lasts">
-<img src="assets/history.svg" width="100%" alt="The history of the station, from the day the account was made">
+<picture><source media="(max-width: 600px)" srcset="assets/history-m.svg"><img src="assets/history.svg" width="100%" alt="The history of the station, from the day the account was made"></picture>
 
 </div>
 
@@ -97,7 +97,7 @@ Things a visitor can do. Each of them opens a pre-filled issue; press the green 
 
 <div align="center">
 
-<img src="assets/train.svg" width="100%" alt="The loop line that visitors move together, and who drove last">
+<picture><source media="(max-width: 600px)" srcset="assets/train-m.svg"><img src="assets/train.svg" width="100%" alt="The loop line that visitors move together, and who drove last"></picture>
 <img src="assets/board.svg" width="100%" alt="The message board of the station">
 <img src="assets/riders.svg" width="100%" alt="A train carrying everyone who starred this repository">
 
@@ -110,5 +110,7 @@ The mini games (a firewall quiz, reading attacks out of access logs, a subnet qu
 <a href="https://takosasi-dev.github.io/takosasi-dev/kisaragi/"><img src="assets/qr.svg" width="100%" alt="A QR code drawn in LED dots. It can be read with a phone camera"></a>
 
 <img src="assets/footer.svg" width="100%" alt="Thank you for travelling with us today">
+
+<a href="ABOUT.md">How this station works</a> (in Japanese, with a short English summary)
 
 </div>

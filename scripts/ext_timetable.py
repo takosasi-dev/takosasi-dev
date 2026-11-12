@@ -41,10 +41,10 @@ def table(commits):
     return cells, (ORDER[used[0]:used[-1] + 1] if used else [])
 
 
-def shown(ms, per=PER):
-    """(the minutes printed, how many are left out). A cell that is too full ends with "ほか n 本" in its last two places."""
+def shown(ms, per=PER, room=2):
+    """(the minutes printed, how many are left out). A cell that is too full ends with "ほか n 本" in its last `room` places."""
     # ponytail: the left-out ones are the latest of the hour, so the last train's mark is not drawn in a cell this full.
-    keep = ms if len(ms) <= per * LINES else ms[:per * LINES - 2]
+    keep = ms if len(ms) <= per * LINES else ms[:per * LINES - room]
     return keep, len(ms) - len(keep)
 
 
@@ -83,8 +83,9 @@ def draw(commits, today):
         hgt = lines * LH + 4
         if i % 2:
             out += f'<rect x="24" y="{y}" width="798" height="{hgt}" fill="#e9eae3"/>'
+        keep = ' class="fx"' if h == peak else ""  # fx, ni: see style.py, the signs at night
         out += (f'<rect x="{hour_x}" y="{y}" width="{HOUR_W}" height="{hgt}" fill="{"#ffd500" if h == peak else "#d9dcd3"}"/>'
-                f'<text x="{hour_x + HOUR_W / 2}" y="{y + hgt / 2 + 7}" font-size="20" font-weight="800" fill="#111">{h}</text>')
+                f'<text x="{hour_x + HOUR_W / 2}" y="{y + hgt / 2 + 7}" font-size="20" font-weight="800" fill="#111"{keep}>{h}</text>')
         for col, x, _, per in cols:
             ms, more = shown(cells.get((h, col), []), per)
             first, last = ends(cells, hours, col)
@@ -93,7 +94,7 @@ def draw(commits, today):
                 mark = "#111" if (h, m) == first and k == 0 else "#d2283a" if (h, m) == last and k == len(ms) - 1 and not more else ""
                 if mark:
                     out += f'<rect x="{cx - 16}" y="{by - 21}" width="32" height="26" rx="4" fill="{mark}"/>'
-                white = ' fill="#fff"' if mark else ""
+                white = ' fill="#fff"' + ' class="ni"' * (mark == "#111") if mark else ""
                 out += f'<text x="{cx}" y="{by}"{white}>{m:02d}</text>'
             if more:
                 out += (f'<text x="{x + 20 + (per - 1.5) * PITCH}" y="{y + 22 + (LINES - 1) * LH}" font-size="13" fill="#555">ほか {more} 本</text>')
@@ -121,7 +122,7 @@ def draw(commits, today):
             f'<text x="{W - 24}" y="62" text-anchor="end" font-size="12" fill="#666" font-family="{MONO}">{period}</text>'
             f'<g text-anchor="middle" font-weight="700" fill="#111" style="font-variant-numeric:tabular-nums">{heads}'
             f'<rect x="{hour_x}" y="74" width="{HOUR_W}" height="28" fill="#222"/>'
-            f'<text x="{hour_x + HOUR_W / 2}" y="94" font-size="15" fill="#fff">時</text>'
+            f'<text x="{hour_x + HOUR_W / 2}" y="94" font-size="15" fill="#fff" class="ni">時</text>'
             f'<g font-size="22">{out}</g></g>'
             f'<rect x="24" y="74" width="798" height="{y - 74}" fill="none" stroke="#8a9099" stroke-width="1.5"/>{legend}</g>')
     label = f"時刻表。過去 4 週間({period})の公開コミット {n} 本を、コミットした時刻で並べた駅の時刻表。平日 {total[0]} 本、土・休日 {total[1]} 本。"
@@ -132,7 +133,73 @@ def draw(commits, today):
     else:
         label += NONE + "。"
     save("timetable.svg", W, H, body, label)
+    draw_m(commits, today, label)
     return label
+
+
+def draw_m(commits, today, label):
+    """The same timetable for a phone (timetable-m.svg). Two columns side by side would leave four minutes to a line,
+    so the weekday table and the weekend table stand one under the other, each over the full width and each
+    from its own first train to its own last. A table without a train is left out; with no train at all, one short empty table."""
+    cells, hours = table(commits)
+    total = [sum(len(ms) for (_, c), ms in cells.items() if c == col) for col in (0, 1)]
+    n = sum(total)
+    per_hour = {h: len(cells.get((h, 0), [])) + len(cells.get((h, 1), [])) for h in hours}
+    peak = max(hours, key=lambda h: per_hour[h]) if n else None
+    day = datetime.date.fromisoformat(today)
+    since = day - datetime.timedelta(days=27)
+    X, HW, P = 16, 48, 34   # left edge, width of the hour column, distance between two minutes
+    MX, MW = X + HW, WM - 2 * X - HW
+    out, y = "", 138
+    for col in [c for c in (0, 1) if total[c]] or [0]:
+        mine = [i for i, h in enumerate(hours) if (h, col) in cells]
+        rows = hours[mine[0]:mine[-1] + 1] if mine else ORDER[:6]
+        first, last = ends(cells, hours, col)
+        top = y
+        out += (f'<rect x="{X}" y="{y}" width="{HW}" height="34" fill="#222"/>'
+                f'<text x="{X + HW / 2}" y="{y + 24}" text-anchor="middle" font-size="{SMALL}" fill="#fff" class="ni">時</text>'
+                f'<rect x="{MX}" y="{y}" width="{MW}" height="34" fill="{COLS[col][2]}"/>'
+                f'<text x="{MX + 14}" y="{y + 24}" font-size="{SMALL}" fill="#fff" letter-spacing="4">{COLS[col][1]}</text>')
+        if n and not total[1 - col]:  # say on the sheet why the other table is not there
+            out += (f'<text x="{WM - X - 10}" y="{y + 24}" text-anchor="end" font-size="{SMALL}" font-weight="400" fill="#fff" opacity=".9">'
+                    f'{COLS[1 - col][1]}の運転はありません</text>')
+        y += 34
+        for i, h in enumerate(rows):
+            ms, more = shown(cells.get((h, col), []), PER, 3)
+            hgt = max(1, -(-(len(ms) + 3 * bool(more)) // PER)) * LH + 4
+            if i % 2:
+                out += f'<rect x="{X}" y="{y}" width="{WM - 2 * X}" height="{hgt}" fill="#e9eae3"/>'
+            keep = ' class="fx"' if h == peak else ""  # fx, ni: see style.py, the signs at night
+            out += (f'<rect x="{X}" y="{y}" width="{HW}" height="{hgt}" fill="{"#ffd500" if h == peak else "#d9dcd3"}"/>'
+                    f'<text x="{X + HW / 2}" y="{y + hgt / 2 + 7}" text-anchor="middle" font-size="20" font-weight="800" fill="#111"{keep}>{h}</text>')
+            for k, m in enumerate(ms):
+                cx, by = MX + 24 + (k % PER) * P, y + 24 + (k // PER) * LH
+                mark = "#111" if (h, m) == first and k == 0 else "#d2283a" if (h, m) == last and k == len(ms) - 1 and not more else ""
+                if mark:
+                    out += f'<rect x="{cx - 16}" y="{by - 21}" width="32" height="26" rx="4" fill="{mark}"/>'
+                white = ' fill="#fff"' + ' class="ni"' * (mark == "#111") if mark else ""
+                out += f'<text x="{cx}" y="{by}" text-anchor="middle" font-size="22"{white}>{m:02d}</text>'
+            if more:
+                out += (f'<text x="{WM - X - 8}" y="{y + 23 + (LINES - 1) * LH}" text-anchor="end" font-size="{SMALL}" font-weight="400" fill="#555">ほか {more} 本</text>')
+            y += hgt
+            out += f'<rect x="{X}" y="{y - .5}" width="{WM - 2 * X}" height="1" fill="#c3c6bd"/>'
+        if not total[col]:
+            out += f'<text x="{MX + MW / 2}" y="{(top + 34 + y) / 2 + 6}" text-anchor="middle" font-size="{SMALL}" font-weight="400" fill="#777">{NONE}</text>'
+        out += f'<rect x="{X}" y="{top}" width="{WM - 2 * X}" height="{y - top}" fill="none" stroke="#8a9099" stroke-width="1.5"/>'
+        y += 18
+    note = ["数字は、コミットした「分」。", "1 つが 1 本(日本時間)"]
+    legend = (f'<g font-size="{SMALL}" font-weight="400" fill="#444">'
+              f'<rect x="{X}" y="{y}" width="24" height="20" rx="4" fill="#111"/><text x="{X + 30}" y="{y + 17}">始発</text>'
+              f'<rect x="{X + 81}" y="{y}" width="24" height="20" rx="4" fill="#d2283a"/><text x="{X + 111}" y="{y + 17}">終電</text>'
+              f'<rect x="{X + 162}" y="{y}" width="24" height="20" fill="#ffd500"/><text x="{X + 192}" y="{y + 17}">いちばん混む時間帯</text>'
+              + "".join(f'<text x="{X}" y="{y + 48 + k * 24}">{ln}</text>' for k, ln in enumerate(note)) + "</g>")
+    H = y + 48 + 24 * (len(note) - 1) + 20
+    body = (f'<g font-family="{GOTH}">' + sign_m(H, "時刻表", "COMMIT TIMETABLE")
+            + f'<text x="20" y="72" font-size="{SMALL}" fill="#555">たこさし駅　コミット線　発車時刻</text>'
+              f'<text x="20" y="98" font-size="{SMALL}" font-weight="700" fill="#333">過去 4 週間の公開コミット {n} 本</text>'
+              f'<text x="20" y="122" font-size="{SMALL}" fill="#666" font-family="{MONO}">{since.month}/{since.day} 〜 {day.month}/{day.day}</text>'
+              f'<g font-weight="700" fill="#111" style="font-variant-numeric:tabular-nums">{out}</g>{legend}</g>')
+    save("timetable-m.svg", WM, H, body, label)
 
 
 def live(ctx):
@@ -150,6 +217,8 @@ def selfcheck():
     assert table([]) == ({}, []) and ends({}, [], 0) == (None, None)
     full = PER * LINES  # a full cell is printed whole; one more and the last two places go to "ほか n 本"
     assert shown(list(range(full))) == (list(range(full)), 0) and shown(list(range(40))) == (list(range(full - 2)), 42 - full)
+    assert shown(list(range(40)), PER, 3) == (list(range(full - 3)), 43 - full)  # the phone sheet needs three places for it
+    assert 16 + 48 + 24 + (PER - 1) * 34 + 16 <= WM - 16  # ten minutes fit on a line of the phone sheet
     # both columns when both have trains or neither has; one full-width column when only one has
     assert [c for c, *_ in layout([3, 2])[1]] == [0, 1] == [c for c, *_ in layout([0, 0])[1]]
     for total, col in (([3, 0], 0), ([0, 2], 1)):

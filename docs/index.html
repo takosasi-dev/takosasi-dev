@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <!-- The only place this page talks to, apart from itself, is the public GitHub API. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; base-uri 'none'; form-action 'none'">
+<!-- frame-src: the live camera is a picture of this site (live.svg) in a frame, so that live.js can set its clock. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; frame-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>たこさし駅 構内 | takosasi-dev</title>
 <meta name="description" content="takosasi-dev のプロフィールの改札の先。実時刻で動く LED の発車標、発車ベル、キーボードで遊べるミニゲーム。">
@@ -45,6 +46,12 @@
     <button type="button" id="snd" aria-pressed="false">ゲームの効果音: 切</button>
     <small>音は、ボタンを押したときだけ鳴ります。</small>
   </div>
+</section>
+
+<section class="case" aria-labelledby="h-cam">
+  <div class="strip"><h2 id="h-cam">駅前ライブカメラ</h2><span>Live camera</span><small>空と灯りは、あなたの時計に合わせています</small></div>
+  <div class="cam" role="group" aria-label="駅前ライブカメラの画面"><iframe id="cam" src="live.svg" title="たこさし駅前のライブカメラ" tabindex="-1"></iframe></div>
+  <p class="cam-say" id="cam-say"></p>
 </section>
 
 <h2 class="sec" id="games"><span>遊</span>待合室 <small>WAITING ROOM</small></h2>
@@ -113,5 +120,6 @@
 <script src="led.js"></script>
 <script src="rally.js"></script>
 <script src="station.js"></script>
+<script src="live.js"></script>
 </body>
 </html>

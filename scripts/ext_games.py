@@ -195,12 +195,12 @@ def amida(ctx):
         out += (f'<circle cx="{x}" cy="92" r="21" fill="{LINE[i]}"/>'
                 f'<text x="{x}" y="100" text-anchor="middle" font-size="24" font-weight="700" fill="#fff">{i + 1}</text>'
                 f'<circle cx="{x}" cy="356" r="21" fill="#333"/>'
-                f'<text x="{x}" y="364" text-anchor="middle" font-size="23" font-weight="700" fill="#fff">{"ABCD"[i]}</text>')
+                f'<text x="{x}" y="364" text-anchor="middle" font-size="23" font-weight="700" fill="#fff" class="ni">{"ABCD"[i]}</text>')
     for i, r in enumerate(picks):  # which repo each exit is; which start reaches it is left to the player
         x, y = 40 + (i % 2) * 400, 412 + (i // 2) * 34
         name = r["name"] if len(r["name"]) <= 26 else r["name"][:25] + "…"
         out += (f'<circle cx="{x + 12}" cy="{y - 8}" r="13" fill="#333"/>'
-                f'<text x="{x + 12}" y="{y - 2}" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">{"ABCD"[i]}</text>'
+                f'<text x="{x + 12}" y="{y - 2}" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" class="ni">{"ABCD"[i]}</text>'
                 f'<text x="{x + 34}" y="{y}" font-size="21" font-weight="700" fill="#111" font-family="{MONO}">{esc(name)}</text>')
     save("amida.svg", W, H, out + "</g>",
          "あみだくじ。のりば 1〜4 から線をたどる。行き先 " + "、".join(f'{"ABCD"[i]}: {r["name"]}' for i, r in enumerate(picks)))

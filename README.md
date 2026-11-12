@@ -49,7 +49,7 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 <a href="https://takosasi-dev.github.io/packet-bouncer/"><img src="assets/play-packet-bouncer.svg" width="330" alt="Packet Bouncer をブラウザで遊ぶ"></a>
 <a href="https://takosasi-dev.github.io/rail-rampage/"><img src="assets/play-rail-rampage.svg" width="330" alt="RailRampage をブラウザで遊ぶ"></a>
 
-<img src="assets/map-all.svg" width="100%" alt="全線路線図: 分類を路線、公開リポジトリを駅にした図。下へ行くほど新しい駅">
+<picture><source media="(max-width: 600px)" srcset="assets/map-all-m.svg"><img src="assets/map-all.svg" width="100%" alt="全線路線図: 分類を路線、公開リポジトリを駅にした図。下へ行くほど新しい駅"></picture>
 
 </div>
 
@@ -63,7 +63,7 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 | Repo | 内容 | Lang | Release |
 |---|---|---|---|
 | [delve-down](https://github.com/takosasi-dev/delve-down) | ターミナルで遊ぶ、文字で描くダンジョンのローグライク(Python 標準ライブラリだけ) | Python | v0.1.0 |
-| [luck-ladder](https://github.com/takosasi-dev/luck-ladder) | ブラウザで遊べるトランプのハイ&ロー(Godot 4.7.2 / Web) | GDScript | - |
+| [luck-ladder](https://github.com/takosasi-dev/luck-ladder) | ブラウザで遊べるトランプのハイ&ロー(Godot 4.7.2 / Web) | GDScript | v0.2.0 |
 | [packet-bouncer](https://github.com/takosasi-dev/packet-bouncer) | ブラウザで遊ぶパケット検問ゲーム(Godot 4.7・開発中) | GDScript | - |
 | [rail-rampage](https://github.com/takosasi-dev/rail-rampage) | トロッコ問題を題材にした横スクロールの1ボタン破壊ゲーム（Godot 4） | GDScript | v0.1.0 |
 | [shapez-quad-forge](https://github.com/takosasi-dev/shapez-quad-forge) | shapez.io の目標シェイプから建物数最小の構築手順を逆算するツール (QuadForge) | Python | v0.2.0 |
@@ -193,19 +193,19 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 
 <a name="noriba-3"></a>
 <img src="assets/sec-03.svg" width="100%" alt="3 番線 技術領域 SKILLS">
-<img src="assets/routemap.svg" width="100%" alt="路線図。インフラ線: Linux, Windows Server, VMware, AWS。セキュリティ線: Network, Security, ModSecurity, Snort。開発線: Godot, C++ / JUCE, TypeScript, Python, C#">
+<picture><source media="(max-width: 600px)" srcset="assets/routemap-m.svg"><img src="assets/routemap.svg" width="100%" alt="路線図。インフラ線: Linux, Windows Server, VMware, AWS。セキュリティ線: Network, Security, ModSecurity, Snort。開発線: Godot, C++ / JUCE, TypeScript, Python, C#"></picture>
 
 <a name="noriba-4"></a>
 <img src="assets/sec-04.svg" width="100%" alt="4 番線 運行記録 ACTIVITY">
 <img src="assets/stats.svg" width="100%" alt="運行状況: 公開リポジトリ数、リリース数、言語の内訳">
 <img src="assets/releases.svg" width="100%" alt="新着リリース">
 <img src="assets/contrib.svg" width="100%" alt="稼働記録: 過去 1 年のコントリビューション">
-<img src="assets/timetable.svg" width="100%" alt="時刻表: 過去 4 週間の公開コミットを、コミットした時刻で並べた駅の時刻表。行が「時」、数字が「分」。平日と土・休日の 2 列で、始発・終電・いちばん混む時間帯に印">
+<picture><source media="(max-width: 600px)" srcset="assets/timetable-m.svg"><img src="assets/timetable.svg" width="100%" alt="時刻表: 過去 4 週間の公開コミットを、コミットした時刻で並べた駅の時刻表。行が「時」、数字が「分」。平日と土・休日の 2 列で、始発・終電・いちばん混む時間帯に印"></picture>
 <img src="assets/commuter.svg" width="480" alt="定期券: たこさし ⇔ GitHub。いま続いている連続日数と、その有効期間。1 日休むと期限切れになる">
-<img src="assets/stamps.svg" width="100%" alt="駅スタンプ帳: 公開リポジトリ数・リリース数・言語・連続日数などの実績を、達成するとスタンプが押される台紙">
+<picture><source media="(max-width: 600px)" srcset="assets/stamps-m.svg"><img src="assets/stamps.svg" width="100%" alt="駅スタンプ帳: 公開リポジトリ数・リリース数・言語・連続日数などの実績を、達成するとスタンプが押される台紙"></picture>
 <img src="assets/lost.svg" width="100%" alt="お忘れ物センター: いちばん長く push していないリポジトリと、その日数">
-<img src="assets/lost-delay.svg" width="100%" alt="遅延証明書: 注目のリポジトリのうち、リリースがいちばん遅れている 1 本">
-<img src="assets/history.svg" width="100%" alt="沿革: GitHub への登録、いちばん古い公開リポジトリ、10・25・50 本目、いちばん多く新設した月、このプロフィールの公開日、今の本数とリリース数を古い順に並べた年表">
+<picture><source media="(max-width: 600px)" srcset="assets/lost-delay-m.svg"><img src="assets/lost-delay.svg" width="100%" alt="遅延証明書: 注目のリポジトリのうち、リリースがいちばん遅れている 1 本"></picture>
+<picture><source media="(max-width: 600px)" srcset="assets/history-m.svg"><img src="assets/history.svg" width="100%" alt="沿革: GitHub への登録、いちばん古い公開リポジトリ、10・25・50 本目、いちばん多く新設した月、このプロフィールの公開日、今の本数とリリース数を古い順に並べた年表"></picture>
 
 <a name="noriba-5"></a>
 <img src="assets/sec-05.svg" width="100%" alt="5 番線 待合室 WAITING ROOM">
@@ -490,7 +490,7 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 
 見に来た人みんなで 1 本の列車を動かす、環状線のすごろくです。下の札を押し、開いた画面でそのまま緑のボタンを押すと、列車がその数だけ進みます(GitHub へのログインが要ります)。同じ人が続けて 2 回は運転できません。運転した人の GitHub の名前が、運転記録の板に載ります。
 
-<img src="assets/train.svg" width="100%" alt="たこさし環状線のいまの様子。列車の位置、周回数、のべ運転回数、直近の運転士">
+<picture><source media="(max-width: 600px)" srcset="assets/train-m.svg"><img src="assets/train.svg" width="100%" alt="たこさし環状線のいまの様子。列車の位置、周回数、のべ運転回数、直近の運転士"></picture>
 
 <div align="center">
 
@@ -556,5 +556,7 @@ Issue は自動で返事が付いて閉じられます。絵が変わるまで�
 <a href="https://takosasi-dev.github.io/takosasi-dev/kisaragi/"><img src="assets/qr.svg" width="100%" alt="連絡のりば: LED の点で描いた QR コード。スマホのカメラで読むと、路線図に載っていない隠し駅へ行ける"></a>
 
 <img src="assets/footer.svg" width="100%" alt="本日もご利用ありがとうございました">
+
+<a href="ABOUT.md">この駅のしくみ</a>(どう作って、どう動かしているか)
 
 </div>

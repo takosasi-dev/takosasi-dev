@@ -3,6 +3,8 @@
 
     assets/diorama.svg        sky, sun and moon, a skyline, an elevated line with a station, trains, a bus
     assets/diorama-dark.svg   the same for GitHub's dark theme, with one thing more (see "things nobody is told about")
+    docs/live.svg             only the screen, for the "live camera" of the Pages site: docs/live.js holds everything
+                              that depends on the time of day (CLOCK) at the visitor's own clock
 
     python3 scripts/ext_diorama.py     # self-check
 
@@ -17,10 +19,16 @@ so DIORAMA_T=20 (seconds into the loop) is enough to look at any time of day in 
 ctx["weather"] (today in Tokyo, or None) puts the weather on the screen: clouds, rain, snow, fog or
 lightning, and one line of text in the corner. DIORAMA_WX=rain (cloud, snow, fog, thunder, clear)
 tries one without the network.
+
+ctx["today"] puts the calendar on it (almanac): the street trees follow the seasons, a few days of the
+year bring their own things, and the moon has the phase it really has that night. PROFILE_DATE=2026-04-01
+python3 scripts/update_live.py data.json tries another day.
 """
+import datetime
 import math
 import os
 import random
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -46,6 +54,10 @@ GROUPS = [(8.2, 43, 3), (8.8, 38, 2), (9.4, 30, 2), (10, 24, 2), (10.8, 18, 1), 
 WARM = ["#ffd27a", "#ffd27a", "#ffe6a8", "#ffb85a", "#cfe6ff"]
 FACADES = ["#5b6f95", "#6a7da0", "#50648c", "#7b8aa8", "#64788f", "#8a8fae", "#567a98"]
 NIGHT = "#03051a"
+# The 60-second animations that show the time of day. Everything else is movement (trains, the bus, blinking,
+# rain). docs/live.js stops the ones named here and sets them to the visitor's clock; the rest runs on.
+CLOCK = ("dy", "dk", "dw", "lp", "sx", "sy", "sr", "mx", "my", "gh", "nt", "fw") + tuple(f"l{i}" for i in range(len(GROUPS)))
+MOVES = ("ss", "cl", "tr", "bs", "wc", "g1", "g2")   # 60-second loops that are movement, for the self-check
 
 
 def mix(a, b, k):
@@ -255,6 +267,133 @@ def waiter():
     return css, f'<g class="gh" opacity=".8">{f.svg()}</g>'
 
 
+# --------------------------------------------------------------------------- the calendar
+SYNODIC = 29.530588853   # days from one new moon to the next, on average
+# The street trees through the year: (from this month and day on, kind). LEAVES: kind -> a (leaf, shade) per tree.
+TREES = [((1, 1), "bare"), ((3, 25), "sakura"), ((4, 9), "fresh"), ((6, 1), "green"), ((10, 1), "turning"),
+         ((11, 10), "autumn"), ((12, 1), "bare")]
+LEAVES = {"sakura": [("#ffc4de", "#ff9cc8")], "fresh": [("#8ada66", "#62bb4e")], "green": [("#3f8f4f", "#2f7040")],
+          "turning": [("#a3b84a", "#d9a23a"), ("#74a34a", "#bdb242")],
+          "autumn": [("#e25a30", "#b63c22"), ("#f4b636", "#d99024"), ("#ea7e2c", "#c4521f")]}
+TREE_JA = {"bare": "街路樹は葉を落としている。", "sakura": "桜が満開で、花びらが舞っている。", "fresh": "街路樹は新緑。",
+           "green": "街路樹は深い緑。", "turning": "街路樹が色づきはじめた。", "autumn": "紅葉が見ごろで、落ち葉が舞っている。"}
+# (first day, last day, what it adds, caption in the corner of the screen or None, sentence for the label or None).
+# A day can have several; the caption of the first one that has a caption is shown.
+EVENTS = [
+    ((1, 1), (1, 3), "newyear", "謹賀新年", "正月。"),
+    ((12, 31), (12, 31), "countdown", "大みそか", "大みそかで、夜ふけに年越しの花火が上がる。"),
+    ((7, 1), (7, 7), "tanabata", "七夕", "駅前に七夕の笹が立ち、夜空に天の川がかかる。"),
+    ((10, 25), (10, 31), "pumpkin", "ハロウィン", "駅前にハロウィンのかぼちゃが並んでいる。"),
+    ((12, 1), (12, 25), "lights", "イルミネーション", "夜は街路樹と駅舎にイルミネーションが灯る。"),
+    ((7, 20), (8, 31), "fireworks", "花火大会", "昼は入道雲が立ち、夜は花火が上がる。"),
+    ((3, 25), (4, 8), "petals", "桜 見ごろ", None),
+    ((11, 10), (11, 30), "leaves", "紅葉 見ごろ", None),
+    ((6, 5), (7, 10), "hydrangea", "あじさい 見ごろ", "道ばたにあじさいが咲いている。"),
+    ((12, 28), (12, 31), "kadomatsu", None, "駅の入口に門松が出ている。"),
+    ((1, 1), (1, 7), "kadomatsu", None, "駅の入口に門松が出ている。"),
+    ((12, 15), (12, 31), "snowcap", None, "遠くの山は雪をかぶっている。"),
+    ((1, 1), (2, 29), "snowcap", None, "遠くの山は雪をかぶっている。"),
+]
+
+
+def almanac(day):
+    """What the date puts on the screen: (kind of the street trees, set of extras, caption or "", words for the label)."""
+    md = (day.month, day.day)
+    trees = [kind for since, kind in TREES if since <= md][-1]
+    hits = [e for e in EVENTS if e[0] <= md <= e[1]]
+    words = TREE_JA[trees] + "".join(dict.fromkeys(e[4] for e in hits if e[4]))
+    return trees, {e[2] for e in hits}, next((e[3] for e in hits if e[3]), ""), words
+
+
+def moon_phase(day):
+    """Where the moon is in its month at 21:00 in Japan on that day: 0 new, .5 full, just under 1 new again.
+    Counted from one known new moon with the average length of a month, so it can be half a day off."""
+    since = datetime.datetime.combine(day, datetime.time(12)) - datetime.datetime(2000, 1, 6, 18, 14)  # both UTC
+    return since.total_seconds() / 86400 / SYNODIC % 1
+
+
+def moon_rows(r, p):
+    """The moon at phase p as rows of letters; nothing at all within a day of the new moon. The lit side faces
+    the sun of this picture, which sets on the left: a waxing moon is lit on the left, a waning one on the right."""
+    if not .035 < p < .965:
+        return []
+    k, rows = math.cos(2 * math.pi * p), []
+    for y in range(-r, r + 1):
+        w = math.sqrt(max(0, r * r + r * .6 - y * y))
+        rows.append("".join("o" if x * x + y * y <= r * r + r * .6 and (x <= .5 - w * k if p < .5 else x >= w * k - .5) else "."
+                            for x in range(-r, r + 1)))
+    return rows
+
+
+def moon_ja(p):
+    age = p * SYNODIC
+    for upto, name in ((1, ""), (6, "三日月"), (9, "上弦の月"), (13.3, "満ちていく月"), (16.3, "満月"), (21, "欠けていく月"),
+                       (24, "下弦の月"), (28.5, "明け方の細い月")):
+        if age < upto:
+            return f"今夜の月は{name}(月齢 {age:.0f})。" if name else "今夜は新月で、月は出ない。"
+    return "今夜は新月で、月は出ない。"
+
+
+BURSTS = [(66, 24, "#ff7aa8", 4.7, 0), (146, 17, "#ffe07a", 5.9, -2.1), (214, 30, "#7fe0ff", 5.3, -3.4),
+          (292, 18, "#b9ff8a", 6.4, -1), (340, 34, "#ffb85a", 4.1, -2.9)]   # x, y, colour, seconds for one round, delay
+
+
+def fireworks(on, off):
+    """(css, svg): fireworks over the town between two seconds of the loop. Every burst is five pictures shown one
+    after another (the shell going up, three rings growing, sparks coming down), each burst at its own pace."""
+    ring = lambda r, n, turn=0, dy=0: "".join(  # noqa: E731
+        f"M{round(r * math.cos(a))} {dy + round(r * math.sin(a))}h1v1h-1z" for a in (2 * math.pi * (i + turn) / n for i in range(n)))
+    css = [loop("fw"), switch("fw", on, off)]
+    for name, a, b, op in (("fa", 0, 14, 1), ("fb", 14, 22, 1), ("fc", 22, 34, 1), ("fd", 34, 52, 1), ("fe", 52, 68, .5)):
+        css.append(f"@keyframes {name}{{" + (f"0%{{opacity:0}}{a}%" if a else "0%") + f"{{opacity:{op}}}{b}%,to{{opacity:0}}}}"
+                   f".{name}{{animation:{name} var(--s) step-end var(--d) infinite}}")
+    # One burst is drawn once; each place it goes off is a <use> that hands down its colour, pace and delay.
+    pale = 'fill="#fff" fill-opacity=".7"'
+    pics = (("fa", 'fill="#ffe9c0"', "M0 5h1v3h-1zM0 10h1v2h-1zM0 15h1v1h-1z"), ("fb", 'fill="#fff"', ring(2, 8) + "M0 0h1v1h-1z"),
+            ("fc", "", ring(6, 16)), ("fc", pale, ring(3, 8, .5)),
+            ("fd", "", ring(11, 24) + ring(5, 10)), ("fd", pale, ring(8, 16, .5) + ring(2, 6, .5)),
+            ("fe", "", ring(13, 16, .5, 2) + ring(9, 10, 0, 4)), ("fe", pale, ring(5, 6, .5, 3)))
+    svg = '<defs><g id="fz" fill="currentColor">' + "".join(f'<path class="{c}" opacity="0" {f} d="{d}"/>' for c, f, d in pics) + "</g></defs>"
+    svg += "".join(f'<use href="#fz" x="{cx}" y="{cy}" style="color:{col};--s:{secs}s;--d:{delay}s"/>' for cx, cy, col, secs, delay in BURSTS)
+    return "".join(css), f'<g class="fw" opacity="0">{svg}</g>'
+
+
+def drift(cols, n, secs, slant=30):
+    """(css, svg): n small things per colour coming down slowly and to the left (petals, leaves), one whole dot a
+    step. Each is drawn twice, one screen apart, so the fall has no seam."""
+    rnd = random.Random("drift")
+    css = (f"@keyframes pa{{to{{transform:translateY({ROWS}px)}}}}@keyframes pb{{to{{transform:translateX({-slant}px)}}}}"
+           f".pa{{animation:pa {secs}s steps({ROWS}) infinite}}.pb{{animation:pb {secs}s steps({slant}) infinite}}")
+    svg = ""
+    for col in cols:
+        at = [(rnd.randrange(COLS + slant), rnd.randrange(ROWS)) for _ in range(n)]
+        svg += f'<path fill="{col}" d="' + "".join(f"M{x} {y}h1v1h-1zM{x + slant} {y - ROWS}h1v1h-1z" for x, y in at) + '"/>'
+    return css, f'<g class="pa"><g class="pb">{svg}</g></g>'
+
+
+def caption(text, right=True):
+    """One line in a corner of the screen, like the caption of a TV screen."""
+    rows = F12.rows(text)
+    n, cap = len(rows[0]), Layer()
+    x = COLS - n - 4 if right else 4
+    cap.art(x, 3, ["".join("#" if b else "." for b in row) for row in rows], {"#": "#ffffff"})
+    return f'<path fill="#000" opacity=".5" d="M{x - 2} 2h{n + 4}v14h{-n - 4}z"/>' + cap.svg()
+
+
+TREE = ["..ggg..", ".gGggg.", "ggggGgg", "gGggggg", "gggGggg", ".ggggg.", "..ggg.."]
+TREE_BARE = ["b..b..b", ".b.b.b.", "..bbb..", "b..b..b", ".b.b.b.", "..bbb..", "...b..."]
+BIG = ["...ggGgg...", ".ggGggggGg.", ".ggggGgggg.", "gggGgggggGg", "ggggggGgggg", "gGgggggggGg", "ggggGgggggg", ".ggGgggGgg.",
+       "..ggggggg..", "....ggg...."]
+BIG_BARE = ["b...b.b...b", ".b..b.b..b.", "..b.b.b.b..", "b..bb.bb..b", ".b..bbb..b.", "..bb.b.bb..", "....bbb....", ".....b.....",
+            ".....b.....", ".....b....."]
+BAMBOO = ["....g..", "...gg.r", "..g.g..", ".y..gg.", "....g.b", "..p.g..", "...gg..", ".b..g.y", "....g..", "...rg..",
+          "....g..", "....g..", "....g..", "....g.."]
+PUMPKIN = ["...s...", ".ooooo.", "ooeoeoo", "oommmoo", ".ooooo."]
+KADOMATSU = ["..g..", ".gg..", ".gg.g", ".gggg", "pgggp", "ppppp", "sssss", "sssss"]
+HYDRANGEA = [".hHh.", "hHhhH", "hhHhh", ".lhl."]
+CUMULUS = [(52, 34, 6), (44, 42, 6), (60, 43, 7), (50, 50, 9), (38, 55, 7), (64, 56, 8)]   # discs: x, y, radius
+
+
 # --------------------------------------------------------------------------- the city
 def totals(cal):
     return [sum(d["contributionCount"] for d in w["contributionDays"]) for w in cal["weeks"][-53:]] or [0]
@@ -433,21 +572,25 @@ def weather(wx):
     # one line in the corner, like the caption of a TV screen
     ja, temps = WX_JA[kind], [wx.get("tmax"), wx.get("tmin")]
     known = all(type(t) is int and -60 < t < 60 for t in temps)
-    rows = F12.rows(f"東京 {ja}" + (f" {temps[0]}/{temps[1]}℃" if known else ""))
-    cap = Layer()
-    cap.art(4, 3, ["".join("#" if b else "." for b in row) for row in rows], {"#": "#ffffff"})
-    out["front"] += f'<path fill="#000" opacity=".5" d="M2 2h{len(rows[0]) + 4}v14h{-len(rows[0]) - 4}z"/>' + cap.svg()
+    out["front"] += caption(f"東京 {ja}" + (f" {temps[0]}/{temps[1]}℃" if known else ""), right=False)
     out["words"] = f"今日の東京の天気は{ja}" + (f"、最高 {temps[0]} 度、最低 {temps[1]} 度。" if known else "。")
     return out
 
 
-def build(cal, wx=None, dark=False):
+def build(cal, wx=None, dark=False, day=None, cam=False):
     """(SVG body, text for people who cannot see it). wx: ctx["weather"], or None for the picture without weather.
-    dark: the picture shown to people who use GitHub's dark theme; it has one more thing in it."""
+    dark: the picture shown to people who use GitHub's dark theme; it has one more thing in it.
+    day: a datetime.date puts the season, the days of the year and the real moon on it; None is a summer day
+    that is no day in particular. cam: only the screen, without its casing, for the live camera of the Pages site."""
     tot = totals(cal)
     sky_wx = weather(wx)
+    trees, extras, cap, season_words = almanac(day) if day else ("green", set(), "", "")
+    phase = moon_phase(day) if day else None
     (ghost_css, ghost_svg), (signal_css, signal_svg) = ghost(), signal()
     waiter_css, waiter_svg = waiter() if dark else ("", "")
+    if cam:  # on a real clock the day is long, so the train that is in no timetable has to be kept to the night
+        ghost_css += loop("nt") + switch("nt", DAY[3][0], DAY[4][0])
+        ghost_svg = f'<g class="nt">{ghost_svg}</g>'
     rnd = random.Random("diorama")
     css = [loop("dy"), frames("dy", DAY), loop("dk"), frames("dk", DUSK), loop("dw"), frames("dw", DAWN),
            loop("lp"), switch("lp", *LAMPS),
@@ -471,26 +614,46 @@ def build(cal, wx=None, dark=False):
                                       (29.7, "44px,22px);opacity:0", "step-end"), (LOOP, "44px,22px);opacity:0")],
                                "transform:translate(%s")]
     sky += '<path class="ss" style="opacity:0" fill="#fff" d="M250 8h2v1h-2zM247 7h3v1h-3zM243 6h3v1h-3z"/>'
-    moon = Layer()
-    moon.art(-5, -5, disc(5, (3, -2, 5)), {"o": "#f6f1cf"})
-    my = arc(MOON_UP + 12, MOON_UP, MOON_SECS, BASE + 4, 16)[0]
-    css += [loop("mx"), across("mx", MOON_UP, MOON_SECS, 372, 30), loop("my", "step-end"), rise("my", MOON_UP, MOON_SECS, BASE + 4, 16)]
-    sky += (f'<g class="mx" style="transform:translateX({372 - 342 * 12 // MOON_SECS}px)"><g class="my" style="transform:translateY({my}px)">'
-            f'{moon.svg()}</g></g>')
-    clouds = Layer()
+    if "tanabata" in extras:  # the Milky Way: a band of faint stars across the night
+        way = ["".join(f"M{round(x + rnd.gauss(0, 9))} {round(3 + (x - 90) * .25 + rnd.gauss(0, 6))}h1v1h-1z"
+                       for x in (90 + 230 * rnd.random() for _ in range(n))) for n in (90, 20)]
+        sky += f'<path fill="#aebfe8" opacity=".45" d="{way[0]}"/><path fill="#e6eeff" opacity=".8" d="{way[1]}"/>'
+    # The moon. A full moon is up all night; before that it has risen earlier (so it is already high at dusk and
+    # sets in the night), after that it rises later. Without a date: the crescent this picture always had.
+    rows = disc(5, (3, -2, 5)) if phase is None else moon_rows(5, phase)
+    if rows:
+        up = MOON_UP + ((phase or .5) - .5) * 2 * MOON_SECS            # may be before 0: it rose "yesterday"
+        rel = (max(DAY[3][0], up) + min(DAY[4][0], up + MOON_SECS)) / 2 - up   # the middle of its part of the night
+        moon = Layer()
+        moon.art(-5, -5, rows, {"o": "#f6f1cf"})
+        css += [loop("mx"), across("mx", up % LOOP, MOON_SECS, 372, 30), loop("my", "step-end"), rise("my", up % LOOP, MOON_SECS, BASE + 4, 16)]
+        sky += (f'<g class="mx" style="transform:translateX({round(372 - 342 * rel / MOON_SECS)}px)">'
+                f'<g class="my" style="transform:translateY({arc(up + rel, up, MOON_SECS, BASE + 4, 16)[0]}px)">{moon.svg()}</g></g>')
+    for name, (on, off) in (("fireworks", (14.5, 25)), ("countdown", (24, 31))):
+        if name in extras:
+            fw_css, fw_svg = fireworks(on, off)
+            css.append(fw_css)
+            sky += fw_svg
+    clouds, tower = Layer(), Layer()
     for cx, cy, wide in ((40, 14, 22), (150, 26, 16), (262, 10, 26), (340, 30, 14)):
         clouds.box(cx + 3, cy, wide - 8, 1, "#e9f1fa")
         clouds.box(cx + 1, cy + 1, wide - 3, 1, "#e9f1fa")
         clouds.box(cx, cy + 2, wide, 1, "#d3e0ee")
+    if "fireworks" in extras:  # a summer day: a thunderhead standing behind the hills
+        for cx, cy, r in CUMULUS:
+            tower.art(cx - r, cy - r, disc(r), {"o": "#f4f8fc"})
+        for cx, cy, r in CUMULUS[3:]:
+            tower.art(cx - r, cy + 2, disc(r)[r + 2:], {"o": "#d3e0ee"})
     css += [loop("cl"), frames("cl", [(0, 48, "steps(12)"), (12, 60, "step-end"), (12.01, 0, "steps(48)"), (LOOP, 48)],
                                "transform:translateX(%spx)")]
     sky += (f'<g class="dy" opacity=".12"><rect width="{COLS}" height="{ROWS}" fill="url(#gd)"/>'
-            f'<g class="cl">{clouds.svg()}</g></g>')
+            f'{tower.svg(True)}<g class="cl">{clouds.svg()}</g></g>')
     sky += (f'<rect class="dk" opacity=".8" width="{COLS}" height="{BASE + 6}" fill="url(#gk)"/>'
             f'<rect class="dw" opacity="0" width="{COLS}" height="{BASE + 6}" fill="url(#gw)"/>')
     sun, sun_red = Layer(), Layer()
-    sun.art(-6, -6, disc(6), {"o": "#ffe07a"})
-    sun_red.art(-6, -6, disc(6), {"o": "#ff6a3c"})
+    sr = 8 if "newyear" in extras else 6                  # the first sunrise of the year is a big one
+    sun.art(-sr, -sr, disc(sr), {"o": "#ffe07a"})
+    sun_red.art(-sr, -sr, disc(sr), {"o": "#ff6a3c"})
     css += [loop("sx"), across("sx", SUN_UP, SUN_SECS, 372, 30), loop("sy", "step-end"), rise("sy", SUN_UP, SUN_SECS, BASE + 6, 13),
             loop("sr"), frames("sr", [(0, 0), (4, 0), (8, 1), (44, 1), (47.5, 0), (LOOP, 0)])]
     sky += (f'<g class="sx" style="transform:translateX(-30px)"><g class="sy" style="transform:translateY({ROWS + 20}px)">'
@@ -501,15 +664,20 @@ def build(cal, wx=None, dark=False):
     # ---- hills far away, so the sun has something to set behind (decoration, not data)
     far = Pair()
     bump = lambda x, at, wide: math.exp(-((x - at) / wide) ** 2)  # noqa: E731
+    near = {"sakura": "#8f7aa6", "fresh": "#3c8270", "turning": "#5f7a6a", "autumn": "#a0624a"}.get(trees, "#335f84")
     for col, night, ridge in (("#3f7198", "#0b1132", lambda x: 17 * bump(x, 84, 52) + 11 * bump(x, 196, 58) + 5 * bump(x, 300, 50) + 1.4 * math.sin(x / 6) + 2),
-                              ("#335f84", "#070b22", lambda x: 9 * bump(x, 18, 44) + 7 * bump(x, 140, 40) + 4 * bump(x, 250, 60) + math.sin(x / 4 + 1) + 1)):
-        x = 0
+                              (near, "#070b22", lambda x: 9 * bump(x, 18, 44) + 7 * bump(x, 140, 40) + 4 * bump(x, 250, 60) + math.sin(x / 4 + 1) + 1)):
+        x, caps = 0, []
         while x < COLS:
             e, h = x, round(ridge(x))
             while e + 1 < COLS and round(ridge(e + 1)) == h:
                 e += 1
             far.box(x, BASE - h, e - x + 1, h, col, night)
+            if "snowcap" in extras and night == "#0b1132" and h >= 12:   # snow on the tops of the far ridge
+                caps.append((x, BASE - h, e - x + 1, 1 + (h >= 16) + (h >= 19)))
             x = e + 1
+        for cap_box in caps:  # after the whole ridge, so the snow is one path and not one per step of the ridge
+            far.box(*cap_box, "#eef3f8", "#4a5684")
     far.box(0, BASE, COLS, GROUND - BASE, "#3a4d6a", "#070a1a")
     far.box(84, BASE - 26, 1, 9, "#8d97a6", "#1a2040")   # a radio mast on the hill
     sky += far.svg() + '<g class="lp"><path class="bk" fill="#ff3b30" d="M84 45h1v1h-1z"/></g>'
@@ -593,9 +761,42 @@ def build(cal, wx=None, dark=False):
     fg.box(0, GROUND + 1, COLS, ROWS - GROUND - 1, "#2c333f", "#0c0f1c")
     for x in range(4, COLS, 12):
         fg.box(x, GROUND + 2, 5, 1, "#c9c9b0", "#3c4050")
-    for x in (34, 136, 266, 280, 376):                    # trees
-        fg.box(x + 2, 95, 1, 5, "#6b4a3a")
-        fg.art(x, 89, [".ggg.", "ggGgg", "gGggg", "ggggG", ".ggg."], {"g": "#3f8f4f", "G": "#2f7040"})
+    # Trees along the street, and the big one in front of the station. They carry the season.
+    # Drawn into a layer of their own, one path per colour: in the layer of the station every change of colour
+    # starts a new path, and a bed of flowers would cost more bytes than the station.
+    deco, twinkle = Pair(), [Layer(), Layer()]            # twinkle: lights that only December has
+    for i, (x, big) in enumerate(((6, 0), (31, 0), (134, 0), (261, 1), (373, 0), (382, 0))):
+        rows = ((TREE, TREE_BARE), (BIG, BIG_BARE))[big][trees == "bare"]
+        y, mid = (79 if big else 87), x + len(rows[0]) // 2
+        deco.box(mid, y + len(rows) - 1, 1, GROUND - y - len(rows) + 1, "#6b4a3a")
+        if big:
+            deco.box(mid - 1, GROUND - 1, 3, 1, "#6b4a3a")
+        leaf = LEAVES.get(trees, [("#8a6a55", "#8a6a55")])
+        deco.art(x, y, rows, {"b": "#8a6a55", "g": leaf[i % len(leaf)][0], "G": leaf[i % len(leaf)][1]})
+        if "lights" in extras:                            # every twig carries a lamp
+            for r, row in enumerate(rows[:-3 if big else -1]):
+                for c, ch in enumerate(row):
+                    if ch == "b":
+                        twinkle[(r + c) % 2].box(x + c, y + r, 1, 1, ("#ffe9b0", "#fff7d6", "#ffd27a")[(r * 3 + c) % 3])
+    if "lights" in extras:                                # and a string of lamps hangs along the front of the station
+        css.append("@keyframes il{50%{opacity:.3}}.il{animation:il 1.8s steps(1) infinite}.i2{animation-delay:-.9s}")
+        for k, x in enumerate(list(range(148, 169, 2)) + list(range(234, 255, 2))):
+            twinkle[k % 2].box(x, 78 + k % 2, 1, 1, ("#ff5c8d", "#ffd27a", "#4df06c", "#35d6ff")[k % 4])
+    if "hydrangea" in extras:
+        for k, x in enumerate((14, 40, 128, 141, 255, 273)):
+            deco.art(x, 96, HYDRANGEA, [{"h": "#7f95ff", "H": "#a8b6ff", "l": "#2f7040"}, {"h": "#b98cf5", "H": "#d4b4ff", "l": "#2f7040"},
+                                      {"h": "#ff9fd0", "H": "#ffc4e2", "l": "#2f7040"}][k % 3])
+    if "tanabata" in extras:
+        deco.art(175, 86, BAMBOO, {"g": "#57b548", "r": "#ff5c5c", "y": "#ffe07a", "b": "#7fd0ff", "p": "#ff9fd0"})
+    if "pumpkin" in extras:
+        for x in (174, 237, 252):
+            deco.art(x, 95, PUMPKIN, {"o": "#ff8a1f", "s": "#3f8f4f", "e": "#4a2200", "m": "#4a2200"},
+                   {"o": "#8a4410", "s": "#143018", "e": "#2a1400", "m": "#2a1400"})
+            fl.art(x, 95, PUMPKIN, {"e": "#ffe07a", "m": "#ffc04a"})   # a candle inside: the face glows at night
+    if "kadomatsu" in extras:
+        pine = {"g": "#6fc25a", "p": "#2f7040", "s": "#c9a25a"}
+        deco.art(166, 92, KADOMATSU, pine)                  # one on each side of the way in
+        deco.art(232, 92, [r[::-1] for r in KADOMATSU], pine)
     for x in (26, 124, 276, 392):                         # street lamps
         fg.box(x, 88, 1, 12, "#56606c")
         fg.box(x - 1, 87, 3, 1, "#56606c")
@@ -628,19 +829,34 @@ def build(cal, wx=None, dark=False):
         '<filter id="df" x="-5%" y="-10%" width="110%" height="120%"><feGaussianBlur stdDeviation="1.3"/></filter>')
     w, h = COLS * P, ROWS * P
     place = f'<g transform="translate({LED_X} {Y0}) scale({P})" clip-path="url(#dc)"'
+    lights = "".join(f'<g class="il{" i2" * k}">{t.svg(True)}</g>' for k, t in enumerate(twinkle) if t.runs)
+    falling = ""
+    if extras & {"petals", "leaves"}:
+        fall_css, falling = drift(*((["#ffd3e6", "#ff9cc8"], 14, 10) if "petals" in extras else (["#e25a30", "#f4b636"], 9, 7.5)))
+        css.append(fall_css)
+    case = "" if cam else (casing(W, H, "たこさし駅前", "Station front", "ビルの高さは週ごとの活動量。60 秒で 1 日")
+                           + f'<rect x="{LED_X - 3}" y="{Y0 - 3}" width="{w + 6}" height="{h + 6}" rx="2" fill="#000" stroke="#15171a"/>')
     body = (
-        casing(W, H, "たこさし駅前", "Station front", "ビルの高さは週ごとの活動量。60 秒で 1 日")
-        + f'<rect x="{LED_X - 3}" y="{Y0 - 3}" width="{w + 6}" height="{h + 6}" rx="2" fill="#000" stroke="#15171a"/>'
+        case
         + f'<style>{"".join(css + sky_wx["css"] + [ghost_css, signal_css, waiter_css])}</style><defs>{grads}</defs>'
         + f'{place} shape-rendering="crispEdges">'
         + sky + town + back.svg() + f'<g class="lp">{glow.svg()}</g>' + waiter_svg + train + ghost_svg
-        + fg.svg() + sign.svg() + signal_svg + f'<g id="db" class="lp">{fl.svg()}</g>' + tako_svg + bus_svg + sky_wx["front"] + "</g>"
+        + fg.svg() + deco.svg(True) + sign.svg() + signal_svg + f'<g id="db" class="lp">{fl.svg()}{lights}</g>' + tako_svg + bus_svg
+        + falling + sky_wx["front"] + (caption(cap) if cap else "") + "</g>"
         + f'<rect x="{LED_X}" y="{Y0}" width="{w}" height="{h}" fill="url(#dm)"/>'
         + f'{place}><g filter="url(#df)" opacity=".55"><use href="#da" clip-path="url(#dh)"/><use href="#db"/></g></g>')
-    label = (f"たこさし駅前の大型 LED ビジョン。60 秒で朝・昼・夕・夜が巡り、高架の駅に列車が発着する。"
-             f"ビル {len(tot)} 棟は過去 1 年の週ごとの活動量で、いちばん高いビルの週は {max(tot)} 回、建設中の右端が今週の {tot[-1]} 回。"
-             + sky_wx["words"] + ("夜のホームに、だれか立っている。" if dark else ""))
+    label = (("たこさし駅前の大型 LED ビジョン。空と灯りは見ている人の時計に合わせて変わり、高架の駅に列車が発着する。" if cam else
+              "たこさし駅前の大型 LED ビジョン。60 秒で朝・昼・夕・夜が巡り、高架の駅に列車が発着する。")
+             + f"ビル {len(tot)} 棟は過去 1 年の週ごとの活動量で、いちばん高いビルの週は {max(tot)} 回、建設中の右端が今週の {tot[-1]} 回。"
+             + sky_wx["words"] + season_words + (moon_ja(phase) if day else "") + ("夜のホームに、だれか立っている。" if dark else ""))
     return body, label
+
+
+def camera(cal, wx, day):
+    """docs/live.svg as text: the screen alone, with what docs/live.js needs to know written on the root."""
+    body, label = build(cal, wx, dark=True, day=day, cam=True)
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{LED_X} {Y0} {COLS * P} {ROWS * P}" role="img" aria-label="{esc(label)}" '
+            f'data-clock="{" ".join(CLOCK)}" data-up="{SUN_UP}" data-secs="{SUN_SECS}" style="background:#070605">{body}</svg>\n')
 
 
 def live(ctx):
@@ -648,8 +864,13 @@ def live(ctx):
     if os.environ.get("DIORAMA_WX"):  # try a weather by hand
         wx = {"kind": os.environ["DIORAMA_WX"], "tmax": 15, "tmin": 8}
     # The README shows the second one to dark-theme readers (<picture>, prefers-color-scheme).
+    day = datetime.date.fromisoformat(ctx["today"])
     for name, dark in (("diorama.svg", False), ("diorama-dark.svg", True)):
-        save(name, W, H, *build(ctx["cal"], wx, dark))
+        save(name, W, H, *build(ctx["cal"], wx, dark, day))
+    svg = camera(ctx["cal"], wx, day)
+    with open(os.path.join(ROOT, "docs", "live.svg"), "w", encoding="utf-8", newline="\n") as f:
+        f.write(svg)
+    print("wrote docs/live.svg", len(svg))
     return {}
 
 
@@ -696,4 +917,29 @@ if __name__ == "__main__":  # self-check
     assert 'class="gh"' in night[0] and 'class="gh"' not in plain[0] and night[1] == plain[1] + "夜のホームに、だれか立っている。"
     assert night[0].replace(waiter()[0], "").replace(waiter()[1], "") == plain[0]
     assert 12 <= WAIT[0] < WAIT[1] <= 40 and all(WORD.lower() not in s.lower() for s in night + plain)
+    # the calendar: every day of a leap year has its words, and between them the days use everything there is
+    seen = set()
+    for k in range(366):
+        trees, extras, cap, words = almanac(datetime.date(2028, 1, 1) + datetime.timedelta(days=k))
+        seen |= extras | {trees}
+        assert words and all(F12.glyph(ch) != F12.glyph("?") for ch in cap), cap
+    assert seen == set(LEAVES) | {"bare"} | {e[2] for e in EVENTS}
+    assert almanac(datetime.date(2026, 11, 12))[::2] == ("autumn", "紅葉 見ごろ") and almanac(datetime.date(2026, 5, 5))[1:3] == (set(), "")
+    snow = {"kind": "snow", "tmax": 1, "tmin": -2}
+    for iso in ("2026-01-01", "2026-04-01", "2026-06-20", "2026-07-07", "2026-08-01", "2026-10-31", "2026-11-12", "2026-12-20", "2026-12-31"):
+        body, label = build(cal, snow, True, datetime.date.fromisoformat(iso))
+        assert len(body) - len(build(cal, snow, True)[0]) < 8000, (iso, len(body))   # a day of the year costs little
+        assert "nan" not in body.lower() and WORD.lower() not in (body + label).lower() and "。。" not in label, iso
+        assert 'class="gh"' in body and 'class="gt"' in body and 'class="ms"' in body   # the hidden things are still there
+    # the moon: none on the night of a new moon (2026-11-09), full on 2026-11-24, and a half moon is half a disc
+    assert moon_rows(5, moon_phase(datetime.date(2026, 11, 9))) == [] and abs(moon_phase(datetime.date(2026, 11, 24)) - .5) < .03
+    full = sum(r.count("o") for r in moon_rows(5, .5))
+    assert full == sum(r.count("o") for r in disc(5)) and 0 <= sum(r.count("o") for r in moon_rows(5, .25)) * 2 - full <= 11
+    assert moon_rows(5, .25) == [r[::-1] for r in moon_rows(5, .75)] and "今夜は新月" in moon_ja(.99) + moon_ja(.01)
+    # the camera: only the screen, and every 60-second animation is known to be either the time of day or movement
+    cam = camera(cal, {"kind": "rain", "tmax": 20, "tmin": 10}, datetime.date(2026, 8, 1))
+    names = set(re.findall(r"\.(\w+)\{animation:\w+ 60s", cam))
+    assert names <= set(CLOCK) | set(MOVES) and {"dy", "lp", "sx", "mx", "gh", "nt", "fw", "l0"} <= names, names - set(CLOCK) - set(MOVES)
+    assert cam.startswith("<svg") and f'data-clock="{" ".join(CLOCK)}"' in cam and 'letter-spacing' not in cam and len(cam) < 130_000
+    assert WORD.lower() not in cam.lower() and 'class="nt"><g class="gt"' in cam   # the unlisted train keeps to the night
     print("diorama ok")

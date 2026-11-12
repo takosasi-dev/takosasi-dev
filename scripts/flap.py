@@ -8,7 +8,12 @@ middle, and flaps that fall through a few other letters before each cell settles
 Everything is CSS animation, so it runs inside an <img>. Standard library only.
 """
 import random
-from xml.sax.saxutils import escape as esc
+from xml.sax.saxutils import escape
+
+
+def esc(s):  # the same as style.esc; this file stands alone
+    return escape(s, {'"': "&quot;"})
+
 
 # Latin letters come from the first fonts (bold sans, like the real boards), kana and kanji from the rest.
 FACE = "'Helvetica Neue',Helvetica,Arial,'Yu Gothic UI','Hiragino Sans','Noto Sans CJK JP',Meiryo,sans-serif"

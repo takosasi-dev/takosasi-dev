@@ -18,8 +18,10 @@ permissions:
 # One line at a time. ponytail: GitHub keeps only one waiting run per group, so of several issues
 # opened within the same few seconds only the first and the last get an answer. Fine for a toy;
 # move to a queue (a label swept by a scheduled run) if that ever matters.
+# Only the issues this workflow answers share the group. Every opened issue starts this workflow, and one
+# with another title would otherwise take the waiting place of a real one (which then gets no answer).
 concurrency:
-  group: board
+  group: ${{ startsWith(github.event.issue.title, 'board:') && 'board' || format('board-skip-{0}', github.run_id) }}
   cancel-in-progress: false
 
 jobs:
@@ -29,6 +31,9 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # the head of main now, not the commit of the moment the issue was opened: the run before this one has pushed
+          ref: ${{ github.event.repository.default_branch }}
       - name: Write the line
         env:
           TITLE: ${{ github.event.issue.title }}

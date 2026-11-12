@@ -22,9 +22,11 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false # this job runs the code of a pull request
       - name: Self-checks
         run: |
-          for f in scripts/led.py scripts/flap.py scripts/ext_*.py; do
+          for f in scripts/led.py scripts/flap.py scripts/style.py scripts/ext_*.py; do
             echo "== $f"
             python3 "$f"
           done

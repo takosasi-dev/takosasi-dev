@@ -108,9 +108,67 @@ def draw(state):
         b.put(F16, "まだ運転士がいません。", 6, 48, GREEN)
         b.put(F16, "最初の1人をお待ちしています。", 6, 66, GREEN)
     h = y0 + 40 + b.h + 17
-    save("train.svg", W, h, out + casing(W, h, "運転記録", "Drivers", "下の札から Issue を出すと列車が進みます", y=y0) + b.svg() + seam(b, 43),
-         f"たこさし環状線。列車は {name} 駅、{lap} 周目、のべ {state['moves']} 回運転。"
-         + (f"直近の運転士: {'、'.join(esc(r['login']) for r in state['recent'])}" if state["recent"] else ""))
+    label = (f"たこさし環状線。列車は {name} 駅、{lap} 周目、のべ {state['moves']} 回運転。"
+             + (f"直近の運転士: {'、'.join(esc(r['login']) for r in state['recent'])}" if state["recent"] else ""))
+    save("train.svg", W, h, out + casing(W, h, "運転記録", "Drivers", "下の札から Issue を出すと列車が進みます", y=y0) + b.svg() + seam(b, 43), label)
+    draw_m(state, label)
+
+
+# The loop on the phone sheet stands upright: たこさし on top, clockwise down the right side, デバッグ at the bottom,
+# back up the left side. (x, y, label dx, label dy, label anchor), in the order of STOPS.
+LOOP_M = (130, 152, 170, 442)  # x, y, width, height of the track; its ends are half circles
+STOPS_M = [(215, 152, 0, -36, "middle")]
+STOPS_M += [(300, 257 + i * 58, 32, 8, "start") for i in range(5)]
+STOPS_M += [(215, 594, 0, 52, "middle")]
+STOPS_M += [(130, 489 - i * 58, -32, 8, "end") for i in range(5)]
+
+
+def draw_m(state, label):
+    """train-m.svg, the same sheet for a phone: the loop upright, and under it a board 194 dots wide on which a driver
+    takes two rows (the name, then how far), so that no name is cut short."""
+    name = STOPS[state["pos"]][0]
+    tx, ty = STOPS_M[state["pos"]][:2]
+    lap = state["laps"] + 1
+    lx, ly, lw, lh = LOOP_M
+    cx = lx + lw / 2
+    out = (f'<style>@keyframes tp{{50%{{opacity:.1}}}}.tp{{animation:tp 1.6s steps(1) infinite}}'
+           f'@media (prefers-reduced-motion:reduce){{.tp{{animation:none}}}}</style>'
+           f'<g font-family="{GOTH}">' + sign_m(664, "たこさし環状線", "LOOP LINE", 25)
+           + f'<text x="20" y="74" font-size="{SMALL}" font-weight="700" fill="#555">{lap} 周目 ・ のべ {state["moves"]} 回運転</text>'
+             f'<rect x="{lx}" y="{ly}" width="{lw}" height="{lh}" rx="{lw / 2}" fill="none" stroke="{TRACK}" stroke-width="10"/>'
+             f'<path d="M{lx + lw - 7} 338l7 12l7-12zM{lx - 7} 408l7-12l7 12z" fill="#fff"/>'
+             # between the two rings of a train at either side there are 116 units: nothing in here is wider
+             f'<text x="{cx}" y="346" text-anchor="middle" font-size="{SMALL}" font-weight="700" fill="#666">ただいまの</text>'
+             f'<text x="{cx}" y="369" text-anchor="middle" font-size="{SMALL}" font-weight="700" fill="#666">停車駅</text>'
+             f'<text x="{cx}" y="410" text-anchor="middle" font-size="28" font-weight="700" fill="#111">{name}</text>')
+    for i, ((n, *_), (x, y, dx, dy, anchor)) in enumerate(zip(STOPS, STOPS_M)):
+        out += (f'<circle cx="{x}" cy="{y}" r="10" fill="#fff" stroke="#222" stroke-width="4"/>'
+                f'<text x="{x + dx}" y="{y + dy}" text-anchor="{anchor}" font-size="21" font-weight="700" fill="{"#d2283a" if i == state["pos"] else "#111"}">{n}</text>')
+    out += (f'<g transform="translate({tx} {ty})"><circle class="tp" r="27" fill="none" stroke="#e5404f" stroke-width="4"/>'
+            f'<rect x="-21" y="-14" width="42" height="28" rx="7" fill="#e5404f" stroke="#111" stroke-width="3"/>'
+            f'<rect x="-14" y="-8" width="11" height="9" rx="1.5" fill="#fff"/><rect x="3" y="-8" width="11" height="9" rx="1.5" fill="#fff"/>'
+            f'<circle cx="-11" cy="7" r="2.2" fill="#ffd500"/><circle cx="11" cy="7" r="2.2" fill="#ffd500"/></g></g>')
+
+    y0, cols = 674, (WM - 2 * LED_X) // 2
+    recent = state["recent"][:KEEP]
+    b = Board("t", LED_X, y0 + 66, cols, 48 + (36 * len(recent) if recent else 56))
+    R = cols - 5
+    w = b.put(F16, "現在", 7, 4, GREEN, invert=True)
+    b.put(F16, f"{name}駅", 15 + w, 4, AMBER)
+    b.put(F16, f"全{N}駅", R, 4, GREEN, right=True)  # beside the longest name there is no room for a three-digit lap
+    b.put(F16, f"のべ運転 {state['moves']}回", 6, 24, GREEN)
+    b.put(F16, f"{lap}周目", R, 24, AMBER, right=True)
+    for i, r in enumerate(recent):
+        b.put(F16, F16.fit(r["login"], R - 6), 6, 48 + i * 36, AMBER)
+        b.put(F16, f"{r['steps']}駅 → {STOPS[r['to']][0]}", R, 65 + i * 36, GREEN, right=True)
+    if not recent:
+        for k, ln in enumerate(["まだ運転士がいません。", "最初の1人を", "お待ちしています。"]):
+            b.put(F16, ln, 6, 48 + k * 18, GREEN)
+    h = y0 + 66 + b.h + 17
+    strip = (f'<g font-family="{GOTH}"><text x="22" y="{y0 + 30}" font-size="20" font-weight="700" fill="#f2f2ee" letter-spacing="3">運転記録</text>'
+             f'<text x="124" y="{y0 + 30}" font-size="{SMALL}" fill="#aab0b8" letter-spacing="1">Drivers</text>'
+             f'<text x="22" y="{y0 + 55}" font-size="{SMALL}" fill="#aab0b8">下の札から Issue を出すと列車が進みます</text></g>')
+    save("train-m.svg", WM, h, out + casing(WM, h, y=y0) + strip + b.svg() + seam(b, 43), label)
 
 
 def static():
@@ -149,6 +207,10 @@ def selfcheck():
     for i in range(12):
         s2, _ = step(s2, "train: 1", f"user{i}")
     assert len(s2["recent"]) == KEEP and s2["recent"][0]["login"] == "user11" and s2["moves"] == 14
+    # the phone sheet: one place per stop, in the same order, on the track
+    lx, ly, lw, lh = LOOP_M
+    assert len(STOPS_M) == N and all(x in (lx, lx + lw / 2, lx + lw) and ly <= y <= ly + lh for x, y, *_ in STOPS_M)
+    assert F16.width("まだ運転士がいません。") <= (WM - 2 * LED_X) // 2 - 11 and F16.width("3駅 → バグの森") <= (WM - 2 * LED_X) // 2 - 11
     print("train ok")
 
 

@@ -76,7 +76,40 @@ def live(ctx):
                 f'<circle cx="{lx}" cy="{y - 7}" r="{10 if last else 8}" fill="#fff" stroke="{"#d6402b" if last else "#222"}" stroke-width="{4.5 if last else 3.5}"/>'
                 f'<text x="{lx + 24}" y="{y}" font-size="20" font-weight="700" fill="#111"{squeeze}>{esc(text)}</text>')
     save("history.svg", W, H, out + "</g>", "沿革。" + "。".join(f"{d} {t}" for _, d, t in ev))
+    draw_m(ev)
     return {}
+
+
+def draw_m(ev):
+    """The same sign for a phone (history-m.svg): the line runs down the left edge, each row is the day and,
+    under it, what happened, broken into as many lines as it needs."""
+    lx, tx = 32, 58
+    note = ["いま公開しているリポジトリの", "記録から自動で作成"]
+    y = 50 + 24 * len(note) + 14
+    rows, year = "", ""
+    rule = f'<rect x="20" y="{y}" width="{WM - 40}" height="2" fill="{BLUE}"/>'
+    y += 18
+    first = None
+    for i, (_, date, text) in enumerate(ev):
+        last = i == len(ev) - 1
+        if date[:4] != year:
+            year = date[:4]
+            rows += f'<text x="{tx}" y="{y + 22}" font-size="24" font-weight="800" fill="{BLUE}" font-family="{MONO}">{year}</text>'
+            y += 38
+        day = date[5:] if len(date) > 7 else f"{int(date[5:])} 月"
+        first = first or y + 12
+        rows += (f'<circle cx="{lx}" cy="{y + 12}" r="{10 if last else 8}" fill="#fff" stroke="{"#d6402b" if last else "#222"}" stroke-width="{4.5 if last else 3.5}"/>'
+                 f'<text x="{tx}" y="{y + 19}" font-size="{SMALL}" font-weight="700" fill="#555" font-family="{MONO}">{day}</text>')
+        end = y + 12
+        for k, ln in enumerate(wrap_px(text, 20, WM - tx - 16)):
+            rows += f'<text x="{tx}" y="{y + 45 + k * 26}" font-size="20" font-weight="700" fill="#111">{esc(ln)}</text>'
+            bottom = y + 45 + k * 26
+        y = bottom + 22
+    H = y - 2
+    out = (f'<g font-family="{GOTH}">' + sign_m(H, "沿革", "HISTORY")
+           + "".join(f'<text x="20" y="{72 + k * 24}" font-size="{SMALL}" font-weight="700" fill="#555">{ln}</text>' for k, ln in enumerate(note))
+           + rule + f'<path d="M{lx} {first}V{end}" stroke="{BLUE}" stroke-width="7" stroke-linecap="round"/>' + rows + "</g>")
+    save("history-m.svg", WM, H, out, "沿革。" + "。".join(f"{d} {t}" for _, d, t in ev))
 
 
 if __name__ == "__main__":  # self-check: python3 scripts/ext_history.py

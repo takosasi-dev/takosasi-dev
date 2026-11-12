@@ -82,16 +82,39 @@ def stamps(ctx):
         col = INK if ok else "#b9bcc0"
         ring = (f'<circle r="62" stroke-width="4.5"/><circle r="53" stroke-width="1.5"/>' if ok
                 else '<circle r="62" stroke-width="2" stroke-dasharray="5 6"/>')
-        out += (f'<g transform="translate({cx} {cy}) rotate({tilt[i % len(tilt)] if ok else 0})"{" filter=" + chr(34) + "url(#ink)" + chr(34) if ok else ""}>'
-                f'<g fill="none" stroke="{col}">{ring}</g><g fill="{col}" font-weight="800">'
-                f'<text y="-24" font-size="16">{top}</text><text y="{14 if big.isdigit() else 10}" font-size="{40 if big.isdigit() else 30}">{big}</text>'
-                f'<text y="36" font-size="15">{bottom}</text>'
-                + ('<circle cx="-44" r="2.5"/><circle cx="44" r="2.5"/>' if len(big) < 4 else "") + '</g></g>'
-                f'<text x="{cx}" y="{cy + 88}" font-size="16.5" font-weight="700" fill="#222">{caption}</text>'
+        out += (seal(cx, cy, tilt[i % len(tilt)] if ok else 0, ok, col, ring, top, big, bottom)
+                + f'<text x="{cx}" y="{cy + 88}" font-size="16.5" font-weight="700" fill="#222">{caption}</text>'
                 + (f'<text x="{cx}" y="{cy + 109}" font-size="14.5" font-weight="700" fill="{INK}">達成</text>' if ok
                    else f'<text x="{cx}" y="{cy + 109}" font-size="14.5" fill="#777">いま {have[key]} / {need}</text>'))
-    save("stamps.svg", W, H, out + "</g>",
-         f"駅スタンプ帳: {done} / {len(todo)} 個。" + "、".join(f"{c}{'(達成)' if have[k] >= n else ''}" for k, n, _, c in todo))
+    label = f"駅スタンプ帳: {done} / {len(todo)} 個。" + "、".join(f"{c}{'(達成)' if have[k] >= n else ''}" for k, n, _, c in todo)
+    save("stamps.svg", W, H, out + "</g>", label)
+
+    # the same sheet for a phone: two stamps to a row, each a little larger, so the small print inside stays readable
+    cw, pitch, big_r = (WM - 40) / 2, 216, 1.13
+    H = 92 + pitch * -(-len(todo) // 2) + 2
+    out = (f'<defs>{INK_FILTER}</defs><g font-family="{GOTH}">' + sign_m(H, "駅スタンプ帳", "STAMP RALLY")
+           + f'<text x="20" y="76" font-size="{SMALL}" font-weight="700" fill="#555">あつめた数 '
+             f'<tspan font-size="28" fill="{INK}">{done}</tspan> / {len(todo)}</text><g text-anchor="middle">')
+    for i, (key, need, (top, big, bottom), caption) in enumerate(todo):
+        cx, cy, ok = 20 + cw / 2 + cw * (i % 2), 92 + 78 + pitch * (i // 2), have[key] >= need
+        col = INK if ok else "#b9bcc0"
+        ring = (f'<circle r="62" stroke-width="4.5"/><circle r="53" stroke-width="1.5"/>' if ok
+                else '<circle r="62" stroke-width="2" stroke-dasharray="5 6"/>')
+        squeeze = f' textLength="{cw - 8:.0f}" lengthAdjust="spacingAndGlyphs"' if text_w(caption, SMALL) > cw - 8 else ""
+        out += (seal(cx, cy, tilt[i % len(tilt)] if ok else 0, ok, col, ring, top, big, bottom, f" scale({big_r})")
+                + f'<text x="{cx}" y="{cy + 98}" font-size="{SMALL}" font-weight="700" fill="#222"{squeeze}>{caption}</text>'
+                + (f'<text x="{cx}" y="{cy + 122}" font-size="{SMALL}" font-weight="700" fill="{INK}">達成</text>' if ok
+                   else f'<text x="{cx}" y="{cy + 122}" font-size="{SMALL}" fill="#777">いま {have[key]} / {need}</text>'))
+    save("stamps-m.svg", WM, H, out + "</g></g>", label)
+
+
+def seal(cx, cy, turn, ok, col, ring, top, big, bottom, scale=""):
+    """One stamp at (cx, cy): three lines of lettering in its ring. A stamp that was reached is pressed in ink, askew."""
+    return (f'<g transform="translate({cx} {cy}) rotate({turn}){scale}"{" filter=" + chr(34) + "url(#ink)" + chr(34) if ok else ""}>'
+            f'<g fill="none" stroke="{col}">{ring}</g><g fill="{col}" font-weight="800">'
+            f'<text y="-24" font-size="16">{top}</text><text y="{14 if big.isdigit() else 10}" font-size="{40 if big.isdigit() else 30}">{big}</text>'
+            f'<text y="36" font-size="15">{bottom}</text>'
+            + ('<circle cx="-44" r="2.5"/><circle cx="44" r="2.5"/>' if len(big) < 4 else "") + '</g></g>')
 
 
 # --------------------------------------------------------------------------- 2. lost and found
@@ -151,7 +174,9 @@ def lost(ctx):
                           f'<text x="104" y="{132 + k * 30}" font-size="19" font-weight="700" fill="#111">{v}</text>'
                           for k, (a, v) in enumerate([("列車", esc(r["name"])), ("遅れ", late), ("理由", why)])))
         label = f"遅延証明書: {r['name']}、{late}。理由: {why}"
+        facts_m = [("列車", esc(r["name"])), ("遅れ", late), ("理由", why)]
     else:
+        facts_m = None
         out += (f'<text x="40" y="128" font-size="26" font-weight="800" fill="#111">本日、遅延はありません。</text>'
                 f'<text x="40" y="164" font-size="17" fill="#222">全列車、定刻どおり運転しています。</text>')
         label = "遅延証明書: 本日、遅延はありません"
@@ -160,19 +185,56 @@ def lost(ctx):
             f'<text y="20" text-anchor="middle" font-size="13" font-weight="800" fill="{INK}">之印</text></g>'
             f'<text x="{W - 140}" y="{H - 34}" text-anchor="end" font-size="14" fill="#333">takosasi-dev 駅</text></g>')
     save("lost-delay.svg", W, H, out, label)
+    delay_m(ctx["today"], facts_m, label)
+
+
+def delay_m(today, rows, label, blue="#1d4f9e"):
+    """The delay certificate for a phone (lost-delay-m.svg): the same slip, narrow, every sentence broken to fit.
+    rows: [(heading, text already escaped)], or None on a day without a delay."""
+    out, y = "", 132
+    if rows:
+        for ln in wrap_px("下記の列車は、リリースが遅れていることを証明します。", 19, WM - 64):
+            out += f'<text x="32" y="{y}" font-size="19" fill="#222">{ln}</text>'
+            y += 27
+        y += 12
+        for a, v in rows:  # the heading over its text: beside it, a reason would not fit on one line
+            out += f'<text x="32" y="{y}" font-size="{SMALL}" font-weight="700" fill="{blue}">{a}</text>'
+            for ln in wrap_px(v, 20, WM - 64):
+                y += 27
+                out += f'<text x="32" y="{y}" font-size="20" font-weight="700" fill="#111">{ln}</text>'
+            y += 36
+        y -= 18
+    else:
+        out += (f'<text x="32" y="{y + 6}" font-size="26" font-weight="800" fill="#111">本日、遅延はありません。</text>'
+                f'<text x="32" y="{y + 42}" font-size="19" fill="#222">全列車、定刻どおり運転しています。</text>')
+        y += 64
+    H = y + 112  # room for the seal under the last line
+    out = (f'<defs>{INK_FILTER}</defs><g font-family="{GOTH}"><rect x="1" y="1" width="{WM - 2}" height="{H - 2}" rx="5" fill="{PLATE}" stroke="{PLATE_EDGE}" stroke-width="2"/>'
+           f'<rect x="10" y="10" width="{WM - 20}" height="{H - 20}" fill="none" stroke="{blue}" stroke-width="2"/>'
+           f'<rect x="15" y="15" width="{WM - 30}" height="{H - 30}" fill="none" stroke="{blue}" stroke-width=".8"/>'
+           f'<text x="32" y="64" font-size="31" font-weight="800" fill="{blue}" letter-spacing="9">遅延証明書</text>'
+           f'<text x="32" y="94" font-size="{SMALL}" fill="{blue}" font-family="{MONO}">DELAY CERTIFICATE</text>'
+           f'<text x="{WM - 32}" y="94" text-anchor="end" font-size="{SMALL}" fill="#333" font-family="{MONO}">{today.replace("-", ".")}</text>'
+           + out
+           + f'<g transform="translate({WM - 76} {H - 70}) rotate(-7) scale(1.2)" filter="url(#ink)"><rect x="-34" y="-34" width="68" height="68" rx="5" fill="none" stroke="{INK}" stroke-width="4"/>'
+             f'<text y="-4" text-anchor="middle" font-size="22" font-weight="800" fill="{INK}">駅長</text>'
+             f'<text y="20" text-anchor="middle" font-size="13" font-weight="800" fill="{INK}">之印</text></g>'
+             f'<text x="{WM - 134}" y="{H - 34}" text-anchor="end" font-size="{SMALL}" fill="#333">takosasi-dev 駅</text></g>')
+    save("lost-delay-m.svg", WM, H, out, label)
 
 
 # --------------------------------------------------------------------------- 3. the map of every repo
 COLS, FOLD, CHARS = 3, 18, 19  # columns on the sheet; stations before a line folds into a new block; letters on one name line
 
 
-def name_lines(name):
-    """A station name on one line, or broken at a hyphen into two (the second is cut if still too long)."""
-    if len(name) <= CHARS:
-        return [name]
-    cut = name.rfind("-", 1, CHARS) + 1 or CHARS
-    rest = name[cut:]
-    return [name[:cut], rest if len(rest) <= CHARS else rest[:CHARS - 2] + ".."]
+def name_lines(name, chars=CHARS, most=2):
+    """A station name on one line, or broken at hyphens into `most` lines at most (the last is cut if still too long)."""
+    out = []
+    while len(name) > chars and len(out) < most - 1:
+        cut = name.rfind("-", 1, chars) + 1 or chars
+        out.append(name[:cut])
+        name = name[cut:]
+    return out + [name if len(name) <= chars else name[:chars - 2] + ".."]
 
 
 def map_all(ctx):
@@ -242,9 +304,59 @@ def map_all(ctx):
             f'<text x="24" y="38" font-size="23" font-weight="700" fill="#111" letter-spacing="4">全線路線図</text>'
             f'<text x="162" y="37" font-size="12" fill="#666" font-family="{MONO}" letter-spacing="2">ALL LINES</text>'
             f'<text x="{W - 24}" y="37" text-anchor="end" font-size="14" font-weight="700" fill="#555">{len(ctx["repos"])} 駅 / {lines} 路線。下へ行くほど新しい駅</text>')
-    save("map-all.svg", W, H, head + out + "</g>",
-         f"全線路線図: {len(ctx['repos'])} 駅 / {lines} 路線。"
-         + "。".join(f"{CAT[t][2]}: {'、'.join(r['name'] for r in sorted(g, key=lambda r: (born(r), r['name'])))}" for t, g in ctx["groups"].items() if g))
+    label = (f"全線路線図: {len(ctx['repos'])} 駅 / {lines} 路線。"
+             + "。".join(f"{CAT[t][2]}: {'、'.join(r['name'] for r in sorted(g, key=lambda r: (born(r), r['name'])))}" for t, g in ctx["groups"].items() if g))
+    save("map-all.svg", W, H, head + out + "</g>", label)
+    map_all_m(ctx, born, opened, label)
+
+
+def map_all_m(ctx, born, opened, label):
+    """The same map for a phone: two columns, a line is never folded, a long name breaks at its hyphens
+    (three lines at most) instead of being cut. More repos only make the sheet taller."""
+    # ponytail: a line is never folded here, so one line far longer than the rest leaves the other column short.
+    # Fold it the way map_all() does with FOLD if a category ever passes about 25 repos.
+    CAT = ctx["CAT"]
+    lines = [(t, sorted(g, key=lambda r: (born(r), r["name"]))) for t, g in ctx["groups"].items() if g]
+    rows = lambda r: name_lines(r["name"], 14, 3)  # noqa: E731
+    step = lambda r, last: 10 + 23 * len(rows(r)) + (28 if opened(r, last) else 0)  # noqa: E731
+    hs = [50 + sum(step(r, r is st[-1]) for r in st) + 36 for _, st in lines]
+    cut = min(range(1, len(lines)), key=lambda c: max(sum(hs[:c]), sum(hs[c:])), default=len(lines))
+    cw, top = (WM - 20) / 2, 92
+    out, y, bottom = "", top, top
+    for i, ((title, st), h) in enumerate(zip(lines, hs)):
+        if i == cut:
+            y = top
+        _, _, ja, sym, lc, _ = CAT[title]
+        x0 = 14 + (i >= cut) * cw
+        sx, pw, count = x0 + 18, cw - 10, f"{len(st)}駅"
+        room = pw - 38 - text_w(count, SMALL) - 18
+        squeeze = f' textLength="{room:.0f}" lengthAdjust="spacingAndGlyphs"' if text_w(ja, SMALL) > room else ""
+        ys, yy = [], y + 50
+        for r in st:
+            ys.append(yy + 10)
+            yy += step(r, r is st[-1])
+        out += (f'<path d="M{sx} {y + 18}V{ys[-1]}" stroke="{lc}" stroke-width="8"/>'
+                f'<path d="M{sx} {ys[-1]}V{yy + 14}" stroke="{lc}" stroke-width="8" stroke-dasharray="3 5"/>'
+                f'<rect x="{x0}" y="{y}" width="{pw:.0f}" height="36" rx="18" fill="{lc}"/>'
+                f'<circle cx="{sx}" cy="{y + 18}" r="13" fill="#fff"/>'
+                f'<text x="{sx}" y="{y + 24}" text-anchor="middle" font-size="16.5" font-weight="800" fill="#111">{sym}</text>'
+                f'<text x="{x0 + 38}" y="{y + 25}" font-size="{SMALL}" font-weight="700" fill="#fff"{squeeze}>{ja}</text>'
+                f'<text x="{x0 + pw - 12:.0f}" y="{y + 25}" text-anchor="end" font-size="{SMALL}" font-weight="700" fill="#fff">{count}</text>')
+        for r, sy in zip(st, ys):
+            new, ls = opened(r, r is st[-1]), rows(r)
+            out += (f'<circle cx="{sx}" cy="{sy}" r="{9 if new else 7}" fill="#fff" stroke="{INK if new else "#222"}" stroke-width="{4.5 if new else 3}"/>'
+                    + "".join(f'<text x="{sx + 18}" y="{sy + 6 + k * 23}" font-family="{MONO}" font-size="{SMALL}" font-weight="700" fill="#111">{esc(ln)}</text>'
+                              for k, ln in enumerate(ls)))
+            if new:
+                ty = sy + 23 * len(ls) - 7
+                out += (f'<rect x="{sx + 18}" y="{ty}" width="92" height="26" rx="13" fill="{INK}"/>'
+                        f'<text x="{sx + 64}" y="{ty + 19.5}" text-anchor="middle" font-size="{SMALL}" font-weight="700" fill="#fff">延伸開業</text>')
+        y += h
+        bottom = max(bottom, y)
+    H = bottom + 2
+    head = (f'<g font-family="{GOTH}">' + sign_m(H, "全線路線図", "ALL LINES")
+            + f'<text x="20" y="72" font-size="{SMALL}" font-weight="700" fill="#555">{len(ctx["repos"])} 駅 / {len(lines)} 路線。下へ行くほど新しい駅</text>')
+    save("map-all-m.svg", WM, H, head + out + "</g>", label)
 
 
 # --------------------------------------------------------------------------- 4. the train across the page
@@ -322,4 +434,7 @@ if __name__ == "__main__":  # self-check of the rules: python3 scripts/ext_data.
     assert ghost_day(2026, 11) == ghost_day(2026, 11)
     assert name_lines("padlab") == ["padlab"] and name_lines("minecraft-building-blocks-plus") == ["minecraft-building-", "blocks-plus"]
     assert name_lines("a" * 45) == ["a" * 19, "a" * 17 + ".."]
+    # the phone sheet: narrower lines, three of them, so no real name is cut
+    assert name_lines("minecraft-building-blocks-plus", 14, 3) == ["minecraft-", "building-", "blocks-plus"]
+    assert name_lines("-ai-work-board-", 14, 3) == ["-ai-work-", "board-"] and name_lines("a" * 45, 14, 3)[2] == "a" * 12 + ".."
     print("ext_data ok, ghost days 2026:", days)
