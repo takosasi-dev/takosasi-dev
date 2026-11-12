@@ -204,15 +204,32 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 <img src="assets/releases.svg" width="100%" alt="新着リリース">
 <img src="assets/contrib.svg" width="100%" alt="稼働記録: 過去 1 年のコントリビューション">
 <picture><source media="(max-width: 600px)" srcset="assets/timetable-m.svg"><img src="assets/timetable.svg" width="100%" alt="時刻表: 過去 4 週間の公開コミットを、コミットした時刻で並べた駅の時刻表。行が「時」、数字が「分」。平日と土・休日の 2 列で、始発・終電・いちばん混む時間帯に印"></picture>
+<!-- The annual report is on show in December only. scripts/ext_annual.py fills this in. -->
+<!-- ANNUAL:START -->
+
+<!-- ANNUAL:END -->
+
+</div>
+
+定期券・スタンプ帳・お忘れ物・遅延証明書・沿革は、資料室にあります。札を押すと開きます。
+
+<details>
+<summary><picture><img src="assets/records-plate.svg" height="40" align="middle" alt="資料室: 定期券・スタンプ帳・お忘れ物・遅延証明書・沿革"></picture></summary>
+<br>
+
+<div align="center">
+
 <img src="assets/commuter.svg" width="480" alt="定期券: たこさし ⇔ GitHub。いま続いている連続日数と、その有効期間。1 日休むと期限切れになる">
 <picture><source media="(max-width: 600px)" srcset="assets/stamps-m.svg"><img src="assets/stamps.svg" width="100%" alt="駅スタンプ帳: 公開リポジトリ数・リリース数・言語・連続日数などの実績を、達成するとスタンプが押される台紙"></picture>
 <img src="assets/lost.svg" width="100%" alt="お忘れ物センター: いちばん長く push していないリポジトリと、その日数">
 <picture><source media="(max-width: 600px)" srcset="assets/lost-delay-m.svg"><img src="assets/lost-delay.svg" width="100%" alt="遅延証明書: 注目のリポジトリのうち、リリースがいちばん遅れている 1 本"></picture>
 <picture><source media="(max-width: 600px)" srcset="assets/history-m.svg"><img src="assets/history.svg" width="100%" alt="沿革: GitHub への登録、いちばん古い公開リポジトリ、10・25・50 本目、いちばん多く新設した月、このプロフィールの公開日、今の本数とリリース数を古い順に並べた年表"></picture>
-<!-- The annual report is on show in December only. scripts/ext_annual.py fills this in. -->
-<!-- ANNUAL:START -->
 
-<!-- ANNUAL:END -->
+</div>
+
+</details>
+
+<div align="center">
 
 <a name="noriba-5"></a>
 <img src="assets/sec-05.svg" width="100%" alt="5 番線 待合室 WAITING ROOM">
@@ -511,7 +528,7 @@ Issue は自動で返事が付いて閉じられます。絵が変わるまで�
 
 </details>
 
-<details open>
+<details>
 <summary><picture><img src="assets/ticket-plate.svg" height="40" align="middle" alt="きっぷうりば"></picture></summary>
 <br>
 
@@ -529,7 +546,7 @@ Issue は自動で返事が付いて閉じられます。同じ人が何度出�
 
 </details>
 
-<details open>
+<details>
 <summary><picture><img src="assets/board-plate.svg" height="40" align="middle" alt="伝言板"></picture></summary>
 <br>
 

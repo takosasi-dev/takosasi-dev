@@ -247,6 +247,7 @@ if __name__ == "__main__":
     for n in range(1, len(SECTIONS) + 1):
         section(n)
     routemap()
+    plate("records-plate.svg", LINE[3], "記", "録", "資料室", "RECORDS ROOM")  # the folded second half of platform 4
     sign("link-x.svg", False, "のりかえ　X (Twitter)", "@kou111011051")
     sign("gate.svg", "gate", "改札口　GATE", "構内へ入る")
     sign("play-packet-bouncer.svg", True, "ブラウザで遊ぶ　PLAY", "Packet Bouncer")
