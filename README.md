@@ -400,7 +400,7 @@ LED の板を、列車の案内が一瞬で通過します。4 けたの列車�
 <img src="assets/fortune.svg" width="100%" alt="本日の運行占い。毎朝引き直します">
 
 <!-- FORTUNE:START -->
-本日のおすすめ: <a href="https://github.com/takosasi-dev/spec-lint">spec-lint</a>（開いている仕様ノートを、ルールノートの決まりと照らして点検する）
+本日のおすすめ: <a href="https://github.com/takosasi-dev/minecraft-building-blocks-plus">minecraft-building-blocks-plus</a>（Minecraft 統合版に縦ハーフ・階段・アーチなど 5,740 種の形状ブロックを足すアドオン(非公式)）
 <!-- FORTUNE:END -->
 
 </details>
@@ -460,9 +460,9 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 <img src="assets/subnet.svg" width="100%" alt="本日のサブネット問題">
 
 <!-- SUBNET:START -->
-<details><summary>172.19.0.0</summary><blockquote><b>不正解。</b>それは /16 のときの答えです。/20 はもっと細かく区切ります。</blockquote></details>
-<details><summary>172.19.208.0</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りの先頭です。</blockquote></details>
-<details><summary>172.19.192.0</summary><blockquote><b>正解。</b>/20 は、3 番目の数字を 16 ずつに区切ります。197 は 192〜207 の区切りに入るので、ネットワークアドレスは 172.19.192.0、ブロードキャストアドレスは 172.19.207.255。アドレスは全部で 4,096 個、使えるホストはそこから 2 を引いて 4,094 台です。</blockquote></details>
+<details><summary>4,094 台</summary><blockquote><b>正解。</b>/20 は、3 番目の数字を 16 ずつに区切ります。214 は 208〜223 の区切りに入るので、ネットワークアドレスは 192.168.208.0、ブロードキャストアドレスは 192.168.223.255。アドレスは全部で 4,096 個、使えるホストはそこから 2 を引いて 4,094 台です。</blockquote></details>
+<details><summary>8,190 台</summary><blockquote><b>不正解。</b>それは /19 のときの答えです。</blockquote></details>
+<details><summary>4,096 台</summary><blockquote><b>不正解。</b>それはアドレスの総数です。ネットワークアドレスとブロードキャストアドレスの 2 つは使えません。</blockquote></details>
 <!-- SUBNET:END -->
 
 </details>
@@ -478,10 +478,10 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 たどり終わったら、選んだのりばを押して答え合わせをどうぞ。
 
 <!-- AMIDA:START -->
-<details><summary>1 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/koe-loom">koe-loom</a>(Discord などで使える Windows 11 向けボイスチェンジャー（DSP のみ、JUCE / C++）。プレリリース)。</blockquote></details>
-<details><summary>2 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/handoff-board">handoff-board</a>(引き継ぎノートを古い順にサイドバーへ並べる)。</blockquote></details>
-<details><summary>3 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/delve-down">delve-down</a>(ターミナルで遊ぶ、文字で描くダンジョンのローグライク(Python 標準ライブラリだけ))。</blockquote></details>
-<details><summary>4 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/spec-lint">spec-lint</a>(開いている仕様ノートを、ルールノートの決まりと照らして点検する)。</blockquote></details>
+<details><summary>1 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/vault-doctor">vault-doctor</a>(リンク切れ・孤立ノート・命名や配置ルール違反を見つける)。</blockquote></details>
+<details><summary>2 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/sourcestamp">sourcestamp</a>(今開いているページの出典を Markdown の1行でコピーする Chrome 拡張(通信なし))。</blockquote></details>
+<details><summary>3 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/spec-status">spec-status</a>(Obsidian の仕様書がどこまで実装されたかを1か所で見る道具(一覧ノート・GUI・JSON。Python 標準ライブラリだけ))。</blockquote></details>
+<details><summary>4 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/obsidian-vault-vet">obsidian-vault-vet</a>(Obsidian の vault を読むだけで点検する CLI(リンク切れ・孤立ノートなど6種))。</blockquote></details>
 <!-- AMIDA:END -->
 
 </details>
