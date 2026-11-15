@@ -43,8 +43,8 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 <a href="https://github.com/takosasi-dev/koe-loom"><img src="assets/card-koe-loom.svg" alt="KoeLoom"></a>
 <a href="https://github.com/takosasi-dev/rail-rampage"><img src="assets/card-rail-rampage.svg" alt="RailRampage"></a>
 <a href="https://github.com/takosasi-dev/packet-bouncer"><img src="assets/card-packet-bouncer.svg" alt="Packet Bouncer"></a>
+<a href="https://github.com/takosasi-dev/parry-duel"><img src="assets/card-parry-duel.svg" alt="ParryDuel"></a>
 <a href="https://github.com/takosasi-dev/padlab"><img src="assets/card-padlab.svg" alt="PadLab"></a>
-<a href="https://github.com/takosasi-dev/net-diag"><img src="assets/card-net-diag.svg" alt="net-diag"></a>
 <!-- CARDS:END -->
 
 <a href="https://takosasi-dev.github.io/packet-bouncer/"><img src="assets/play-packet-bouncer.svg" width="330" alt="Packet Bouncer をブラウザで遊ぶ"></a>
