@@ -64,12 +64,12 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 | Repo | 内容 | Lang | Release |
 |---|---|---|---|
 | [delve-down](https://github.com/takosasi-dev/delve-down) | ターミナルで遊ぶ、文字で描くダンジョンのローグライク(Python 標準ライブラリだけ) | Python | v0.1.0 |
-| [luck-ladder](https://github.com/takosasi-dev/luck-ladder) | ブラウザで遊べるトランプのハイ&ロー(Godot 4.7.2 / Web) | GDScript | v0.6.0 |
+| [luck-ladder](https://github.com/takosasi-dev/luck-ladder) | ブラウザで遊べるトランプのハイ&ロー(Godot 4.7.2 / Web) | GDScript | v0.6.1 |
 | [packet-bouncer](https://github.com/takosasi-dev/packet-bouncer) | ブラウザで遊ぶパケット検問ゲーム(Godot 4.7・開発中) | GDScript | - |
-| [parry-duel](https://github.com/takosasi-dev/parry-duel) | 当たる瞬間に、弾く。敵の攻撃を弾いて反撃する、ブラウザで遊べる 1 対 1 のゲーム(Godot 4.7 / Web) | GDScript | v0.1.1 |
-| [rail-rampage](https://github.com/takosasi-dev/rail-rampage) | トロッコ問題を題材にした横スクロールの1ボタン破壊ゲーム（Godot 4） | GDScript | v0.1.0 |
+| [parry-duel](https://github.com/takosasi-dev/parry-duel) | 当たる瞬間に、弾く。敵の攻撃を弾いて反撃する、ブラウザで遊べる 1 対 1 のゲーム(Godot 4.7 / Web) | GDScript | v0.2.0 |
+| [rail-rampage](https://github.com/takosasi-dev/rail-rampage) | トロッコ問題を題材にした横スクロールの1ボタン破壊ゲーム（Godot 4） | GDScript | v0.1.1 |
 | [shapez-quad-forge](https://github.com/takosasi-dev/shapez-quad-forge) | shapez.io の目標シェイプから建物数最小の構築手順を逆算するツール (QuadForge) | Python | v0.2.0 |
-| [sling-arc](https://github.com/takosasi-dev/sling-arc) | 惑星の重力で軌道を曲げてゴールに入れる、ブラウザで遊ぶ 2D ゲーム(Godot 4.7) | GDScript | v0.1.0 |
+| [sling-arc](https://github.com/takosasi-dev/sling-arc) | 惑星の重力で軌道を曲げてゴールに入れる、ブラウザで遊ぶ 2D ゲーム(Godot 4.7) | GDScript | v0.1.1 |
 
 </details>
 
@@ -401,7 +401,7 @@ LED の板を、列車の案内が一瞬で通過します。4 けたの列車�
 <img src="assets/fortune.svg" width="100%" alt="本日の運行占い。毎朝引き直します">
 
 <!-- FORTUNE:START -->
-本日のおすすめ: <a href="https://github.com/takosasi-dev/dbc-gui">dbc-gui</a>（DBC の PC 側。SSH トンネル越しに Linux サーバの systemd unit 単位の負荷を見る）
+本日のおすすめ: <a href="https://github.com/takosasi-dev/github-repo-lens">github-repo-lens</a>（GitHub のリポジトリの事実を出典つきでコピーし、自分の公開リポジトリをルールと Actions の書き方で点検する Chrome 拡張(非公式)）
 <!-- FORTUNE:END -->
 
 </details>
@@ -461,9 +461,9 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 <img src="assets/subnet.svg" width="100%" alt="本日のサブネット問題">
 
 <!-- SUBNET:START -->
-<details><summary>172.29.242.64</summary><blockquote><b>正解。</b>/27 は、最後の数字を 32 ずつに区切ります。78 は 64〜95 の区切りに入るので、ネットワークアドレスは 172.29.242.64、ブロードキャストアドレスは 172.29.242.95。アドレスは全部で 32 個、使えるホストはそこから 2 を引いて 30 台です。</blockquote></details>
-<details><summary>172.29.242.0</summary><blockquote><b>不正解。</b>それは /24 のときの答えです。/27 はもっと細かく区切ります。</blockquote></details>
-<details><summary>172.29.242.65</summary><blockquote><b>不正解。</b>それは最初に使えるホストのアドレスです。ネットワークアドレスはその 1 つ前です。</blockquote></details>
+<details><summary>192.168.90.0</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りのネットワークアドレスです。</blockquote></details>
+<details><summary>192.168.255.255</summary><blockquote><b>不正解。</b>それは /16 のときの答えです。/23 はもっと細かく区切ります。</blockquote></details>
+<details><summary>192.168.89.255</summary><blockquote><b>正解。</b>/23 は、3 番目の数字を 2 ずつに区切ります。88 は 88〜89 の区切りに入るので、ネットワークアドレスは 192.168.88.0、ブロードキャストアドレスは 192.168.89.255。アドレスは全部で 512 個、使えるホストはそこから 2 を引いて 510 台です。</blockquote></details>
 <!-- SUBNET:END -->
 
 </details>
@@ -479,10 +479,10 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 たどり終わったら、選んだのりばを押して答え合わせをどうぞ。
 
 <!-- AMIDA:START -->
-<details><summary>1 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/wishcompare">wishcompare</a>(買うか迷っている商品を取り込み、価格を記録日つきで並べて比べる Chrome 拡張)。</blockquote></details>
-<details><summary>2 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/status-badge">status-badge</a>(開いているノートの実装状況を、見出し部のバッジで表示する)。</blockquote></details>
-<details><summary>3 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/minecraft-item-pipe">minecraft-item-pipe</a>(Minecraft統合版のアイテム輸送パイプ。コンテナ間を自動搬送・仕分け)。</blockquote></details>
-<details><summary>4 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/net-diag">net-diag</a>(自宅回線のボトルネックを推測ではなく実測で切り分けるネットワーク診断ツール(CLI + GUI、Windows))。</blockquote></details>
+<details><summary>1 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/discord-vc-check">discord-vc-check</a>(Discord の通話音声の不調を、マイク・スピーカー・回線・PC 負荷の区間ごとに切り分ける(非公式))。</blockquote></details>
+<details><summary>2 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/rail-rampage">rail-rampage</a>(トロッコ問題を題材にした横スクロールの1ボタン破壊ゲーム（Godot 4）)。</blockquote></details>
+<details><summary>3 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/shapez-quad-forge">shapez-quad-forge</a>(shapez.io の目標シェイプから建物数最小の構築手順を逆算するツール (QuadForge))。</blockquote></details>
+<details><summary>4 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/disk-sift">disk-sift</a>(何がディスクを食っているかを原因別に出して安全に掃除する TUI/CLI(Arch Linux 向け))。</blockquote></details>
 <!-- AMIDA:END -->
 
 </details>
