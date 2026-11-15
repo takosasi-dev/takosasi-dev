@@ -247,6 +247,7 @@ PROJECTS = {
     "koe-loom": ("KoeLoom", "音声", "Discord などで使える Windows 11 向け\nボイスチェンジャー。DSP のみ、JUCE / C++"),
     "rail-rampage": ("RailRampage", None, "トロッコ問題を題材にした横スクロールの\n1ボタン破壊ゲーム（Godot 4）"),
     "packet-bouncer": ("Packet Bouncer", None, "ブラウザで遊ぶパケット検問ゲーム\n（Godot 4・開発中）"),
+    "parry-duel": ("ParryDuel", None, "敵の攻撃を、当たる瞬間に弾いて反撃する\n1 対 1 のブラウザゲーム（Godot 4）"),
     "padlab": ("PadLab", None, "Windows 向けゲームコントローラー診断ツール\n入力表示・ドリフト・チャタリング・精度"),
     "net-diag": ("net-diag", None, "自宅回線のボトルネックを推測ではなく\n実測で切り分けるネットワーク診断ツール"),
 }
