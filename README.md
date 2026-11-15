@@ -66,8 +66,8 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 | [delve-down](https://github.com/takosasi-dev/delve-down) | ターミナルで遊ぶ、文字で描くダンジョンのローグライク(Python 標準ライブラリだけ) | Python | v0.1.0 |
 | [luck-ladder](https://github.com/takosasi-dev/luck-ladder) | ブラウザで遊べるトランプのハイ&ロー(Godot 4.7.2 / Web) | GDScript | v0.6.1 |
 | [packet-bouncer](https://github.com/takosasi-dev/packet-bouncer) | ブラウザで遊ぶパケット検問ゲーム(Godot 4.7・開発中) | GDScript | - |
-| [parry-duel](https://github.com/takosasi-dev/parry-duel) | 当たる瞬間に、弾く。敵の攻撃を弾いて反撃する、ブラウザで遊べる 1 対 1 のゲーム(Godot 4.7 / Web) | GDScript | v0.2.0 |
-| [rail-rampage](https://github.com/takosasi-dev/rail-rampage) | トロッコ問題を題材にした横スクロールの1ボタン破壊ゲーム（Godot 4） | GDScript | v0.1.1 |
+| [parry-duel](https://github.com/takosasi-dev/parry-duel) | 当たる瞬間に、弾く。敵の攻撃を弾いて反撃する、ブラウザで遊べる 1 対 1 のゲーム(Godot 4.7 / Web) | GDScript | v0.3.0 |
+| [rail-rampage](https://github.com/takosasi-dev/rail-rampage) | トロッコ問題を題材にした横スクロールの1ボタン破壊ゲーム（Godot 4） | GDScript | v0.1.2 |
 | [shapez-quad-forge](https://github.com/takosasi-dev/shapez-quad-forge) | shapez.io の目標シェイプから建物数最小の構築手順を逆算するツール (QuadForge) | Python | v0.2.0 |
 | [sling-arc](https://github.com/takosasi-dev/sling-arc) | 惑星の重力で軌道を曲げてゴールに入れる、ブラウザで遊ぶ 2D ゲーム(Godot 4.7) | GDScript | v0.1.1 |
 
