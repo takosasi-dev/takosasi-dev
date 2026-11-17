@@ -64,7 +64,7 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 | Repo | 内容 | Lang | Release |
 |---|---|---|---|
 | [delve-down](https://github.com/takosasi-dev/delve-down) | ターミナルで遊ぶ、文字で描くダンジョンのローグライク(Python 標準ライブラリだけ) | Python | v0.1.0 |
-| [luck-ladder](https://github.com/takosasi-dev/luck-ladder) | ブラウザで遊べるトランプのハイ&ロー(Godot 4.7.2 / Web) | GDScript | v0.7.1 |
+| [luck-ladder](https://github.com/takosasi-dev/luck-ladder) | ブラウザで遊べるトランプのハイ&ロー(Godot 4.7.2 / Web) | GDScript | v0.8.0 |
 | [packet-bouncer](https://github.com/takosasi-dev/packet-bouncer) | ブラウザで遊ぶパケット検問ゲーム(Godot 4.7・開発中) | GDScript | - |
 | [parry-duel](https://github.com/takosasi-dev/parry-duel) | 当たる瞬間に、弾く。敵の攻撃を弾いて反撃する、ブラウザで遊べる 1 対 1 のゲーム(Godot 4.7 / Web) | GDScript | v0.3.0 |
 | [rail-rampage](https://github.com/takosasi-dev/rail-rampage) | トロッコ問題を題材にした横スクロールの1ボタン破壊ゲーム（Godot 4） | GDScript | v0.1.2 |
@@ -401,7 +401,7 @@ LED の板を、列車の案内が一瞬で通過します。4 けたの列車�
 <img src="assets/fortune.svg" width="100%" alt="本日の運行占い。毎朝引き直します">
 
 <!-- FORTUNE:START -->
-本日のおすすめ: <a href="https://github.com/takosasi-dev/delve-down">delve-down</a>（ターミナルで遊ぶ、文字で描くダンジョンのローグライク(Python 標準ライブラリだけ)）
+本日のおすすめ: <a href="https://github.com/takosasi-dev/hush-switch">hush-switch</a>（指定したアプリの音だけをボタン1つでミュート/解除する Windows 用ソフト (C# / WPF / Core Audio)）
 <!-- FORTUNE:END -->
 
 </details>
@@ -461,9 +461,9 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 <img src="assets/subnet.svg" width="100%" alt="本日のサブネット問題">
 
 <!-- SUBNET:START -->
-<details><summary>172.22.188.0</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りの先頭です。</blockquote></details>
-<details><summary>172.22.184.1</summary><blockquote><b>不正解。</b>それは最初に使えるホストのアドレスです。ネットワークアドレスはその 1 つ前です。</blockquote></details>
-<details><summary>172.22.184.0</summary><blockquote><b>正解。</b>/22 は、3 番目の数字を 4 ずつに区切ります。185 は 184〜187 の区切りに入るので、ネットワークアドレスは 172.22.184.0、ブロードキャストアドレスは 172.22.187.255。アドレスは全部で 1,024 個、使えるホストはそこから 2 を引いて 1,022 台です。</blockquote></details>
+<details><summary>172.30.23.65</summary><blockquote><b>不正解。</b>それは最初に使えるホストのアドレスです。ネットワークアドレスはその 1 つ前です。</blockquote></details>
+<details><summary>172.30.23.64</summary><blockquote><b>正解。</b>/27 は、最後の数字を 32 ずつに区切ります。67 は 64〜95 の区切りに入るので、ネットワークアドレスは 172.30.23.64、ブロードキャストアドレスは 172.30.23.95。アドレスは全部で 32 個、使えるホストはそこから 2 を引いて 30 台です。</blockquote></details>
+<details><summary>172.30.23.96</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りの先頭です。</blockquote></details>
 <!-- SUBNET:END -->
 
 </details>
@@ -479,10 +479,10 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 たどり終わったら、選んだのりばを押して答え合わせをどうぞ。
 
 <!-- AMIDA:START -->
-<details><summary>1 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/rail-rampage">rail-rampage</a>(トロッコ問題を題材にした横スクロールの1ボタン破壊ゲーム（Godot 4）)。</blockquote></details>
-<details><summary>2 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/dbc-gui">dbc-gui</a>(DBC の PC 側。SSH トンネル越しに Linux サーバの systemd unit 単位の負荷を見る)。</blockquote></details>
-<details><summary>3 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/diag-sheet">diag-sheet</a>(診断ツールの結果 JSON を共通のシート形式に変換する)。</blockquote></details>
-<details><summary>4 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/minecraft-item-pipe">minecraft-item-pipe</a>(Minecraft統合版のアイテム輸送パイプ。コンテナ間を自動搬送・仕分け)。</blockquote></details>
+<details><summary>1 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/minecraft-gunsmith">minecraft-gunsmith</a>(Minecraft 統合版の銃アドオン。データを書くだけで銃が増える武器エンジン(非公式))。</blockquote></details>
+<details><summary>2 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/hush-switch">hush-switch</a>(指定したアプリの音だけをボタン1つでミュート/解除する Windows 用ソフト (C# / WPF / Core Audio))。</blockquote></details>
+<details><summary>3 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/report-age">report-age</a>(調査ノートがいつ書かれたか、どれだけ古いか、調べ直しが要るかを表示する)。</blockquote></details>
+<details><summary>4 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/kanade-daw">kanade-daw</a>(AI 音楽生成・自動採譜を核にした統合 DAW(C++20 / JUCE 8、ローカル完結))。</blockquote></details>
 <!-- AMIDA:END -->
 
 </details>
