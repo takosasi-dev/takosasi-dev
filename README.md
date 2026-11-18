@@ -74,7 +74,7 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 </details>
 
 <details>
-<summary><picture><img src="assets/arc-apps.svg" height="40" align="middle" alt="アプリ / APPS (9)"></picture></summary>
+<summary><picture><img src="assets/arc-apps.svg" height="40" align="middle" alt="アプリ / APPS (10)"></picture></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -85,6 +85,7 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 | [hush-switch](https://github.com/takosasi-dev/hush-switch) | 指定したアプリの音だけをボタン1つでミュート/解除する Windows 用ソフト (C# / WPF / Core Audio) | C# | v0.3.0 |
 | [kanade-daw](https://github.com/takosasi-dev/kanade-daw) | AI 音楽生成・自動採譜を核にした統合 DAW(C++20 / JUCE 8、ローカル完結) | C++ | v0.6.0 |
 | [koe-loom](https://github.com/takosasi-dev/koe-loom) | Discord などで使える Windows 11 向けボイスチェンジャー（DSP のみ、JUCE / C++）。プレリリース | C++ | v0.6.0 |
+| [padsight](https://github.com/takosasi-dev/padsight) | Windows tray app that overlays your gamepad input (pad view, input history, sticks, stats) on top of games. Read-only, via SDL3. | C# | - |
 | [subly](https://github.com/takosasi-dev/subly) | Subly - Android・Windows(PC)両対応のサブスクリプション管理アプリ | Kotlin | v0.1.4 |
 | [taskdeck](https://github.com/takosasi-dev/taskdeck) | Windows 常駐の Todo アプリ。どこからでも Ctrl+Shift+Space で1行入力 | C# | v0.1.1 |
 | [win-loss-tracker](https://github.com/takosasi-dev/win-loss-tracker) | 遊技の収支をオフラインで記録・集計する Android アプリ(INTERNET 権限なし) | Kotlin | v1.5.0 |
@@ -401,7 +402,7 @@ LED の板を、列車の案内が一瞬で通過します。4 けたの列車�
 <img src="assets/fortune.svg" width="100%" alt="本日の運行占い。毎朝引き直します">
 
 <!-- FORTUNE:START -->
-本日のおすすめ: <a href="https://github.com/takosasi-dev/hush-switch">hush-switch</a>（指定したアプリの音だけをボタン1つでミュート/解除する Windows 用ソフト (C# / WPF / Core Audio)）
+本日のおすすめ: <a href="https://github.com/takosasi-dev/koe-loom">koe-loom</a>（Discord などで使える Windows 11 向けボイスチェンジャー（DSP のみ、JUCE / C++）。プレリリース）
 <!-- FORTUNE:END -->
 
 </details>
@@ -461,9 +462,9 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 <img src="assets/subnet.svg" width="100%" alt="本日のサブネット問題">
 
 <!-- SUBNET:START -->
-<details><summary>172.30.23.65</summary><blockquote><b>不正解。</b>それは最初に使えるホストのアドレスです。ネットワークアドレスはその 1 つ前です。</blockquote></details>
-<details><summary>172.30.23.64</summary><blockquote><b>正解。</b>/27 は、最後の数字を 32 ずつに区切ります。67 は 64〜95 の区切りに入るので、ネットワークアドレスは 172.30.23.64、ブロードキャストアドレスは 172.30.23.95。アドレスは全部で 32 個、使えるホストはそこから 2 を引いて 30 台です。</blockquote></details>
-<details><summary>172.30.23.96</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りの先頭です。</blockquote></details>
+<details><summary>172.29.72.128</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りの先頭です。</blockquote></details>
+<details><summary>172.29.72.0</summary><blockquote><b>正解。</b>/25 は、最後の数字を 128 ずつに区切ります。20 は 0〜127 の区切りに入るので、ネットワークアドレスは 172.29.72.0、ブロードキャストアドレスは 172.29.72.127。アドレスは全部で 128 個、使えるホストはそこから 2 を引いて 126 台です。</blockquote></details>
+<details><summary>172.29.72.1</summary><blockquote><b>不正解。</b>それは最初に使えるホストのアドレスです。ネットワークアドレスはその 1 つ前です。</blockquote></details>
 <!-- SUBNET:END -->
 
 </details>
@@ -479,10 +480,10 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 たどり終わったら、選んだのりばを押して答え合わせをどうぞ。
 
 <!-- AMIDA:START -->
-<details><summary>1 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/minecraft-gunsmith">minecraft-gunsmith</a>(Minecraft 統合版の銃アドオン。データを書くだけで銃が増える武器エンジン(非公式))。</blockquote></details>
-<details><summary>2 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/hush-switch">hush-switch</a>(指定したアプリの音だけをボタン1つでミュート/解除する Windows 用ソフト (C# / WPF / Core Audio))。</blockquote></details>
-<details><summary>3 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/report-age">report-age</a>(調査ノートがいつ書かれたか、どれだけ古いか、調べ直しが要るかを表示する)。</blockquote></details>
-<details><summary>4 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/kanade-daw">kanade-daw</a>(AI 音楽生成・自動採譜を核にした統合 DAW(C++20 / JUCE 8、ローカル完結))。</blockquote></details>
+<details><summary>1 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/net-diag">net-diag</a>(自宅回線のボトルネックを推測ではなく実測で切り分けるネットワーク診断ツール(CLI + GUI、Windows))。</blockquote></details>
+<details><summary>2 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/delve-down">delve-down</a>(ターミナルで遊ぶ、文字で描くダンジョンのローグライク(Python 標準ライブラリだけ))。</blockquote></details>
+<details><summary>3 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/taskdeck">taskdeck</a>(Windows 常駐の Todo アプリ。どこからでも Ctrl+Shift+Space で1行入力)。</blockquote></details>
+<details><summary>4 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/deskkit">deskkit</a>(Windows 用 QOL ツールキット(ModeShift / DropSort / LayoutKeep / ClipShelf)を1つの常駐アプリに)。</blockquote></details>
 <!-- AMIDA:END -->
 
 </details>
