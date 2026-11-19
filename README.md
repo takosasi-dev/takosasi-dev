@@ -402,7 +402,7 @@ LED の板を、列車の案内が一瞬で通過します。4 けたの列車�
 <img src="assets/fortune.svg" width="100%" alt="本日の運行占い。毎朝引き直します">
 
 <!-- FORTUNE:START -->
-本日のおすすめ: <a href="https://github.com/takosasi-dev/koe-loom">koe-loom</a>（Discord などで使える Windows 11 向けボイスチェンジャー（DSP のみ、JUCE / C++）。プレリリース）
+本日のおすすめ: <a href="https://github.com/takosasi-dev/sync-guard">sync-guard</a>（同期や外部編集でノートが急に減ったときに警告する）
 <!-- FORTUNE:END -->
 
 </details>
@@ -462,9 +462,9 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 <img src="assets/subnet.svg" width="100%" alt="本日のサブネット問題">
 
 <!-- SUBNET:START -->
-<details><summary>172.29.72.128</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りの先頭です。</blockquote></details>
-<details><summary>172.29.72.0</summary><blockquote><b>正解。</b>/25 は、最後の数字を 128 ずつに区切ります。20 は 0〜127 の区切りに入るので、ネットワークアドレスは 172.29.72.0、ブロードキャストアドレスは 172.29.72.127。アドレスは全部で 128 個、使えるホストはそこから 2 を引いて 126 台です。</blockquote></details>
-<details><summary>172.29.72.1</summary><blockquote><b>不正解。</b>それは最初に使えるホストのアドレスです。ネットワークアドレスはその 1 つ前です。</blockquote></details>
+<details><summary>10.115.138.64</summary><blockquote><b>正解。</b>/26 は、最後の数字を 64 ずつに区切ります。95 は 64〜127 の区切りに入るので、ネットワークアドレスは 10.115.138.64、ブロードキャストアドレスは 10.115.138.127。アドレスは全部で 64 個、使えるホストはそこから 2 を引いて 62 台です。</blockquote></details>
+<details><summary>10.115.138.0</summary><blockquote><b>不正解。</b>それは /24 のときの答えです。/26 はもっと細かく区切ります。</blockquote></details>
+<details><summary>10.115.138.65</summary><blockquote><b>不正解。</b>それは最初に使えるホストのアドレスです。ネットワークアドレスはその 1 つ前です。</blockquote></details>
 <!-- SUBNET:END -->
 
 </details>
@@ -480,10 +480,10 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 たどり終わったら、選んだのりばを押して答え合わせをどうぞ。
 
 <!-- AMIDA:START -->
-<details><summary>1 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/net-diag">net-diag</a>(自宅回線のボトルネックを推測ではなく実測で切り分けるネットワーク診断ツール(CLI + GUI、Windows))。</blockquote></details>
-<details><summary>2 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/delve-down">delve-down</a>(ターミナルで遊ぶ、文字で描くダンジョンのローグライク(Python 標準ライブラリだけ))。</blockquote></details>
-<details><summary>3 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/taskdeck">taskdeck</a>(Windows 常駐の Todo アプリ。どこからでも Ctrl+Shift+Space で1行入力)。</blockquote></details>
-<details><summary>4 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/deskkit">deskkit</a>(Windows 用 QOL ツールキット(ModeShift / DropSort / LayoutKeep / ClipShelf)を1つの常駐アプリに)。</blockquote></details>
+<details><summary>1 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/handoff-board">handoff-board</a>(引き継ぎノートを古い順にサイドバーへ並べる)。</blockquote></details>
+<details><summary>2 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/kanade-daw">kanade-daw</a>(AI 音楽生成・自動採譜を核にした統合 DAW(C++20 / JUCE 8、ローカル完結))。</blockquote></details>
+<details><summary>3 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/github-repo-lens">github-repo-lens</a>(GitHub のリポジトリの事実を出典つきでコピーし、自分の公開リポジトリをルールと Actions の書き方で点検する Chrome 拡張(非公式))。</blockquote></details>
+<details><summary>4 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/net-diag">net-diag</a>(自宅回線のボトルネックを推測ではなく実測で切り分けるネットワーク診断ツール(CLI + GUI、Windows))。</blockquote></details>
 <!-- AMIDA:END -->
 
 </details>
