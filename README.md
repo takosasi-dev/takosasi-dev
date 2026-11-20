@@ -58,18 +58,27 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 <!-- ARCHIVE:START -->
 
 <details>
-<summary><picture><img src="assets/arc-games.svg" height="40" align="middle" alt="ゲーム / GAMES (7)"></picture></summary>
+<summary><picture><img src="assets/arc-games.svg" height="40" align="middle" alt="ゲーム / GAMES (16)"></picture></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
 |---|---|---|---|
+| [dash-cut](https://github.com/takosasi-dev/dash-cut) | 突進の線で、まとめて斬る。画面を払って突進し、線の上の敵をまとめて斬る、ブラウザで遊べる 60 秒のゲーム(Godot 4.7 / Web) | GDScript | - |
 | [delve-down](https://github.com/takosasi-dev/delve-down) | ターミナルで遊ぶ、文字で描くダンジョンのローグライク(Python 標準ライブラリだけ) | Python | v0.1.0 |
+| [key-blink](https://github.com/takosasi-dev/key-blink) | 押したキーの場所へ、一瞬で跳ぶ。キーボードの 30 キーが自機の場所になる縦のシューティング、ブラウザで遊べるゲーム(Godot 4.7 / Web) | GDScript | - |
+| [key-flak](https://github.com/takosasi-dev/key-flak) | 押して、離した高さで落とす。中の段の 10 キーを発射台にしてミサイルから町を守る、ブラウザで遊べるゲーム(Godot 4.7 / Web) | GDScript | - |
+| [key-swat](https://github.com/takosasi-dev/key-swat) | 広がる前に、そのキーを押して潰す。画面のキーボードに湧く虫を手元のキーで潰す、ブラウザで遊べるゲーム(Godot 4.7 / Web) | GDScript | - |
+| [key-turf](https://github.com/takosasi-dev/key-turf) | 外に線を引いて戻ると、囲んだ所が自分の色になる。1 つのキーボードを 2 人で分ける(1 人なら CPU と)、ブラウザで遊べる陣取り(Godot 4.7 / Web) | GDScript | - |
 | [luck-ladder](https://github.com/takosasi-dev/luck-ladder) | ブラウザで遊べるトランプのハイ&ロー(Godot 4.7.2 / Web) | GDScript | v0.8.0 |
 | [packet-bouncer](https://github.com/takosasi-dev/packet-bouncer) | ブラウザで遊ぶパケット検問ゲーム(Godot 4.7・開発中) | GDScript | - |
 | [parry-duel](https://github.com/takosasi-dev/parry-duel) | 当たる瞬間に、弾く。敵の攻撃を弾いて反撃する、ブラウザで遊べる 1 対 1 のゲーム(Godot 4.7 / Web) | GDScript | v0.3.0 |
 | [rail-rampage](https://github.com/takosasi-dev/rail-rampage) | トロッコ問題を題材にした横スクロールの1ボタン破壊ゲーム（Godot 4） | GDScript | v0.1.2 |
+| [reply-riff](https://github.com/takosasi-dev/reply-riff) | 1 小節を聞いて、A S D F J K L ; の 8 キーで弾き返す。合うと伴奏が育つ、ブラウザで遊べる耳コピのゲーム(Godot 4.7 / Web) | GDScript | - |
+| [root-call](https://github.com/takosasi-dev/root-call) | 夜間当番になって、端末にコマンドを打って夜の障害を原因から直す、ブラウザで遊べるゲーム(Godot 4.7 / Web) | GDScript | - |
 | [shapez-quad-forge](https://github.com/takosasi-dev/shapez-quad-forge) | shapez.io の目標シェイプから建物数最小の構築手順を逆算するツール (QuadForge) | Python | v0.2.0 |
 | [sling-arc](https://github.com/takosasi-dev/sling-arc) | 惑星の重力で軌道を曲げてゴールに入れる、ブラウザで遊ぶ 2D ゲーム(Godot 4.7) | GDScript | v0.1.1 |
+| [steer-row](https://github.com/takosasi-dev/steer-row) | 押すキーで切る角度を選ぶ。中の段の 10 キーをハンドルの目盛りにして前の自分の幽霊と競う、ブラウザで遊べるレースゲーム(Godot 4.7 / Web) | GDScript | - |
+| [tako-tower](https://github.com/takosasi-dev/tako-tower) | タップした壁に、張り付いて登る。タコが腕を伸ばして塔を登る、ブラウザで遊べるタイムアタック(Godot 4.7 / Web) | GDScript | - |
 
 </details>
 
@@ -402,7 +411,7 @@ LED の板を、列車の案内が一瞬で通過します。4 けたの列車�
 <img src="assets/fortune.svg" width="100%" alt="本日の運行占い。毎朝引き直します">
 
 <!-- FORTUNE:START -->
-本日のおすすめ: <a href="https://github.com/takosasi-dev/sync-guard">sync-guard</a>（同期や外部編集でノートが急に減ったときに警告する）
+本日のおすすめ: <a href="https://github.com/takosasi-dev/kanade-daw">kanade-daw</a>（AI 音楽生成・自動採譜を核にした統合 DAW(C++20 / JUCE 8、ローカル完結)）
 <!-- FORTUNE:END -->
 
 </details>
@@ -462,9 +471,9 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 <img src="assets/subnet.svg" width="100%" alt="本日のサブネット問題">
 
 <!-- SUBNET:START -->
-<details><summary>10.115.138.64</summary><blockquote><b>正解。</b>/26 は、最後の数字を 64 ずつに区切ります。95 は 64〜127 の区切りに入るので、ネットワークアドレスは 10.115.138.64、ブロードキャストアドレスは 10.115.138.127。アドレスは全部で 64 個、使えるホストはそこから 2 を引いて 62 台です。</blockquote></details>
-<details><summary>10.115.138.0</summary><blockquote><b>不正解。</b>それは /24 のときの答えです。/26 はもっと細かく区切ります。</blockquote></details>
-<details><summary>10.115.138.65</summary><blockquote><b>不正解。</b>それは最初に使えるホストのアドレスです。ネットワークアドレスはその 1 つ前です。</blockquote></details>
+<details><summary>15 台</summary><blockquote><b>不正解。</b>引くのは 2 つです(ネットワークアドレスとブロードキャストアドレス)。</blockquote></details>
+<details><summary>30 台</summary><blockquote><b>不正解。</b>それは /27 のときの答えです。</blockquote></details>
+<details><summary>14 台</summary><blockquote><b>正解。</b>/28 は、最後の数字を 16 ずつに区切ります。189 は 176〜191 の区切りに入るので、ネットワークアドレスは 172.16.123.176、ブロードキャストアドレスは 172.16.123.191。アドレスは全部で 16 個、使えるホストはそこから 2 を引いて 14 台です。</blockquote></details>
 <!-- SUBNET:END -->
 
 </details>
@@ -480,10 +489,10 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 たどり終わったら、選んだのりばを押して答え合わせをどうぞ。
 
 <!-- AMIDA:START -->
-<details><summary>1 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/handoff-board">handoff-board</a>(引き継ぎノートを古い順にサイドバーへ並べる)。</blockquote></details>
-<details><summary>2 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/kanade-daw">kanade-daw</a>(AI 音楽生成・自動採譜を核にした統合 DAW(C++20 / JUCE 8、ローカル完結))。</blockquote></details>
-<details><summary>3 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/github-repo-lens">github-repo-lens</a>(GitHub のリポジトリの事実を出典つきでコピーし、自分の公開リポジトリをルールと Actions の書き方で点検する Chrome 拡張(非公式))。</blockquote></details>
-<details><summary>4 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/net-diag">net-diag</a>(自宅回線のボトルネックを推測ではなく実測で切り分けるネットワーク診断ツール(CLI + GUI、Windows))。</blockquote></details>
+<details><summary>1 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/status-badge">status-badge</a>(開いているノートの実装状況を、見出し部のバッジで表示する)。</blockquote></details>
+<details><summary>2 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/minecraft-backrooms-level0">minecraft-backrooms-level0</a>(Minecraft統合版アドオン。The Backrooms の Level 0 を専用ディメンションに無限生成(非公式))。</blockquote></details>
+<details><summary>3 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/dash-cut">dash-cut</a>(突進の線で、まとめて斬る。画面を払って突進し、線の上の敵をまとめて斬る、ブラウザで遊べる 60 秒のゲーム(Godot 4.7 / Web))。</blockquote></details>
+<details><summary>4 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/hush-switch">hush-switch</a>(指定したアプリの音だけをボタン1つでミュート/解除する Windows 用ソフト (C# / WPF / Core Audio))。</blockquote></details>
 <!-- AMIDA:END -->
 
 </details>
