@@ -411,7 +411,7 @@ LED の板を、列車の案内が一瞬で通過します。4 けたの列車�
 <img src="assets/fortune.svg" width="100%" alt="本日の運行占い。毎朝引き直します">
 
 <!-- FORTUNE:START -->
-本日のおすすめ: <a href="https://github.com/takosasi-dev/kanade-daw">kanade-daw</a>（AI 音楽生成・自動採譜を核にした統合 DAW(C++20 / JUCE 8、ローカル完結)）
+本日のおすすめ: <a href="https://github.com/takosasi-dev/key-blink">key-blink</a>（押したキーの場所へ、一瞬で跳ぶ。キーボードの 30 キーが自機の場所になる縦のシューティング、ブラウザで遊べるゲーム(Godot 4.7 / Web)）
 <!-- FORTUNE:END -->
 
 </details>
@@ -471,9 +471,9 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 <img src="assets/subnet.svg" width="100%" alt="本日のサブネット問題">
 
 <!-- SUBNET:START -->
-<details><summary>15 台</summary><blockquote><b>不正解。</b>引くのは 2 つです(ネットワークアドレスとブロードキャストアドレス)。</blockquote></details>
-<details><summary>30 台</summary><blockquote><b>不正解。</b>それは /27 のときの答えです。</blockquote></details>
-<details><summary>14 台</summary><blockquote><b>正解。</b>/28 は、最後の数字を 16 ずつに区切ります。189 は 176〜191 の区切りに入るので、ネットワークアドレスは 172.16.123.176、ブロードキャストアドレスは 172.16.123.191。アドレスは全部で 16 個、使えるホストはそこから 2 を引いて 14 台です。</blockquote></details>
+<details><summary>31 台</summary><blockquote><b>不正解。</b>引くのは 2 つです(ネットワークアドレスとブロードキャストアドレス)。</blockquote></details>
+<details><summary>32 台</summary><blockquote><b>不正解。</b>それはアドレスの総数です。ネットワークアドレスとブロードキャストアドレスの 2 つは使えません。</blockquote></details>
+<details><summary>30 台</summary><blockquote><b>正解。</b>/27 は、最後の数字を 32 ずつに区切ります。254 は 224〜255 の区切りに入るので、ネットワークアドレスは 172.28.197.224、ブロードキャストアドレスは 172.28.197.255。アドレスは全部で 32 個、使えるホストはそこから 2 を引いて 30 台です。</blockquote></details>
 <!-- SUBNET:END -->
 
 </details>
@@ -489,10 +489,10 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 たどり終わったら、選んだのりばを押して答え合わせをどうぞ。
 
 <!-- AMIDA:START -->
-<details><summary>1 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/status-badge">status-badge</a>(開いているノートの実装状況を、見出し部のバッジで表示する)。</blockquote></details>
-<details><summary>2 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/minecraft-backrooms-level0">minecraft-backrooms-level0</a>(Minecraft統合版アドオン。The Backrooms の Level 0 を専用ディメンションに無限生成(非公式))。</blockquote></details>
-<details><summary>3 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/dash-cut">dash-cut</a>(突進の線で、まとめて斬る。画面を払って突進し、線の上の敵をまとめて斬る、ブラウザで遊べる 60 秒のゲーム(Godot 4.7 / Web))。</blockquote></details>
-<details><summary>4 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/hush-switch">hush-switch</a>(指定したアプリの音だけをボタン1つでミュート/解除する Windows 用ソフト (C# / WPF / Core Audio))。</blockquote></details>
+<details><summary>1 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/luck-ladder">luck-ladder</a>(ブラウザで遊べるトランプのハイ&amp;ロー(Godot 4.7.2 / Web))。</blockquote></details>
+<details><summary>2 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/sourcestamp">sourcestamp</a>(今開いているページの出典を Markdown の1行でコピーする Chrome 拡張(通信なし))。</blockquote></details>
+<details><summary>3 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/gameboy-pocket-pane">gameboy-pocket-pane</a>(ゲームボーイ（PocketPane）: Claude Code のペインでゲームボーイ互換の ROM を遊ぶ mod。/gb で開き、サンプルゲーム同梱)。</blockquote></details>
+<details><summary>4 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/packet-bouncer">packet-bouncer</a>(ブラウザで遊ぶパケット検問ゲーム(Godot 4.7・開発中))。</blockquote></details>
 <!-- AMIDA:END -->
 
 </details>
