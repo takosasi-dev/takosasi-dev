@@ -411,7 +411,7 @@ LED の板を、列車の案内が一瞬で通過します。4 けたの列車�
 <img src="assets/fortune.svg" width="100%" alt="本日の運行占い。毎朝引き直します">
 
 <!-- FORTUNE:START -->
-本日のおすすめ: <a href="https://github.com/takosasi-dev/key-blink">key-blink</a>（押したキーの場所へ、一瞬で跳ぶ。キーボードの 30 キーが自機の場所になる縦のシューティング、ブラウザで遊べるゲーム(Godot 4.7 / Web)）
+本日のおすすめ: <a href="https://github.com/takosasi-dev/status-badge">status-badge</a>（開いているノートの実装状況を、見出し部のバッジで表示する）
 <!-- FORTUNE:END -->
 
 </details>
@@ -471,9 +471,9 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 <img src="assets/subnet.svg" width="100%" alt="本日のサブネット問題">
 
 <!-- SUBNET:START -->
-<details><summary>31 台</summary><blockquote><b>不正解。</b>引くのは 2 つです(ネットワークアドレスとブロードキャストアドレス)。</blockquote></details>
-<details><summary>32 台</summary><blockquote><b>不正解。</b>それはアドレスの総数です。ネットワークアドレスとブロードキャストアドレスの 2 つは使えません。</blockquote></details>
-<details><summary>30 台</summary><blockquote><b>正解。</b>/27 は、最後の数字を 32 ずつに区切ります。254 は 224〜255 の区切りに入るので、ネットワークアドレスは 172.28.197.224、ブロードキャストアドレスは 172.28.197.255。アドレスは全部で 32 個、使えるホストはそこから 2 を引いて 30 台です。</blockquote></details>
+<details><summary>192.168.255.255</summary><blockquote><b>不正解。</b>それは /16 のときの答えです。/20 はもっと細かく区切ります。</blockquote></details>
+<details><summary>192.168.176.0</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りのネットワークアドレスです。</blockquote></details>
+<details><summary>192.168.175.255</summary><blockquote><b>正解。</b>/20 は、3 番目の数字を 16 ずつに区切ります。162 は 160〜175 の区切りに入るので、ネットワークアドレスは 192.168.160.0、ブロードキャストアドレスは 192.168.175.255。アドレスは全部で 4,096 個、使えるホストはそこから 2 を引いて 4,094 台です。</blockquote></details>
 <!-- SUBNET:END -->
 
 </details>
@@ -489,10 +489,10 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 たどり終わったら、選んだのりばを押して答え合わせをどうぞ。
 
 <!-- AMIDA:START -->
-<details><summary>1 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/luck-ladder">luck-ladder</a>(ブラウザで遊べるトランプのハイ&amp;ロー(Godot 4.7.2 / Web))。</blockquote></details>
-<details><summary>2 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/sourcestamp">sourcestamp</a>(今開いているページの出典を Markdown の1行でコピーする Chrome 拡張(通信なし))。</blockquote></details>
-<details><summary>3 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/gameboy-pocket-pane">gameboy-pocket-pane</a>(ゲームボーイ（PocketPane）: Claude Code のペインでゲームボーイ互換の ROM を遊ぶ mod。/gb で開き、サンプルゲーム同梱)。</blockquote></details>
-<details><summary>4 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/packet-bouncer">packet-bouncer</a>(ブラウザで遊ぶパケット検問ゲーム(Godot 4.7・開発中))。</blockquote></details>
+<details><summary>1 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/claude-code-mods">claude-code-mods</a>(VS Code でも凝った見た目で動く Claude Code の関数フック mod 集)。</blockquote></details>
+<details><summary>2 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/dbc-agent">dbc-agent</a>(Linux サーバの systemd unit 単位の負荷と待たされ率(PSI)を集める常駐エージェント。DBC のサーバ側)。</blockquote></details>
+<details><summary>3 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/pc-stutter-diagnosis">pc-stutter-diagnosis</a>(PC のカクつき（遅延）を推測ではなく実測で切り分ける診断ツール)。</blockquote></details>
+<details><summary>4 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/padsight">padsight</a>(Windows tray app that overlays your gamepad input (pad view, input history, sticks, stats) on top of games. Read-only, via SDL3.)。</blockquote></details>
 <!-- AMIDA:END -->
 
 </details>
