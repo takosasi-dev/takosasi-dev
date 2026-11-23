@@ -83,7 +83,7 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 </details>
 
 <details>
-<summary><picture><img src="assets/arc-apps.svg" height="40" align="middle" alt="アプリ / APPS (10)"></picture></summary>
+<summary><picture><img src="assets/arc-apps.svg" height="40" align="middle" alt="アプリ / APPS (11)"></picture></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
@@ -95,6 +95,7 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 | [kanade-daw](https://github.com/takosasi-dev/kanade-daw) | AI 音楽生成・自動採譜を核にした統合 DAW(C++20 / JUCE 8、ローカル完結) | C++ | v0.6.0 |
 | [koe-loom](https://github.com/takosasi-dev/koe-loom) | Discord などで使える Windows 11 向けボイスチェンジャー（DSP のみ、JUCE / C++）。プレリリース | C++ | v0.6.0 |
 | [padsight](https://github.com/takosasi-dev/padsight) | Windows tray app that overlays your gamepad input (pad view, input history, sticks, stats) on top of games. Read-only, via SDL3. | C# | - |
+| [procsight](https://github.com/takosasi-dev/procsight) | A Japanese process manager for Windows 11 that replaces Task Manager (Rust + egui). Touch-free processes, handles, DLLs, signatures, startup and services. | Rust | v0.4.0 |
 | [subly](https://github.com/takosasi-dev/subly) | Subly - Android・Windows(PC)両対応のサブスクリプション管理アプリ | Kotlin | v0.1.4 |
 | [taskdeck](https://github.com/takosasi-dev/taskdeck) | Windows 常駐の Todo アプリ。どこからでも Ctrl+Shift+Space で1行入力 | C# | v0.1.1 |
 | [win-loss-tracker](https://github.com/takosasi-dev/win-loss-tracker) | 遊技の収支をオフラインで記録・集計する Android アプリ(INTERNET 権限なし) | Kotlin | v1.5.0 |
@@ -411,7 +412,7 @@ LED の板を、列車の案内が一瞬で通過します。4 けたの列車�
 <img src="assets/fortune.svg" width="100%" alt="本日の運行占い。毎朝引き直します">
 
 <!-- FORTUNE:START -->
-本日のおすすめ: <a href="https://github.com/takosasi-dev/status-badge">status-badge</a>（開いているノートの実装状況を、見出し部のバッジで表示する）
+本日のおすすめ: <a href="https://github.com/takosasi-dev/diag-cron">diag-cron</a>（診断ツールを定期実行して結果を測定条件つきで残し、差分を取る）
 <!-- FORTUNE:END -->
 
 </details>
@@ -471,9 +472,9 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 <img src="assets/subnet.svg" width="100%" alt="本日のサブネット問題">
 
 <!-- SUBNET:START -->
-<details><summary>192.168.255.255</summary><blockquote><b>不正解。</b>それは /16 のときの答えです。/20 はもっと細かく区切ります。</blockquote></details>
-<details><summary>192.168.176.0</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りのネットワークアドレスです。</blockquote></details>
-<details><summary>192.168.175.255</summary><blockquote><b>正解。</b>/20 は、3 番目の数字を 16 ずつに区切ります。162 は 160〜175 の区切りに入るので、ネットワークアドレスは 192.168.160.0、ブロードキャストアドレスは 192.168.175.255。アドレスは全部で 4,096 個、使えるホストはそこから 2 を引いて 4,094 台です。</blockquote></details>
+<details><summary>16 台</summary><blockquote><b>不正解。</b>それはアドレスの総数です。ネットワークアドレスとブロードキャストアドレスの 2 つは使えません。</blockquote></details>
+<details><summary>14 台</summary><blockquote><b>正解。</b>/28 は、最後の数字を 16 ずつに区切ります。126 は 112〜127 の区切りに入るので、ネットワークアドレスは 192.168.225.112、ブロードキャストアドレスは 192.168.225.127。アドレスは全部で 16 個、使えるホストはそこから 2 を引いて 14 台です。</blockquote></details>
+<details><summary>30 台</summary><blockquote><b>不正解。</b>それは /27 のときの答えです。</blockquote></details>
 <!-- SUBNET:END -->
 
 </details>
@@ -489,10 +490,10 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 たどり終わったら、選んだのりばを押して答え合わせをどうぞ。
 
 <!-- AMIDA:START -->
-<details><summary>1 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/claude-code-mods">claude-code-mods</a>(VS Code でも凝った見た目で動く Claude Code の関数フック mod 集)。</blockquote></details>
-<details><summary>2 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/dbc-agent">dbc-agent</a>(Linux サーバの systemd unit 単位の負荷と待たされ率(PSI)を集める常駐エージェント。DBC のサーバ側)。</blockquote></details>
-<details><summary>3 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/pc-stutter-diagnosis">pc-stutter-diagnosis</a>(PC のカクつき（遅延）を推測ではなく実測で切り分ける診断ツール)。</blockquote></details>
-<details><summary>4 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/padsight">padsight</a>(Windows tray app that overlays your gamepad input (pad view, input history, sticks, stats) on top of games. Read-only, via SDL3.)。</blockquote></details>
+<details><summary>1 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/broken-name-watch">broken-name-watch</a>(見えない文字や Windows で使えない文字を含む名前を警告する)。</blockquote></details>
+<details><summary>2 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/dash-cut">dash-cut</a>(突進の線で、まとめて斬る。画面を払って突進し、線の上の敵をまとめて斬る、ブラウザで遊べる 60 秒のゲーム(Godot 4.7 / Web))。</blockquote></details>
+<details><summary>3 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/dbc-gui">dbc-gui</a>(DBC の PC 側。SSH トンネル越しに Linux サーバの systemd unit 単位の負荷を見る)。</blockquote></details>
+<details><summary>4 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/diag-sheet">diag-sheet</a>(診断ツールの結果 JSON を共通のシート形式に変換する)。</blockquote></details>
 <!-- AMIDA:END -->
 
 </details>
