@@ -83,12 +83,13 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 </details>
 
 <details>
-<summary><picture><img src="assets/arc-apps.svg" height="40" align="middle" alt="アプリ / APPS (11)"></picture></summary>
+<summary><picture><img src="assets/arc-apps.svg" height="40" align="middle" alt="アプリ / APPS (12)"></picture></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
 |---|---|---|---|
 | [-ai-work-board-](https://github.com/takosasi-dev/-ai-work-board-) | 各 AI との作業の進み具合を1枚の画面で見て書けるボード | Python | v0.4.0 |
+| [desk-slate](https://github.com/takosasi-dev/desk-slate) | DeskSlate: turn an Android tablet on your desk into a side panel for a Windows PC. Work in progress (probes only). | C# | - |
 | [deskkit](https://github.com/takosasi-dev/deskkit) | Windows 用 QOL ツールキット(ModeShift / DropSort / LayoutKeep / ClipShelf)を1つの常駐アプリに | Python | v0.4.1 |
 | [glintloop](https://github.com/takosasi-dev/glintloop) | 画像にエフェクトを重ねて短いループ アニメーション(GIF・APNG・WebP)を作る Windows アプリ | - | v0.6.0 |
 | [hush-switch](https://github.com/takosasi-dev/hush-switch) | 指定したアプリの音だけをボタン1つでミュート/解除する Windows 用ソフト (C# / WPF / Core Audio) | C# | v0.3.0 |
@@ -472,9 +473,9 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 <img src="assets/subnet.svg" width="100%" alt="本日のサブネット問題">
 
 <!-- SUBNET:START -->
-<details><summary>16 台</summary><blockquote><b>不正解。</b>それはアドレスの総数です。ネットワークアドレスとブロードキャストアドレスの 2 つは使えません。</blockquote></details>
-<details><summary>14 台</summary><blockquote><b>正解。</b>/28 は、最後の数字を 16 ずつに区切ります。126 は 112〜127 の区切りに入るので、ネットワークアドレスは 192.168.225.112、ブロードキャストアドレスは 192.168.225.127。アドレスは全部で 16 個、使えるホストはそこから 2 を引いて 14 台です。</blockquote></details>
-<details><summary>30 台</summary><blockquote><b>不正解。</b>それは /27 のときの答えです。</blockquote></details>
+<details><summary>192.168.173.0</summary><blockquote><b>不正解。</b>それは /24 のときの答えです。/29 はもっと細かく区切ります。</blockquote></details>
+<details><summary>192.168.173.248</summary><blockquote><b>正解。</b>/29 は、最後の数字を 8 ずつに区切ります。249 は 248〜255 の区切りに入るので、ネットワークアドレスは 192.168.173.248、ブロードキャストアドレスは 192.168.173.255。アドレスは全部で 8 個、使えるホストはそこから 2 を引いて 6 台です。</blockquote></details>
+<details><summary>192.168.174.0</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りの先頭です。</blockquote></details>
 <!-- SUBNET:END -->
 
 </details>
@@ -490,10 +491,10 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 たどり終わったら、選んだのりばを押して答え合わせをどうぞ。
 
 <!-- AMIDA:START -->
-<details><summary>1 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/broken-name-watch">broken-name-watch</a>(見えない文字や Windows で使えない文字を含む名前を警告する)。</blockquote></details>
-<details><summary>2 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/dash-cut">dash-cut</a>(突進の線で、まとめて斬る。画面を払って突進し、線の上の敵をまとめて斬る、ブラウザで遊べる 60 秒のゲーム(Godot 4.7 / Web))。</blockquote></details>
-<details><summary>3 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/dbc-gui">dbc-gui</a>(DBC の PC 側。SSH トンネル越しに Linux サーバの systemd unit 単位の負荷を見る)。</blockquote></details>
-<details><summary>4 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/diag-sheet">diag-sheet</a>(診断ツールの結果 JSON を共通のシート形式に変換する)。</blockquote></details>
+<details><summary>1 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/root-call">root-call</a>(夜間当番になって、端末にコマンドを打って夜の障害を原因から直す、ブラウザで遊べるゲーム(Godot 4.7 / Web))。</blockquote></details>
+<details><summary>2 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/minecraft-building-blocks-plus">minecraft-building-blocks-plus</a>(Minecraft 統合版に縦ハーフ・階段・アーチなど 5,740 種の形状ブロックを足すアドオン(非公式))。</blockquote></details>
+<details><summary>3 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/deskkit">deskkit</a>(Windows 用 QOL ツールキット(ModeShift / DropSort / LayoutKeep / ClipShelf)を1つの常駐アプリに)。</blockquote></details>
+<details><summary>4 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/placeholder-form">placeholder-form</a>(仕様ノートの未記入プレースホルダをフォームで埋める(確認・バックアップ・取り消しつき))。</blockquote></details>
 <!-- AMIDA:END -->
 
 </details>
