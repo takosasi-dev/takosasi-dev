@@ -83,21 +83,28 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 </details>
 
 <details>
-<summary><picture><img src="assets/arc-apps.svg" height="40" align="middle" alt="アプリ / APPS (12)"></picture></summary>
+<summary><picture><img src="assets/arc-apps.svg" height="40" align="middle" alt="アプリ / APPS (19)"></picture></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
 |---|---|---|---|
 | [-ai-work-board-](https://github.com/takosasi-dev/-ai-work-board-) | 各 AI との作業の進み具合を1枚の画面で見て書けるボード | Python | v0.4.0 |
-| [desk-slate](https://github.com/takosasi-dev/desk-slate) | DeskSlate: turn an Android tablet on your desk into a side panel for a Windows PC. Work in progress (probes only). | C# | - |
+| [alt-roster](https://github.com/takosasi-dev/alt-roster) | 複数のゲームアカウントのスタミナ・期限・日課をまとめて見る Android アプリ(完全オフライン)。開発中・実機では未確認 | Kotlin | - |
+| [box-ledger](https://github.com/takosasi-dev/box-ledger) | ボードゲーム・カードゲームのコレクションとプレイ記録を管理するアプリ(Android 版。完全オフライン)。開発中・実機では未確認 | Kotlin | - |
+| [cam-pane](https://github.com/takosasi-dev/cam-pane) | CamPane: show an Android device's camera in a window on a Windows PC. Work in progress (PC-side probe only). | C# | v0.0.2 |
+| [daily-meter](https://github.com/takosasi-dev/daily-meter) | 睡眠・飲酒・習慣を 1 本で記録する Android アプリ(完全オフライン)。開発中・実機では未確認 | Kotlin | - |
+| [desk-slate](https://github.com/takosasi-dev/desk-slate) | DeskSlate: turn an Android tablet on your desk into a side panel for a Windows PC. Work in progress (probes only). | C# | v0.0.1 |
 | [deskkit](https://github.com/takosasi-dev/deskkit) | Windows 用 QOL ツールキット(ModeShift / DropSort / LayoutKeep / ClipShelf)を1つの常駐アプリに | Python | v0.4.1 |
+| [dusk-page](https://github.com/takosasi-dev/dusk-page) | 気分と出来事を書きためる Android の日記アプリ(完全オフライン)。開発中・実機では未確認 | Kotlin | - |
 | [glintloop](https://github.com/takosasi-dev/glintloop) | 画像にエフェクトを重ねて短いループ アニメーション(GIF・APNG・WebP)を作る Windows アプリ | - | v0.6.0 |
 | [hush-switch](https://github.com/takosasi-dev/hush-switch) | 指定したアプリの音だけをボタン1つでミュート/解除する Windows 用ソフト (C# / WPF / Core Audio) | C# | v0.3.0 |
 | [kanade-daw](https://github.com/takosasi-dev/kanade-daw) | AI 音楽生成・自動採譜を核にした統合 DAW(C++20 / JUCE 8、ローカル完結) | C++ | v0.6.0 |
 | [koe-loom](https://github.com/takosasi-dev/koe-loom) | Discord などで使える Windows 11 向けボイスチェンジャー（DSP のみ、JUCE / C++）。プレリリース | C++ | v0.6.0 |
 | [padsight](https://github.com/takosasi-dev/padsight) | Windows tray app that overlays your gamepad input (pad view, input history, sticks, stats) on top of games. Read-only, via SDL3. | C# | - |
 | [procsight](https://github.com/takosasi-dev/procsight) | A Japanese process manager for Windows 11 that replaces Task Manager (Rust + egui). Touch-free processes, handles, DLLs, signatures, startup and services. | Rust | v0.4.0 |
+| [shelf-tally](https://github.com/takosasi-dev/shelf-tally) | 家の日用品・食品の在庫を記録する Android アプリ(完全オフライン)。開発中・実機では未確認 | Kotlin | - |
 | [subly](https://github.com/takosasi-dev/subly) | Subly - Android・Windows(PC)両対応のサブスクリプション管理アプリ | Kotlin | v0.1.4 |
+| [tab-span](https://github.com/takosasi-dev/tab-span) | TabSpan: use an Android tablet as an extended monitor for a Windows PC. Work in progress (PC-side probe only). | C# | v0.3.0 |
 | [taskdeck](https://github.com/takosasi-dev/taskdeck) | Windows 常駐の Todo アプリ。どこからでも Ctrl+Shift+Space で1行入力 | C# | v0.1.1 |
 | [win-loss-tracker](https://github.com/takosasi-dev/win-loss-tracker) | 遊技の収支をオフラインで記録・集計する Android アプリ(INTERNET 権限なし) | Kotlin | v1.5.0 |
 
@@ -413,7 +420,7 @@ LED の板を、列車の案内が一瞬で通過します。4 けたの列車�
 <img src="assets/fortune.svg" width="100%" alt="本日の運行占い。毎朝引き直します">
 
 <!-- FORTUNE:START -->
-本日のおすすめ: <a href="https://github.com/takosasi-dev/diag-cron">diag-cron</a>（診断ツールを定期実行して結果を測定条件つきで残し、差分を取る）
+本日のおすすめ: <a href="https://github.com/takosasi-dev/net-diag">net-diag</a>（自宅回線のボトルネックを推測ではなく実測で切り分けるネットワーク診断ツール(CLI + GUI、Windows)）
 <!-- FORTUNE:END -->
 
 </details>
@@ -473,9 +480,9 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 <img src="assets/subnet.svg" width="100%" alt="本日のサブネット問題">
 
 <!-- SUBNET:START -->
-<details><summary>192.168.173.0</summary><blockquote><b>不正解。</b>それは /24 のときの答えです。/29 はもっと細かく区切ります。</blockquote></details>
-<details><summary>192.168.173.248</summary><blockquote><b>正解。</b>/29 は、最後の数字を 8 ずつに区切ります。249 は 248〜255 の区切りに入るので、ネットワークアドレスは 192.168.173.248、ブロードキャストアドレスは 192.168.173.255。アドレスは全部で 8 個、使えるホストはそこから 2 を引いて 6 台です。</blockquote></details>
-<details><summary>192.168.174.0</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りの先頭です。</blockquote></details>
+<details><summary>172.29.127.0</summary><blockquote><b>正解。</b>/26 は、最後の数字を 64 ずつに区切ります。34 は 0〜63 の区切りに入るので、ネットワークアドレスは 172.29.127.0、ブロードキャストアドレスは 172.29.127.63。アドレスは全部で 64 個、使えるホストはそこから 2 を引いて 62 台です。</blockquote></details>
+<details><summary>172.29.127.1</summary><blockquote><b>不正解。</b>それは最初に使えるホストのアドレスです。ネットワークアドレスはその 1 つ前です。</blockquote></details>
+<details><summary>172.29.127.64</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りの先頭です。</blockquote></details>
 <!-- SUBNET:END -->
 
 </details>
@@ -491,10 +498,10 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 たどり終わったら、選んだのりばを押して答え合わせをどうぞ。
 
 <!-- AMIDA:START -->
-<details><summary>1 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/root-call">root-call</a>(夜間当番になって、端末にコマンドを打って夜の障害を原因から直す、ブラウザで遊べるゲーム(Godot 4.7 / Web))。</blockquote></details>
-<details><summary>2 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/minecraft-building-blocks-plus">minecraft-building-blocks-plus</a>(Minecraft 統合版に縦ハーフ・階段・アーチなど 5,740 種の形状ブロックを足すアドオン(非公式))。</blockquote></details>
-<details><summary>3 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/deskkit">deskkit</a>(Windows 用 QOL ツールキット(ModeShift / DropSort / LayoutKeep / ClipShelf)を1つの常駐アプリに)。</blockquote></details>
-<details><summary>4 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/placeholder-form">placeholder-form</a>(仕様ノートの未記入プレースホルダをフォームで埋める(確認・バックアップ・取り消しつき))。</blockquote></details>
+<details><summary>1 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/dusk-page">dusk-page</a>(気分と出来事を書きためる Android の日記アプリ(完全オフライン)。開発中・実機では未確認)。</blockquote></details>
+<details><summary>2 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/procsight">procsight</a>(A Japanese process manager for Windows 11 that replaces Task Manager (Rust + egui). Touch-free processes, handles, DLLs, signatures, startup and services.)。</blockquote></details>
+<details><summary>3 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/tako-tower">tako-tower</a>(タップした壁に、張り付いて登る。タコが腕を伸ばして塔を登る、ブラウザで遊べるタイムアタック(Godot 4.7 / Web))。</blockquote></details>
+<details><summary>4 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/obsidian-vault-vet">obsidian-vault-vet</a>(Obsidian の vault を読むだけで点検する CLI(リンク切れ・孤立ノートなど6種))。</blockquote></details>
 <!-- AMIDA:END -->
 
 </details>
