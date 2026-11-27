@@ -420,7 +420,7 @@ LED の板を、列車の案内が一瞬で通過します。4 けたの列車�
 <img src="assets/fortune.svg" width="100%" alt="本日の運行占い。毎朝引き直します">
 
 <!-- FORTUNE:START -->
-本日のおすすめ: <a href="https://github.com/takosasi-dev/net-diag">net-diag</a>（自宅回線のボトルネックを推測ではなく実測で切り分けるネットワーク診断ツール(CLI + GUI、Windows)）
+本日のおすすめ: <a href="https://github.com/takosasi-dev/discord-vc-check">discord-vc-check</a>（Discord の通話音声の不調を、マイク・スピーカー・回線・PC 負荷の区間ごとに切り分ける(非公式)）
 <!-- FORTUNE:END -->
 
 </details>
@@ -480,9 +480,9 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 <img src="assets/subnet.svg" width="100%" alt="本日のサブネット問題">
 
 <!-- SUBNET:START -->
-<details><summary>172.29.127.0</summary><blockquote><b>正解。</b>/26 は、最後の数字を 64 ずつに区切ります。34 は 0〜63 の区切りに入るので、ネットワークアドレスは 172.29.127.0、ブロードキャストアドレスは 172.29.127.63。アドレスは全部で 64 個、使えるホストはそこから 2 を引いて 62 台です。</blockquote></details>
-<details><summary>172.29.127.1</summary><blockquote><b>不正解。</b>それは最初に使えるホストのアドレスです。ネットワークアドレスはその 1 つ前です。</blockquote></details>
-<details><summary>172.29.127.64</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りの先頭です。</blockquote></details>
+<details><summary>172.29.255.255</summary><blockquote><b>不正解。</b>それは /16 のときの答えです。/20 はもっと細かく区切ります。</blockquote></details>
+<details><summary>172.29.192.0</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りのネットワークアドレスです。</blockquote></details>
+<details><summary>172.29.191.255</summary><blockquote><b>正解。</b>/20 は、3 番目の数字を 16 ずつに区切ります。186 は 176〜191 の区切りに入るので、ネットワークアドレスは 172.29.176.0、ブロードキャストアドレスは 172.29.191.255。アドレスは全部で 4,096 個、使えるホストはそこから 2 を引いて 4,094 台です。</blockquote></details>
 <!-- SUBNET:END -->
 
 </details>
@@ -498,10 +498,10 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 たどり終わったら、選んだのりばを押して答え合わせをどうぞ。
 
 <!-- AMIDA:START -->
-<details><summary>1 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/dusk-page">dusk-page</a>(気分と出来事を書きためる Android の日記アプリ(完全オフライン)。開発中・実機では未確認)。</blockquote></details>
-<details><summary>2 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/procsight">procsight</a>(A Japanese process manager for Windows 11 that replaces Task Manager (Rust + egui). Touch-free processes, handles, DLLs, signatures, startup and services.)。</blockquote></details>
-<details><summary>3 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/tako-tower">tako-tower</a>(タップした壁に、張り付いて登る。タコが腕を伸ばして塔を登る、ブラウザで遊べるタイムアタック(Godot 4.7 / Web))。</blockquote></details>
-<details><summary>4 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/obsidian-vault-vet">obsidian-vault-vet</a>(Obsidian の vault を読むだけで点検する CLI(リンク切れ・孤立ノートなど6種))。</blockquote></details>
+<details><summary>1 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/sling-arc">sling-arc</a>(惑星の重力で軌道を曲げてゴールに入れる、ブラウザで遊ぶ 2D ゲーム(Godot 4.7))。</blockquote></details>
+<details><summary>2 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/disk-sift">disk-sift</a>(何がディスクを食っているかを原因別に出して安全に掃除する TUI/CLI(Arch Linux 向け))。</blockquote></details>
+<details><summary>3 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/tab-span">tab-span</a>(TabSpan: use an Android tablet as an extended monitor for a Windows PC. Work in progress (PC-side probe only).)。</blockquote></details>
+<details><summary>4 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/parry-duel">parry-duel</a>(当たる瞬間に、弾く。敵の攻撃を弾いて反撃する、ブラウザで遊べる 1 対 1 のゲーム(Godot 4.7 / Web))。</blockquote></details>
 <!-- AMIDA:END -->
 
 </details>
