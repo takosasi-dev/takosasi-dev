@@ -53,7 +53,7 @@ ROUTES = [
     ("インフラ線", "#f39700", [("Linux", ["AlmaLinux", "Arch", "Debian"]), ("Windows Server", ["AD", "DNS", "IIS"]),
                             ("VMware", ["ESXi", "vSphere"]), ("AWS", ["EC2", "VPC"])]),
     ("セキュリティ線", "#e5404f", [("Network", []), ("Security", []), ("ModSecurity", ["WAF"]), ("Snort", ["IDS"])]),
-    ("開発線", "#00a7db", [("Godot", []), ("C++ / JUCE", []), ("TypeScript", []), ("Python", []), ("C#", [])]),
+    ("開発線", "#00a7db", [("Godot", []), ("C++ / JUCE", []), ("TypeScript", []), ("Python", []), ("C#", []), ("Rust", []), ("Kotlin", [])]),
 ]
 
 
@@ -66,7 +66,7 @@ def routemap():
            f'<text x="112" y="37" font-size="12" fill="#666" font-family="{MONO}" letter-spacing="2">SKILL MAP</text>'
            f'<text x="{W - 24}" y="37" text-anchor="end" font-size="12" fill="#666" font-family="{MONO}" letter-spacing="2">TAKOSASI-DEV / 03</text>')
     for (name, col, stops), y in zip(ROUTES, ys):
-        step = 140 if len(stops) <= 4 else 115
+        step = min(140, 470 / max(len(stops) - 1, 1))  # the last station stays at x 720, so its slanted name fits
         xs = [250 + i * step for i in range(len(stops))]
         pw = len(name) * 20 + 22
         out += (f'<path d="M60 {y}H{xs[-1] + 46}" stroke="{col}" stroke-width="10" stroke-linecap="round"/>'

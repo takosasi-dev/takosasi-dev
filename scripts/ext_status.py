@@ -34,7 +34,8 @@ def live(ctx):
     busy = sorted(r["name"] for r in live_repos if r.get("ci") in ("PENDING", "EXPECTED"))
     with_ci = sum(1 for r in live_repos if r.get("ci"))
 
-    b = Board("v", LED_X, 40, LED_COLS, 128)
+    end = 28 + -(-len(CAT) // 2) * 20  # two lines a row, as many rows as it takes; the ticker goes under them
+    b = Board("v", LED_X, 40, LED_COLS, end + 20)
     if late:
         tag, col, head = "遅延", RED, f"{sum(s is DELAY for s in states.values())}路線で遅れが出ています"
     elif busy:
@@ -62,10 +63,10 @@ def live(ctx):
     if not late and not busy:
         tick += "現在、遅れの情報はありません。　　"
     tick += f"自動テストつきの列車は {with_ci} 本です。　　　"
-    b.ticker(F16, tick, 108, AMBER)
+    b.ticker(F16, tick, end, AMBER)
     h = 40 + b.h + 17
     save("service.svg", W, h,
-         casing(W, h, "列車運行情報", "Service status", "各リポジトリの自動テスト(CI)の結果") + b.svg() + seam(b, 23) + seam(b, 105),
+         casing(W, h, "列車運行情報", "Service status", "各リポジトリの自動テスト(CI)の結果") + b.svg() + seam(b, 23) + seam(b, end - 3),
          f"列車運行情報。{head}。" + "、".join(f"{CAT[t][2]}: {states[t][1]}" for t in CAT) + "。" + tick.strip())
     return {}
 

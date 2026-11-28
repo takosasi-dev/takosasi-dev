@@ -33,7 +33,7 @@ This profile is drawn as a Japanese railway station. The pictures are SVG files 
 <a href="https://github.com/takosasi-dev/rail-rampage"><img src="assets/card-rail-rampage.svg" alt="RailRampage"></a>
 <a href="https://github.com/takosasi-dev/packet-bouncer"><img src="assets/card-packet-bouncer.svg" alt="Packet Bouncer"></a>
 <a href="https://github.com/takosasi-dev/parry-duel"><img src="assets/card-parry-duel.svg" alt="ParryDuel"></a>
-<a href="https://github.com/takosasi-dev/padlab"><img src="assets/card-padlab.svg" alt="PadLab"></a>
+<a href="https://github.com/takosasi-dev/procsight"><img src="assets/card-procsight.svg" alt="ProcSight"></a>
 <!-- CARDS:END -->
 
 <a href="https://takosasi-dev.github.io/packet-bouncer/"><img src="assets/play-packet-bouncer.svg" width="330" alt="Play Packet Bouncer in the browser"></a>

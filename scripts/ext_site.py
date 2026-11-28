@@ -48,6 +48,7 @@ def static():
 def build(ctx):
     counts = [d["contributionCount"] for w in ctx["cal"]["weeks"] for d in w["contributionDays"]]
     past = counts[:-1] if counts and not counts[-1] else counts  # today may still be empty
+    shown = dict(ctx.get("feat", []))
     repos = [{
         "name": r["name"],
         "cat": ctx["CAT"][ctx["cat_of"][r["name"]]][1],
@@ -65,8 +66,13 @@ def build(ctx):
         # The featured repos as the stations of one loop line, in the order of the cards.
         # docs/line/ sends a visitor from one to its neighbour (the station signs in their READMEs link there).
         "line": [{"repo": repo, "name": name} for repo, name in ctx.get("feat", [])],
+        # The game corner: every game with a Pages site, newest first. A new one shows up by itself.
+        "games": [{"repo": r["name"], "name": shown.get(r["name"]) or "".join(w.capitalize() for w in r["name"].split("-")),
+                   "desc": ctx["DESC"].get(r["name"]) or r["desc"]}
+                  for r in sorted(ctx["repos"], key=lambda r: r.get("created_at", ""), reverse=True)
+                  if r.get("pages") and ctx["cat_of"][r["name"]] == "GAMES"],
     }
-    data["glyphs"] = glyphs(c for r in repos + data["line"] for v in r.values() for c in v if ord(c) > 0x7F)
+    data["glyphs"] = glyphs(c for r in repos + data["line"] + data["games"] for v in r.values() for c in v if ord(c) > 0x7F)
     return data
 
 
@@ -88,5 +94,10 @@ if __name__ == "__main__":  # self-check
     assert d["streak"] == 3 and d["idle"] == 0 and d["counts"] == {"repos": 1, "releases": 2, "langs": 1}
     assert d["repos"][0]["cat"] == "アプリ" and set("アプリ説明") <= set(d["glyphs"]) and d["line"] == []
     d = build({**ctx, "feat": [("x", "駅 X")]})
-    assert d["line"] == [{"repo": "x", "name": "駅 X"}] and "駅" in d["glyphs"]
+    assert d["line"] == [{"repo": "x", "name": "駅 X"}] and "駅" in d["glyphs"] and d["games"] == []
+    g = {"desc": "遊ぶ", "tag": "", "tag_date": "", "pushed": "2026-11-11", "lang": "GDScript", "releases": 0, "pages": True}
+    d = build({**ctx, "CAT": {**ctx["CAT"], "GAMES": ("games", "ゲーム", "ゲーム", "G", "#f39700", GREEN)}, "cat_of": {"x": "APPS", "key-swat": "GAMES", "old-one": "GAMES", "no-site": "GAMES"},
+               "repos": ctx["repos"] + [{**g, "name": "old-one", "created_at": "2026-01-01"}, {**g, "name": "key-swat", "created_at": "2026-11-19"},
+                                        {**g, "name": "no-site", "created_at": "2026-11-20", "pages": False}]})
+    assert [(x["repo"], x["name"]) for x in d["games"]] == [("key-swat", "KeySwat"), ("old-one", "OldOne")], d["games"]
     print("site ok")

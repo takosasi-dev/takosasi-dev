@@ -44,7 +44,7 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 <a href="https://github.com/takosasi-dev/rail-rampage"><img src="assets/card-rail-rampage.svg" alt="RailRampage"></a>
 <a href="https://github.com/takosasi-dev/packet-bouncer"><img src="assets/card-packet-bouncer.svg" alt="Packet Bouncer"></a>
 <a href="https://github.com/takosasi-dev/parry-duel"><img src="assets/card-parry-duel.svg" alt="ParryDuel"></a>
-<a href="https://github.com/takosasi-dev/padlab"><img src="assets/card-padlab.svg" alt="PadLab"></a>
+<a href="https://github.com/takosasi-dev/procsight"><img src="assets/card-procsight.svg" alt="ProcSight"></a>
 <!-- CARDS:END -->
 
 <a href="https://takosasi-dev.github.io/packet-bouncer/"><img src="assets/play-packet-bouncer.svg" width="330" alt="Packet Bouncer をブラウザで遊ぶ"></a>
@@ -83,29 +83,38 @@ The whole page in English: <a href="README.en.md">README.en.md</a>
 </details>
 
 <details>
-<summary><picture><img src="assets/arc-apps.svg" height="40" align="middle" alt="アプリ / APPS (19)"></picture></summary>
+<summary><picture><img src="assets/arc-apps.svg" height="40" align="middle" alt="アプリ / APPS (9)"></picture></summary>
 <br>
 
 | Repo | 内容 | Lang | Release |
 |---|---|---|---|
 | [-ai-work-board-](https://github.com/takosasi-dev/-ai-work-board-) | 各 AI との作業の進み具合を1枚の画面で見て書けるボード | Python | v0.4.0 |
-| [alt-roster](https://github.com/takosasi-dev/alt-roster) | 複数のゲームアカウントのスタミナ・期限・日課をまとめて見る Android アプリ(完全オフライン)。開発中・実機では未確認 | Kotlin | - |
-| [box-ledger](https://github.com/takosasi-dev/box-ledger) | ボードゲーム・カードゲームのコレクションとプレイ記録を管理するアプリ(Android 版。完全オフライン)。開発中・実機では未確認 | Kotlin | - |
-| [cam-pane](https://github.com/takosasi-dev/cam-pane) | CamPane: show an Android device's camera in a window on a Windows PC. Work in progress (PC-side probe only). | C# | v0.0.2 |
-| [daily-meter](https://github.com/takosasi-dev/daily-meter) | 睡眠・飲酒・習慣を 1 本で記録する Android アプリ(完全オフライン)。開発中・実機では未確認 | Kotlin | - |
-| [desk-slate](https://github.com/takosasi-dev/desk-slate) | DeskSlate: turn an Android tablet on your desk into a side panel for a Windows PC. Work in progress (probes only). | C# | v0.0.1 |
 | [deskkit](https://github.com/takosasi-dev/deskkit) | Windows 用 QOL ツールキット(ModeShift / DropSort / LayoutKeep / ClipShelf)を1つの常駐アプリに | Python | v0.4.1 |
-| [dusk-page](https://github.com/takosasi-dev/dusk-page) | 気分と出来事を書きためる Android の日記アプリ(完全オフライン)。開発中・実機では未確認 | Kotlin | - |
 | [glintloop](https://github.com/takosasi-dev/glintloop) | 画像にエフェクトを重ねて短いループ アニメーション(GIF・APNG・WebP)を作る Windows アプリ | - | v0.6.0 |
 | [hush-switch](https://github.com/takosasi-dev/hush-switch) | 指定したアプリの音だけをボタン1つでミュート/解除する Windows 用ソフト (C# / WPF / Core Audio) | C# | v0.3.0 |
 | [kanade-daw](https://github.com/takosasi-dev/kanade-daw) | AI 音楽生成・自動採譜を核にした統合 DAW(C++20 / JUCE 8、ローカル完結) | C++ | v0.6.0 |
 | [koe-loom](https://github.com/takosasi-dev/koe-loom) | Discord などで使える Windows 11 向けボイスチェンジャー（DSP のみ、JUCE / C++）。プレリリース | C++ | v0.6.0 |
-| [padsight](https://github.com/takosasi-dev/padsight) | Windows tray app that overlays your gamepad input (pad view, input history, sticks, stats) on top of games. Read-only, via SDL3. | C# | - |
-| [procsight](https://github.com/takosasi-dev/procsight) | A Japanese process manager for Windows 11 that replaces Task Manager (Rust + egui). Touch-free processes, handles, DLLs, signatures, startup and services. | Rust | v0.4.0 |
+| [padsight](https://github.com/takosasi-dev/padsight) | ゲームパッドの入力(ボタン・スティック・入力の履歴)を、ゲームの上に重ねて表示する Windows の常駐アプリ | C# | - |
+| [procsight](https://github.com/takosasi-dev/procsight) | タスクマネージャーの代わりになる、日本語の Windows 11 用プロセス管理(Rust + egui)。プロセスには触らずに調べる | Rust | v0.4.0 |
+| [taskdeck](https://github.com/takosasi-dev/taskdeck) | Windows 常駐の Todo アプリ。どこからでも Ctrl+Shift+Space で1行入力 | C# | v0.1.1 |
+
+</details>
+
+<details>
+<summary><picture><img src="assets/arc-android.svg" height="40" align="middle" alt="Android / ANDROID (10)"></picture></summary>
+<br>
+
+| Repo | 内容 | Lang | Release |
+|---|---|---|---|
+| [alt-roster](https://github.com/takosasi-dev/alt-roster) | 複数のゲームアカウントのスタミナ・期限・日課をまとめて見る Android アプリ(完全オフライン)。開発中・実機では未確認 | Kotlin | - |
+| [box-ledger](https://github.com/takosasi-dev/box-ledger) | ボードゲーム・カードゲームのコレクションとプレイ記録を管理するアプリ(Android 版。完全オフライン)。開発中・実機では未確認 | Kotlin | - |
+| [cam-pane](https://github.com/takosasi-dev/cam-pane) | Android 端末のカメラの映像を、Windows PC の窓に映す(開発中。PC 側の試作だけ) | C# | v0.0.2 |
+| [daily-meter](https://github.com/takosasi-dev/daily-meter) | 睡眠・飲酒・習慣を 1 本で記録する Android アプリ(完全オフライン)。開発中・実機では未確認 | Kotlin | - |
+| [desk-slate](https://github.com/takosasi-dev/desk-slate) | 机の上の Android タブレットを、Windows PC の横に置く操作パネルにする(開発中。試作だけ) | C# | v0.0.1 |
+| [dusk-page](https://github.com/takosasi-dev/dusk-page) | 気分と出来事を書きためる Android の日記アプリ(完全オフライン)。開発中・実機では未確認 | Kotlin | - |
 | [shelf-tally](https://github.com/takosasi-dev/shelf-tally) | 家の日用品・食品の在庫を記録する Android アプリ(完全オフライン)。開発中・実機では未確認 | Kotlin | - |
 | [subly](https://github.com/takosasi-dev/subly) | Subly - Android・Windows(PC)両対応のサブスクリプション管理アプリ | Kotlin | v0.1.4 |
-| [tab-span](https://github.com/takosasi-dev/tab-span) | TabSpan: use an Android tablet as an extended monitor for a Windows PC. Work in progress (PC-side probe only). | C# | v0.3.0 |
-| [taskdeck](https://github.com/takosasi-dev/taskdeck) | Windows 常駐の Todo アプリ。どこからでも Ctrl+Shift+Space で1行入力 | C# | v0.1.1 |
+| [tab-span](https://github.com/takosasi-dev/tab-span) | Android タブレットを、Windows PC の拡張モニターにする(開発中。PC 側の試作だけ) | C# | v0.3.0 |
 | [win-loss-tracker](https://github.com/takosasi-dev/win-loss-tracker) | 遊技の収支をオフラインで記録・集計する Android アプリ(INTERNET 権限なし) | Kotlin | v1.5.0 |
 
 </details>
@@ -420,7 +429,7 @@ LED の板を、列車の案内が一瞬で通過します。4 けたの列車�
 <img src="assets/fortune.svg" width="100%" alt="本日の運行占い。毎朝引き直します">
 
 <!-- FORTUNE:START -->
-本日のおすすめ: <a href="https://github.com/takosasi-dev/discord-vc-check">discord-vc-check</a>（Discord の通話音声の不調を、マイク・スピーカー・回線・PC 負荷の区間ごとに切り分ける(非公式)）
+本日のおすすめ: <a href="https://github.com/takosasi-dev/broken-name-watch">broken-name-watch</a>（見えない文字や Windows で使えない文字を含む名前を警告する）
 <!-- FORTUNE:END -->
 
 </details>
@@ -480,9 +489,9 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 <img src="assets/subnet.svg" width="100%" alt="本日のサブネット問題">
 
 <!-- SUBNET:START -->
-<details><summary>172.29.255.255</summary><blockquote><b>不正解。</b>それは /16 のときの答えです。/20 はもっと細かく区切ります。</blockquote></details>
-<details><summary>172.29.192.0</summary><blockquote><b>不正解。</b>それは 1 つ後ろの区切りのネットワークアドレスです。</blockquote></details>
-<details><summary>172.29.191.255</summary><blockquote><b>正解。</b>/20 は、3 番目の数字を 16 ずつに区切ります。186 は 176〜191 の区切りに入るので、ネットワークアドレスは 172.29.176.0、ブロードキャストアドレスは 172.29.191.255。アドレスは全部で 4,096 個、使えるホストはそこから 2 を引いて 4,094 台です。</blockquote></details>
+<details><summary>14 台</summary><blockquote><b>正解。</b>/28 は、最後の数字を 16 ずつに区切ります。251 は 240〜255 の区切りに入るので、ネットワークアドレスは 172.26.76.240、ブロードキャストアドレスは 172.26.76.255。アドレスは全部で 16 個、使えるホストはそこから 2 を引いて 14 台です。</blockquote></details>
+<details><summary>16 台</summary><blockquote><b>不正解。</b>それはアドレスの総数です。ネットワークアドレスとブロードキャストアドレスの 2 つは使えません。</blockquote></details>
+<details><summary>15 台</summary><blockquote><b>不正解。</b>引くのは 2 つです(ネットワークアドレスとブロードキャストアドレス)。</blockquote></details>
 <!-- SUBNET:END -->
 
 </details>
@@ -498,10 +507,10 @@ Web サーバのアクセスログです。6 行のうち、攻撃の行を当�
 たどり終わったら、選んだのりばを押して答え合わせをどうぞ。
 
 <!-- AMIDA:START -->
-<details><summary>1 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/sling-arc">sling-arc</a>(惑星の重力で軌道を曲げてゴールに入れる、ブラウザで遊ぶ 2D ゲーム(Godot 4.7))。</blockquote></details>
-<details><summary>2 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/disk-sift">disk-sift</a>(何がディスクを食っているかを原因別に出して安全に掃除する TUI/CLI(Arch Linux 向け))。</blockquote></details>
-<details><summary>3 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/tab-span">tab-span</a>(TabSpan: use an Android tablet as an extended monitor for a Windows PC. Work in progress (PC-side probe only).)。</blockquote></details>
-<details><summary>4 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/parry-duel">parry-duel</a>(当たる瞬間に、弾く。敵の攻撃を弾いて反撃する、ブラウザで遊べる 1 対 1 のゲーム(Godot 4.7 / Web))。</blockquote></details>
+<details><summary>1 番のりば</summary><blockquote><b>B</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/padsight">padsight</a>(ゲームパッドの入力(ボタン・スティック・入力の履歴)を、ゲームの上に重ねて表示する Windows の常駐アプリ)。</blockquote></details>
+<details><summary>2 番のりば</summary><blockquote><b>D</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/dbc-agent">dbc-agent</a>(Linux サーバの systemd unit 単位の負荷と待たされ率(PSI)を集める常駐エージェント。DBC のサーバ側)。</blockquote></details>
+<details><summary>3 番のりば</summary><blockquote><b>A</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/dbc-gui">dbc-gui</a>(DBC の PC 側。SSH トンネル越しに Linux サーバの systemd unit 単位の負荷を見る)。</blockquote></details>
+<details><summary>4 番のりば</summary><blockquote><b>C</b> に着きます。本日のおすすめは <a href="https://github.com/takosasi-dev/glintloop">glintloop</a>(画像にエフェクトを重ねて短いループ アニメーション(GIF・APNG・WebP)を作る Windows アプリ)。</blockquote></details>
 <!-- AMIDA:END -->
 
 </details>

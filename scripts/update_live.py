@@ -40,12 +40,12 @@ EXTENSIONS = ["ext_train", "ext_tako", "ext_data", "ext_games", "ext_diorama", "
               "ext_status", "ext_history", "ext_timetable", "ext_commuter", "ext_board", "ext_stations", "ext_og", "ext_depot", "ext_works", "ext_annual", "ext_inspect"]
 NOTE = "GitHub の記録から毎日自動で更新"
 
-# ponytail: one page of 100 repos, no cursor paging. Add paging when the account passes 100 public repos.
-QUERY = """query($login: String!) {
+QUERY = """query($login: String!, $after: String) {
   user(login: $login) {
     createdAt
-    repositories(first: 100, privacy: PUBLIC, ownerAffiliations: OWNER, isFork: false,
+    repositories(first: 100, after: $after, privacy: PUBLIC, ownerAffiliations: OWNER, isFork: false,
                  orderBy: {field: PUSHED_AT, direction: DESC}) {
+      pageInfo { hasNextPage endCursor }
       nodes {
         name description pushedAt createdAt isArchived
         defaultBranchRef { target { ... on Commit { statusCheckRollup { state } } } }
@@ -129,6 +129,33 @@ def weather():
         return None
 
 
+def graphql(after):
+    req = urllib.request.Request(
+        "https://api.github.com/graphql",
+        data=json.dumps({"query": QUERY, "variables": {"login": USER, "after": after}}).encode(),
+        headers={"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}", "User-Agent": USER})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return json.load(r)
+
+
+def pages_sites():
+    """The names of the public repos that publish a GitHub Pages site (GraphQL does not say; REST does).
+    Never raises: without the answer the game corner of the concourse is just empty for a day."""
+    out = []
+    try:
+        for page in range(1, 11):
+            req = urllib.request.Request(f"https://api.github.com/users/{USER}/repos?type=owner&per_page=100&page={page}",
+                                         headers={"Authorization": f"Bearer {os.environ.get('GITHUB_TOKEN', '')}", "User-Agent": USER})
+            with urllib.request.urlopen(req, timeout=30) as r:
+                items = json.load(r)
+            out += [i["name"] for i in items if i.get("has_pages")]
+            if len(items) < 100:
+                break
+    except Exception as e:  # noqa: BLE001
+        print(f"pages sites: {type(e).__name__} {e}")
+    return out
+
+
 def fetch(today):
     """(public repos, most recently pushed first; the contribution calendar; who starred, newest first;
     the rest: {"joined", "commits", "weather"})."""
@@ -136,13 +163,16 @@ def fetch(today):
         with open(sys.argv[1], encoding="utf-8") as f:
             data = json.load(f)
     else:
-        req = urllib.request.Request(
-            "https://api.github.com/graphql",
-            data=json.dumps({"query": QUERY, "variables": {"login": USER}}).encode(),
-            headers={"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}", "User-Agent": USER})
-        with urllib.request.urlopen(req, timeout=30) as r:
-            data = json.load(r)
-        data["extra"] = {"commits": commit_times(today), "weather": weather()}
+        data = graphql(None)
+        repos = data.get("data", {}).get("user", {}).get("repositories", {})
+        while not data.get("errors") and repos.get("pageInfo", {}).get("hasNextPage"):  # 100 repos a page
+            page = graphql(repos["pageInfo"]["endCursor"])
+            if page.get("errors"):
+                data["errors"] = page["errors"]
+                break
+            repos["nodes"] += page["data"]["user"]["repositories"]["nodes"]
+            repos["pageInfo"] = page["data"]["user"]["repositories"]["pageInfo"]
+        data["extra"] = {"commits": commit_times(today), "weather": weather(), "pages": pages_sites()}
         if os.environ.get("PROFILE_SAVE"):  # keep the answers, to draw from them again without the network
             with open(os.environ["PROFILE_SAVE"], "w", encoding="utf-8", newline="\n") as f:
                 json.dump(data, f, ensure_ascii=False)
@@ -182,6 +212,7 @@ def fetch(today):
             # The automatic tests on the default branch: SUCCESS / FAILURE / ERROR / PENDING / EXPECTED, "" if the repo has none.
             "ci": ((((n.get("defaultBranchRef") or {}).get("target") or {}).get("statusCheckRollup") or {}).get("state") or ""),
             "archived": bool(n.get("isArchived")),
+            "pages": n["name"] in extra.get("pages", []),  # it has a GitHub Pages site at https://USER.github.io/<name>/
         })
     return (repos, user["contributionsCollection"]["contributionCalendar"],
             sorted(stars.values(), key=lambda s: s["at"], reverse=True), extra)
@@ -200,6 +231,7 @@ CATS = [
     ("CLAUDE CODE MODS", T("claude-code-plugin")),
     ("CHROME EXTENSIONS", T("chrome-extension")),
     ("OBSIDIAN", T("obsidian", "obsidian-plugin", "obsidian-md")),
+    ("ANDROID", lambda r: "android" in r["topics"] or r["lang"] == "Kotlin"),
     ("GAMES", lambda r: bool(r["topics"] & {"game", "game-tool", "roguelike", "godot"}) or r["lang"] == "GDScript"),
     ("DIAGNOSTICS", T("diagnostics", "controller-tester")),
     ("LINUX / SERVER", T("linux", "tmux")),
@@ -209,6 +241,7 @@ CATS = [
 CAT = {
     "GAMES": ("games", "ゲーム", "ゲーム", "G", "#f39700", AMBER),
     "APPS": ("apps", "アプリ", "アプリ", "A", "#e5404f", GREEN),
+    "ANDROID": ("android", "Android", "Android", "N", "#e85298", GREEN),
     "DIAGNOSTICS": ("diag", "診断", "診断ツール", "D", "#00a7db", RED),
     "LINUX / SERVER": ("linux", "サーバ", "Linux・サーバ", "L", "#00a650", GREEN),
     "OBSIDIAN": ("obsidian", "Obsidian", "Obsidian", "O", "#9b7cb6", AMBER),
@@ -220,6 +253,11 @@ CAT = {
 # Japanese one-liners for repos whose GitHub description is English or empty.
 DESC = {
     "-ai-work-board-": "各 AI との作業の進み具合を1枚の画面で見て書けるボード",
+    "cam-pane": "Android 端末のカメラの映像を、Windows PC の窓に映す(開発中。PC 側の試作だけ)",
+    "desk-slate": "机の上の Android タブレットを、Windows PC の横に置く操作パネルにする(開発中。試作だけ)",
+    "padsight": "ゲームパッドの入力(ボタン・スティック・入力の履歴)を、ゲームの上に重ねて表示する Windows の常駐アプリ",
+    "procsight": "タスクマネージャーの代わりになる、日本語の Windows 11 用プロセス管理(Rust + egui)。プロセスには触らずに調べる",
+    "tab-span": "Android タブレットを、Windows PC の拡張モニターにする(開発中。PC 側の試作だけ)",
     "blocker-board": "仕様ノートの未記入プレースホルダと、止めているフェーズを一覧にする",
     "broken-name-watch": "見えない文字や Windows で使えない文字を含む名前を警告する",
     "diag-cron": "診断ツールを定期実行して結果を測定条件つきで残し、差分を取る",
@@ -248,14 +286,13 @@ PROJECTS = {
     "rail-rampage": ("RailRampage", None, "トロッコ問題を題材にした横スクロールの\n1ボタン破壊ゲーム（Godot 4）"),
     "packet-bouncer": ("Packet Bouncer", None, "ブラウザで遊ぶパケット検問ゲーム\n（Godot 4・開発中）"),
     "parry-duel": ("ParryDuel", None, "敵の攻撃を、当たる瞬間に弾いて反撃する\n1 対 1 のブラウザゲーム（Godot 4）"),
-    "padlab": ("PadLab", None, "Windows 向けゲームコントローラー診断ツール\n入力表示・ドリフト・チャタリング・精度"),
-    "net-diag": ("net-diag", None, "自宅回線のボトルネックを推測ではなく\n実測で切り分けるネットワーク診断ツール"),
+    "procsight": ("ProcSight", "Rust", "タスクマネージャーの代わりになる日本語の\nプロセス管理。Windows 11 / Rust + egui"),
 }
 
 
 def featured(repos):
     order = list(PROJECTS)
-    picked = [r for r in repos if "featured" in r["topics"]] or [r for r in repos if r["name"] in PROJECTS]
+    picked = [r for r in repos if "featured" in r["topics"] and not r["archived"]] or [r for r in repos if r["name"] in PROJECTS]
     picked.sort(key=lambda r: order.index(r["name"]) if r["name"] in order else len(order))  # stable: the rest stay newest first
     return picked[:6]
 
@@ -446,7 +483,8 @@ def header(repos, cal, today, stars=()):
 
 # --------------------------------------------------------------------------- boards
 def guide(repos, groups):
-    b = Board("g", LED_X, 40, LED_COLS, 98)
+    end = 3 + -(-len(CAT) // 2) * 18  # two lines a row, as many rows as it takes; the ticker goes under them
+    b = Board("g", LED_X, 40, LED_COLS, end + 23)
     for i, title in enumerate(CAT):
         x, y = 5 + (i % 2) * 201, 3 + (i // 2) * 18
         b.put(F16, CAT[title][2], x, y, AMBER)
@@ -457,9 +495,10 @@ def guide(repos, groups):
         n = max(news, key=lambda r: r["tag_date"])
         tick = f'最新リリース: {n["name"]} {n["tag"]}（{md(n["tag_date"])}）　　'
     tick += "最近の更新: " + "、".join(r["name"] for r in repos[:5]) + "　　　"
-    b.ticker(F16, tick, 80, AMBER)
+    b.ticker(F16, tick, end + 5, AMBER)
     counts = "、".join(f"{CAT[t][2]} {len(groups[t])}" for t in CAT)
-    save("guide.svg", W, 256, casing(W, 256, "系統のご案内", "Lines", NOTE) + b.svg() + seam(b, 76),
+    h = 40 + b.h + 20
+    save("guide.svg", W, h, casing(W, h, "系統のご案内", "Lines", NOTE) + b.svg() + seam(b, end + 1),
          f"公開リポジトリ {len(repos)} 本。{counts}。{tick.strip()}")
 
 

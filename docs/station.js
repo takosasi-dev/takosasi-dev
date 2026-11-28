@@ -21,7 +21,9 @@
     const str = (v, n) => (typeof v === "string" ? v.slice(0, n) : "");
     const num = v => (Number.isFinite(v) && v >= 0 ? Math.floor(v) : 0);
     const out = { repos: [], counts: null, streak: num(d.streak), idle: num(d.idle), updated: DATE.test(d.updated) ? d.updated : "",
-                  line: (Array.isArray(d.line) ? d.line.slice(0, 20) : []).filter(s => s && NAME.test(s.repo)).map(s => s.repo) };
+                  line: (Array.isArray(d.line) ? d.line.slice(0, 20) : []).filter(s => s && NAME.test(s.repo)).map(s => s.repo),
+                  games: (Array.isArray(d.games) ? d.games.slice(0, 100) : []).filter(g => g && NAME.test(g.repo))
+                    .map(g => ({ repo: g.repo, name: str(g.name, 40) || g.repo, desc: str(g.desc, 200) })) };
     for (const r of Array.isArray(d.repos) ? d.repos.slice(0, 300) : []) {
       if (!r || !NAME.test(r.name)) continue;
       out.repos.push({ name: r.name, cat: str(r.cat, 12), col: str(r.col, 7), desc: str(r.desc, 200), tag: str(r.tag, 24),
@@ -46,8 +48,25 @@
         + "本日もご利用ありがとうございます。　　　";
       say("main-say", "新着リリース: " + releases().map(r => `${r.name} ${r.tag} (${md(r.tag_date)})`).join("、"));
       // The transfer gate takes a station of the line and sends the visitor one stop on (docs/line/).
+      arcade(data.games);
       if (data.line.length) $("ride").href = "line/?from=" + encodeURIComponent(pickOf(data.line)) + "&go=next";
     } catch (e) { /* the board runs on the clock alone */ }
+  }
+
+  // The game corner: one tile per game with a Pages site. Built with textContent; the address is made
+  // here from a name that passed NAME, so nothing from data.json becomes a link by itself.
+  function arcade(games) {
+    const ul = $("arcade");
+    ul.replaceChildren(...games.map(g => {
+      const li = document.createElement("li"), a = document.createElement("a"), b = document.createElement("b"), small = document.createElement("small");
+      a.href = `https://${USER}.github.io/${g.repo}/`;
+      b.textContent = g.name;
+      small.textContent = g.desc;
+      a.append(b, small);
+      li.append(a);
+      return li;
+    }));
+    say("arcade-say", games.length ? `ブラウザで遊べるゲーム ${games.length} 本。新しい物が上です。札を押すと、そのゲームの駅へのりかえます。` : "");
   }
 
   async function poll() {
